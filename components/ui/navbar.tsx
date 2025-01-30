@@ -7,17 +7,17 @@ import { useState, useRef, useEffect, Suspense } from "react";
 import { Skeleton } from "./skeleton";
 import SearchBar from "../common/SearchBar";
 
+const navigation = [
+  { title: "Dashboard", path: "/dashboard" },
+  { title: "Settings", path: "/settings" },
+  { title: "Log out", path: "/" },
+];
+
 // Profile Dropdown
 const ProfileDropDown = ({ props }: any) => {
   const [state, setState] = useState(false);
+
   const profileRef: any = useRef();
-
-  const navigation = [
-    { title: "Dashboard", path: "/dashboard" },
-    { title: "Settings", path: "/settings" },
-    { title: "Log out", path: "/" },
-  ];
-
   useEffect(() => {
     const handleDropDown = (e: any) => {
       if (!profileRef.current.contains(e.target)) setState(false);
@@ -70,6 +70,16 @@ const ProfileDropDown = ({ props }: any) => {
 
 export const Navbar = () => {
   const [menuState, setMenuState] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 0);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const navigation = [
     { title: "Home", path: "/" },
@@ -78,15 +88,21 @@ export const Navbar = () => {
     { title: "Contact", path: "/contact" },
   ];
   return (
-    <nav className="fixed left-0 right-0 z-50 bg-black bg-opacity-50">
+    <nav
+      className={`fixed left-0 right-0 z-50 ${
+        isScrolled
+          ? "bg-slate-900/95 backdrop-blur-sm shadow-xl"
+          : "bg-black bg-opacity-50"
+      } transition-all duration-300`}
+    >
       <div className="flex items-center space-x-8 py-3 px-4 max-w-screen-xl mx-auto md:px-8">
         <div className="flex-1 flex items-center justify-between">
           <div
-            className={` absolute z-20 w-full top-16 left-0 p-4 border-b lg:static lg:block lg:border-none ${
+            className={`bg-slate-900/95 lg:bg-inherit absolute z-20 w-full top-16 left-0 p-4 border-b lg:static lg:block lg:border-none ${
               menuState ? "" : "hidden"
             }`}
           >
-            <ul className="mt-12 space-y-5 lg:flex lg:space-x-6 lg:space-y-0 lg:mt-0">
+            <ul className=" space-y-5 lg:flex lg:space-x-6 lg:space-y-0 lg:mt-0">
               {navigation.map((item, idx) => (
                 <li key={idx} className="text-gray-600 hover:text-gray-900">
                   <Link href={item.path}>{item.title}</Link>

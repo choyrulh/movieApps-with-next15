@@ -4,20 +4,20 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
-import { getDetailMovie, getTrending } from "@/Service/fetchMovie";
+import { getTrending } from "@/Service/fetchMovie";
 import { Movie } from "@/types/movie.";
 import { ChevronLeft, ChevronRight, Info, Play, Star } from "lucide-react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 
-function Banner() {
+function Banner({ type }: { type: string }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [pauseAutoSlide, setPauseAutoSlide] = useState(false);
   const [progress, setProgress] = useState(0);
-  const router = useRouter();
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["trendingMovies"],
-    queryFn: getTrending,
+    queryKey: ["trendingMovies", type],
+
+    queryFn: () => getTrending(type, {}),
     staleTime: 5 * 60 * 1000,
     retry: 2,
   });
@@ -34,6 +34,8 @@ function Banner() {
 
     return () => clearInterval(interval);
   }, [isLoading, isError, pauseAutoSlide, data?.results]);
+
+  console.log("data:", data);
 
   // Progress bar animation
   useEffect(() => {
@@ -135,7 +137,7 @@ function Banner() {
       </AnimatePresence>
 
       {/* Content */}
-      <div className="relative h-full flex flex-col justify-end p-4 md:p-8 lg:p-12">
+      <div className="relative h-full flex flex-col justify-end p-6 md:p-8 lg:p-12">
         <motion.div
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -143,7 +145,7 @@ function Banner() {
           className="max-w-2xl space-y-4 text-white"
         >
           <h1 className="text-3xl md:text-5xl font-bold drop-shadow-2xl">
-            {currentMovie.title}
+            {currentMovie.title ? currentMovie.title : currentMovie.name}
           </h1>
 
           <div className="flex items-center gap-4 text-sm md:text-base">
@@ -152,7 +154,13 @@ function Banner() {
               <span>{currentMovie.vote_average.toFixed(1)}</span>
             </div>
             <span>•</span>
-            <span>{new Date(currentMovie.release_date).getFullYear()}</span>
+            <span>
+              {new Date(
+                currentMovie.release_date
+                  ? currentMovie.release_date
+                  : currentMovie.first_air_date
+              ).getFullYear()}
+            </span>
             <span>•</span>
             <span>{currentMovie.original_language.toUpperCase()}</span>
           </div>
@@ -165,31 +173,27 @@ function Banner() {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="flex items-center gap-2 px-6 py-2 bg-white/90 text-slate-900 rounded-lg font-semibold hover:bg-white transition-colors"
+              className="flex items-center gap-2 px-6 py-2 bg-white/90 text-slate-900 rounded-lg font-semibold hover:bg-white transition-colors hover:cursor-pointer"
             >
               <Play className="w-5 h-5 fill-current" />
               Watch Now
             </motion.button>
-
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => {
-                const movieId = currentMovie.id;
-                router.push(`/${movieId}`);
-                window.scrollTo(0, 0);
-              }}
-              className="flex items-center gap-2 px-6 py-2 bg-slate-500/50 text-white rounded-lg font-semibold hover:bg-slate-500/70 transition-colors cursor-pointer"
-            >
-              <Info className="w-5 h-5" />
-              More Info
-            </motion.button>
+            <Link href={`/${currentMovie.id}`}>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="flex items-center gap-2 px-6 py-2 bg-slate-500/50 text-white rounded-lg font-semibold hover:bg-slate-500/70 transition-colors hover:cursor-pointer"
+              >
+                <Info className="w-5 h-5" />
+                More Info
+              </motion.button>
+            </Link>
           </div>
         </motion.div>
       </div>
 
       {/* Navigation Controls */}
-      <div className="absolute inset-0 flex items-center justify-between p-4">
+      <div className="lg:h-[38rem] md:h-[32rem] sm:h-[28rem] h-[26rem] absolute inset-0 flex items-center justify-between p-4">
         <motion.button
           onClick={handlePrev}
           whileHover={{ scale: 1.1 }}
@@ -208,7 +212,7 @@ function Banner() {
       </div>
 
       {/* Slide Indicators */}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-50">
+      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-2 z-50">
         {data.results.map((_: Movie, index: number) => (
           <button
             key={index}

@@ -30,7 +30,6 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
   const trailer = movie?.videos?.results.find(
     (video: Video) => video.site === "YouTube" && video.type === "Trailer"
   );
-  console.log("trailer:", trailer);
 
   if (isLoading) {
     return (

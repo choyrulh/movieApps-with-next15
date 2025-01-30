@@ -1,5 +1,15 @@
+"use client";
+
+import Banner from "@/components/Banner";
+import { usePathname } from "next/navigation";
+
 function Show() {
-  return <div className="text-3xl">Show Page</div>;
+  const pathname = usePathname();
+  return (
+    <>
+      <Banner type={pathname === "/show" ? "tv" : "movie"} />
+    </>
+  );
 }
 
 export default Show;

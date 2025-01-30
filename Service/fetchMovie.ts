@@ -32,10 +32,8 @@ export const getNowPlaying = async () => {
     }
 
     const data = await response.json();
-    console.log("data");
     return data;
   } catch (error) {
-    console.error("Error fetching now playing movies:", error);
     throw error; // Lempar error agar bisa ditangani di tempat lain
   }
 };
@@ -93,14 +91,38 @@ const getTopRated = async () => {
   }
 };
 
-export const getTrending = async () => {
+export const getTrending = async (type: string, params = {}) => {
   try {
     const response = await axios.get(
-      `${url}/trending/movie/week?page=1&api_key=${api_key}`
+      `${url}/trending/${type}/week?page=1&api_key=${api_key}`,
+      {
+        params: {
+          api_key: api_key,
+          ...params,
+        },
+      }
     );
 
     const data = await response.data;
     return data;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const getDetailMovie = async (id: number, params = {}) => {
+  try {
+    const response = await axios.get(`${url}/movie/${id}?api_key=${api_key}`, {
+      params: {
+        api_key: api_key,
+        ...params,
+      },
+    });
+
+    return response.data;
+
+    // const data = await response.json();
+    // return data;
   } catch (error) {
     return error;
   }
@@ -138,23 +160,6 @@ const getUpcoming = async () => {
 // );
 
 //detail movie
-export const getDetailMovie = async (id: number, params = {}) => {
-  try {
-    const response = await axios.get(`${url}/movie/${id}?api_key=${api_key}`, {
-      params: {
-        api_key: api_key,
-        ...params,
-      },
-    });
-
-    return response.data;
-
-    // const data = await response.json();
-    // return data;
-  } catch (error) {
-    return error;
-  }
-};
 
 // search by genre
 const getSearchByGenre = async (genreId: number) => {

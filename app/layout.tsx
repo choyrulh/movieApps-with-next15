@@ -28,7 +28,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-slate-900 text-gray-100 tracking-tight`}
       >
         <Navbar />
         <ReactQueryProvider>{children}</ReactQueryProvider>
