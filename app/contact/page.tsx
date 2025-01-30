@@ -1,5 +1,5 @@
-function page() {
+function contact() {
   return <div className="text-3xl">contact Page</div>;
 }
 
-export default page;
+export default contact;
