@@ -10,7 +10,7 @@ import Image from "next/image";
 import { Rating } from "@/components/common/Rating";
 import TrailerModal from "@/components/TrailerModal";
 
-export function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
+function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
 
   const {
