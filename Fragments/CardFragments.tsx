@@ -21,7 +21,7 @@ function CardFragments() {
   } = useQuery<Movie[]>({
     queryKey: ["movie Popular"],
 
-    queryFn: () => getPopularMovie(),
+    queryFn: () => getPopularMovie(1, {}),
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
     retry: 2,
   });
