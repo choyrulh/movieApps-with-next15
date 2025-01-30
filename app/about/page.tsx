@@ -1,5 +1,5 @@
-function about() {
+function About() {
   return <div className="text-3xl">About Page</div>;
 }
 
-export default about;
+export default About;

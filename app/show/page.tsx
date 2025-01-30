@@ -1,5 +1,5 @@
-function show() {
-  return <div className="text-3xl">show Page</div>;
+function Show() {
+  return <div className="text-3xl">Show Page</div>;
 }
 
-export default show;
+export default Show;
