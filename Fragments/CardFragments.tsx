@@ -29,7 +29,7 @@ function CardFragments() {
   console.log("data1:", movies);
 
   return (
-    <>
+    <div>
       <h2 className="text-3xl font-bold text-black mb-8 mt-5">
         Popular Movies
       </h2>
@@ -51,7 +51,7 @@ function CardFragments() {
           Load More
         </Button>
       </div>
-    </>
+    </div>
   );
 }
 

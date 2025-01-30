@@ -56,10 +56,17 @@ export const getGenres = async () => {
   }
 };
 
-export const getPopularMovie = async () => {
+export const getPopularMovie = async (page: number, params = {}) => {
   try {
     const response = await axios.get(
-      `${url}/movie/popular?page=1&api_key=${api_key}`
+      `${url}/movie/popular?page=${page}&api_key=${api_key}`,
+      {
+        params: {
+          api_key: api_key,
+          page: page,
+          ...params,
+        },
+      }
     );
 
     const data = await response.data?.results;
