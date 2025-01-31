@@ -159,19 +159,14 @@ const getUpcoming = async () => {
 //   "/tv/top_rated?page=1&api_key=" + api_key
 // );
 
-//detail movie
-
 // search by genre
-const getSearchByGenre = async (genreId: number) => {
+export const getSearchByGenre = async (genreId: string) => {
   try {
-    const response = await fetch(
+    const response = await axios.get(
       `${url}/discover/movie?api_key=${api_key}&with_genres=${genreId}`
     );
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
 
-    const data = await response.json();
+    const data = await response.data;
     return data;
   } catch (error) {
     return error;

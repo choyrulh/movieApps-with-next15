@@ -35,8 +35,6 @@ function Banner({ type }: { type: string }) {
     return () => clearInterval(interval);
   }, [isLoading, isError, pauseAutoSlide, data?.results]);
 
-  console.log("data:", data);
-
   // Progress bar animation
   useEffect(() => {
     if (pauseAutoSlide) return;

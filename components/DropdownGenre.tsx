@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Select,
   SelectContent,
@@ -7,6 +9,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useStore } from "@/store/useStore";
+import { Value } from "@radix-ui/react-select";
 
 const genre: { id: number; name: string }[] = [
   { id: 28, name: "Action" },
@@ -31,8 +35,10 @@ const genre: { id: number; name: string }[] = [
 ];
 
 export function DropdownGenre() {
+  const { genresId, setSelectedGenresId } = useStore();
+
   return (
-    <Select>
+    <Select onValueChange={(value) => setSelectedGenresId(value)}>
       <SelectTrigger className="w-44">
         <SelectValue placeholder="Select Genre" />
       </SelectTrigger>
