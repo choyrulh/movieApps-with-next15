@@ -94,9 +94,14 @@ function Banner({ type }: { type: string }) {
 
   const currentMovie = data.results[activeIndex];
 
+  const handleSlideClick = (index: number) => {
+    setActiveIndex(index);
+    setProgress(0);
+  };
+
   return (
     <div
-      className="relative h-[60vh] md:h-[80vh] overflow-hidden"
+      className="relative h-[100vh] overflow-hidden"
       onMouseEnter={() => setPauseAutoSlide(true)}
       onMouseLeave={() => setPauseAutoSlide(false)}
     >
@@ -135,7 +140,7 @@ function Banner({ type }: { type: string }) {
       </AnimatePresence>
 
       {/* Content */}
-      <div className="relative h-full flex flex-col justify-end p-6 md:p-8 lg:p-12">
+      <div className="relative h-[80vh] flex flex-col justify-end p-6 md:p-8 lg:p-12">
         <motion.div
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -210,21 +215,54 @@ function Banner({ type }: { type: string }) {
       </div>
 
       {/* Slide Indicators */}
-      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-2 z-50">
-        {data.results.map((_: Movie, index: number) => (
-          <button
-            key={index}
-            onClick={() => {
-              setActiveIndex(index);
-              setProgress(0);
-            }}
-            className={`w-3 h-3 rounded-full transition-all ${
-              index === activeIndex
-                ? "w-6 bg-red-500"
-                : "bg-white/50 hover:bg-white/70"
-            }`}
-          />
-        ))}
+      <div className="absolute bottom-8 lg:right-[18rem] md:right-[12rem] h-32 z-50">
+        <div className="relative max-w-4xl mx-auto">
+          {/* Center highlight zone */}
+          <div className="absolute left-1/2 -translate-x-1/2 w-24 h-32 bg-black/20 backdrop-blur-sm rounded-lg z-10" />
+
+          {/* Thumbnails container */}
+          <motion.div className="flex items-center justify-center gap-4 h-32">
+            {data.results.map((movie: Movie, index: number) => {
+              const position = index - activeIndex;
+
+              return (
+                <motion.div
+                  key={movie.id}
+                  style={{
+                    position: "absolute",
+                    left: "50%",
+                    x: `calc(-50% + ${position * 185}px)`, // Adjust spacing
+                  }}
+                  animate={{
+                    scale: index === activeIndex ? 1.3 : 1,
+                    opacity: Math.abs(position) > 3 ? 0 : 1,
+                    zIndex: index === activeIndex ? 20 : 10,
+                  }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 300,
+                    damping: 30,
+                  }}
+                  onClick={() => handleSlideClick(index)}
+                  className="cursor-pointer"
+                >
+                  <div className={`relative w-40 h-24 overflow-hidden`}>
+                    <Image
+                      src={`https://image.tmdb.org/t/p/w500${movie.backdrop_path}`}
+                      alt={movie.title || movie.name}
+                      fill
+                      className="object-cover"
+                      sizes="80px"
+                    />
+                    {index === activeIndex && (
+                      <div className="absolute inset-0 bg-red-500/10" />
+                    )}
+                  </div>
+                </motion.div>
+              );
+            })}
+          </motion.div>
+        </div>
       </div>
     </div>
   );

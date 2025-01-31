@@ -4,17 +4,13 @@ const api_key = process.env.NEXT_PUBLIC_API_KEY;
 const url = process.env.NEXT_PUBLIC_BASE_URL;
 
 // Search movie
-const getSearch = async (q: string) => {
+export const getSearch = async (q: string) => {
   try {
-    const response = await fetch(
+    const response = await axios.get(
       `${url}/search/movie?api_key=${api_key}&query=${q}&page=1&`
     );
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
+    const data = await response.data;
     return data;
   } catch (error) {
     return error;

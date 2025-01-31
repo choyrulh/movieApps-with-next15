@@ -84,7 +84,7 @@ export const Navbar = () => {
   const navigation = [
     { title: "Home", path: "/" },
     { title: "TV/Show", path: "/show" },
-    { title: "About", path: "/about" },
+    { title: "Anime", path: "/anime" },
     { title: "Contact", path: "/contact" },
   ];
   return (

@@ -9,6 +9,16 @@ import Head from "next/head";
 import Image from "next/image";
 import { Rating } from "@/components/common/Rating";
 import TrailerModal from "@/components/TrailerModal";
+import {
+  Bookmark,
+  Download,
+  ForwardIcon,
+  Heart,
+  LucideShare2,
+  Share,
+  Share2,
+  Share2Icon,
+} from "lucide-react";
 
 function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -129,8 +139,17 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
                 )}
 
                 <p className="text-lg text-slate-300 mb-8">{movie.overview}</p>
-
-                {trailer && <TrailerModal videoKey={trailer.key} />}
+                <div className="flex gap-5">
+                  {trailer && <TrailerModal videoKey={trailer.key} />}
+                  <div className="flex gap-3">
+                    <button className="w-10 h-10 flex items-center justify-center bg-gray-700 rounded-full hover:bg-gray-600 transition">
+                      <Heart className="text-white w-7 h-7" />
+                    </button>
+                    <button className="w-10 h-10 flex items-center justify-center bg-gray-700 rounded-full hover:bg-gray-600 transition">
+                      <ForwardIcon className="text-white w-7 h-7" />
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

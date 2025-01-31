@@ -8,6 +8,7 @@ import { getPopularMovie, getSearchByGenre } from "@/Service/fetchMovie";
 import { useStore } from "@/store/useStore";
 import { Movie } from "@/types/movie.";
 import { useQuery } from "@tanstack/react-query";
+import { Loader2 } from "lucide-react";
 import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
@@ -19,7 +20,7 @@ export default function Home() {
   const [page, setPage] = useState(1);
   const [allMovies, setAllMovies] = useState<Movie[]>([]);
   const pathname = usePathname();
-  const { genresId } = useStore();
+  const { genresId, setSelectedGenresId } = useStore();
 
   // Menyimpan hasil fetching ke dalam state movies tanpa menghapus yang sebelumnya
 
@@ -42,7 +43,7 @@ export default function Home() {
   } = useQuery<{ results: Movie[] }>({
     queryKey: ["movie Genre", genresId],
     enabled: !!genresId,
-    queryFn: () => getSearchByGenre(genresId),
+    queryFn: () => getSearchByGenre(genresId as string),
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
     retry: 2,
   });
@@ -50,7 +51,7 @@ export default function Home() {
   useEffect(() => {
     if (genresId && moviesGenre) {
       setAllMovies(moviesGenre?.results);
-    } else if (movies) {
+    } else if (movies && !genresId) {
       setAllMovies((prevMovies) => {
         const movieSet = new Set(prevMovies.map((m) => m.id));
         const uniqueMovies = movies.filter((m) => !movieSet.has(m.id));
@@ -66,9 +67,18 @@ export default function Home() {
         <Banner type={pathname === "/" ? "movie" : "tv"} />
       </Suspense>
       <div className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-4 mb-4">
           <DropdownGenre />
-          {genresId && <button className="text-slate-400">Cancel</button>}
+          {genresId && (
+            <button
+              onClick={() => {
+                setSelectedGenresId(null), setAllMovies([]);
+              }}
+              className="text-slate-400"
+            >
+              Cancel
+            </button>
+          )}
         </div>
         <div>
           <h2 className="text-3xl font-bold text-slate-300 mb-8 mt-5">
@@ -93,7 +103,13 @@ export default function Home() {
                   }}
                   className="px-6 py-2 bg-cyan-500 hover:bg-cyan-600 rounded-lg text-white font-semibold transition-colors"
                 >
-                  {isLoading ? "Loading..." : "Load More"}
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" /> loading
+                    </>
+                  ) : (
+                    "Load More"
+                  )}
                 </Button>
               </div>
             </>

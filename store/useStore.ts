@@ -1,8 +1,8 @@
 import { create } from "zustand";
 
 interface State {
-  genresId: string;
-  setSelectedGenresId: (genresId: string) => void;
+  genresId: string | null;
+  setSelectedGenresId: (genresId: string | null) => void;
 }
 
 export const useStore = create<State>((set: any) => ({
@@ -10,5 +10,5 @@ export const useStore = create<State>((set: any) => ({
   genresId: "",
 
   // actions
-  setSelectedGenresId: (genresId: string) => set({ genresId }),
+  setSelectedGenresId: (genresId: string | null) => set({ genresId }),
 }));
