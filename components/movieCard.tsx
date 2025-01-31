@@ -16,7 +16,7 @@ const MovieCard = ({ movie }: { movie: Movie }) => {
         <div className="relative aspect-[2/3]">
           <Image
             src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-            alt={movie.title}
+            alt={movie.title ?? movie.name ?? ""}
             fill
             className="object-cover group-hover:opacity-75 transition-opacity"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
