@@ -85,7 +85,7 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
             {movie.backdrop_path && (
               <Image
                 src={`https://image.tmdb.org/t/p/original${movie.backdrop_path}`}
-                alt={movie.title}
+                alt={movie.title ?? movie.name ?? ""}
                 fill
                 priority
                 className="object-fill opacity-30"
@@ -102,7 +102,7 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
                   {movie.poster_path && (
                     <Image
                       src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-                      alt={movie.title}
+                      alt={movie.title ?? movie.name ?? ""}
                       fill
                       priority
                       className="object-cover"
