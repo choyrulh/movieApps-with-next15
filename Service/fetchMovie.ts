@@ -124,6 +124,19 @@ export const getDetailMovie = async (id: number, params = {}) => {
   }
 };
 
+export const getCastsDetailMovie = async (id: string) => {
+  try {
+    const response = await axios.get(
+      `${url}/movie/${id}/credits?api_key=${api_key}`
+    );
+
+    const data = await response.data;
+    return data;
+  } catch (error) {
+    return error;
+  }
+};
+
 const getUpcoming = async () => {
   try {
     const response = await fetch(
@@ -156,10 +169,10 @@ const getUpcoming = async () => {
 // );
 
 // search by genre
-export const getSearchByGenre = async (genreId: string) => {
+export const getSearchByGenre = async (genreId: string, page: unknown) => {
   try {
     const response = await axios.get(
-      `${url}/discover/movie?api_key=${api_key}&with_genres=${genreId}`
+      `${url}/discover/movie?api_key=${api_key}&with_genres=${genreId}&page=${page}`
     );
 
     const data = await response.data;

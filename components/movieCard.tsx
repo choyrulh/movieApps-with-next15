@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { Rating } from "./common/Rating";
+import { memo } from "react";
 
 const MovieCard = ({ movie }: { movie: Movie }) => {
   return (
@@ -39,4 +40,4 @@ const MovieCard = ({ movie }: { movie: Movie }) => {
   );
 };
 
-export default MovieCard;
+export default memo(MovieCard);

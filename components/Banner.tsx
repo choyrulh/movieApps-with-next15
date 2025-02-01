@@ -8,6 +8,7 @@ import { getTrending } from "@/Service/fetchMovie";
 import { Movie } from "@/types/movie.";
 import { ChevronLeft, ChevronRight, Info, Play, Star } from "lucide-react";
 import Link from "next/link";
+import { memo } from "react";
 
 function Banner({ type }: { type: string }) {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -53,9 +54,9 @@ function Banner({ type }: { type: string }) {
 
   if (isLoading) {
     return (
-      <div className="relative h-[60vh] md:h-[80vh]">
+      <div className="relative h-[60vh] md:h-[100vh]">
         <div className="h-full w-full rounded-none" />
-        <div className="absolute bottom-0 left-0 right-0 p-4 md:p-8 space-y-4">
+        <div className="absolute bottom-[15rem] left-0 right-0 p-4 md:p-8 space-y-4">
           <div className="h-8 w-3/4 bg-gray-500" />
           <div className="h-4 w-1/2 bg-gray-500" />
           <div className="flex gap-4">
@@ -129,7 +130,12 @@ function Banner({ type }: { type: string }) {
           {currentMovie.backdrop_path && (
             <Image
               src={`https://image.tmdb.org/t/p/original${currentMovie.backdrop_path}`}
-              alt={currentMovie.title}
+              alt={
+                currentMovie.title
+                  ? currentMovie.title
+                  : currentMovie.original_name
+              }
+              blurDataURL={`https://image.tmdb.org/t/p/w120${currentMovie.backdrop_path}`}
               fill
               priority
               className="object-cover"
@@ -268,4 +274,4 @@ function Banner({ type }: { type: string }) {
   );
 }
 
-export default Banner;
+export default memo(Banner);

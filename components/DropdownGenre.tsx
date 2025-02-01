@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/select";
 import { useStore } from "@/store/useStore";
 import { Value } from "@radix-ui/react-select";
+import { useShallow } from "zustand/react/shallow";
 
 const genre: { id: number; name: string }[] = [
   { id: 28, name: "Action" },
@@ -35,7 +36,11 @@ const genre: { id: number; name: string }[] = [
 ];
 
 export function DropdownGenre() {
-  const { genresId, setSelectedGenresId } = useStore();
+  const { setSelectedGenresId } = useStore(
+    useShallow((state) => ({
+      setSelectedGenresId: state.setSelectedGenresId,
+    }))
+  );
 
   return (
     <Select onValueChange={(value) => setSelectedGenresId(value)}>

@@ -12,6 +12,7 @@ import { Loader2 } from "lucide-react";
 import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
+import { useShallow } from "zustand/react/shallow";
 
 const Banner = dynamic(() => import("@/components/Banner"), {
   ssr: true,
@@ -20,7 +21,12 @@ export default function Home() {
   const [page, setPage] = useState(1);
   const [allMovies, setAllMovies] = useState<Movie[]>([]);
   const pathname = usePathname();
-  const { genresId, setSelectedGenresId } = useStore();
+  const { genresId, setSelectedGenresId } = useStore(
+    useShallow((state) => ({
+      genresId: state.genresId,
+      setSelectedGenresId: state.setSelectedGenresId,
+    }))
+  );
 
   // Menyimpan hasil fetching ke dalam state movies tanpa menghapus yang sebelumnya
 
@@ -41,9 +47,9 @@ export default function Home() {
     isLoading: isLoadingGenre,
     isError: isErrorGenre,
   } = useQuery<{ results: Movie[] }>({
-    queryKey: ["movie Genre", genresId],
+    queryKey: ["movie Genre", genresId, page],
     enabled: !!genresId,
-    queryFn: () => getSearchByGenre(genresId as string),
+    queryFn: () => getSearchByGenre(genresId as string, page),
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
     retry: 2,
   });
