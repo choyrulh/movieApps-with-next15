@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { getCastsDetailMovie, getDetailMovie } from "@/Service/fetchMovie";
+import { getCastsDetailShow, getDetailShow } from "@/Service/fetchMovie";
 import { Genre, Movie, Video } from "@/types/movie.";
 import { Suspense, use, useState } from "react";
 import { Loader } from "@/components/common/Loader";
@@ -9,19 +9,7 @@ import Head from "next/head";
 import Image from "next/image";
 import { Rating } from "@/components/common/Rating";
 import TrailerModal from "@/components/TrailerModal";
-import {
-  Bookmark,
-  CalendarIcon,
-  Download,
-  ForwardIcon,
-  Heart,
-  LucideShare2,
-  Share,
-  Share2,
-  Share2Icon,
-  UserIcon,
-} from "lucide-react";
-import Recommendation from "@/Fragments/Recommendation";
+import { CalendarIcon, ForwardIcon, Heart } from "lucide-react";
 import {
   BanknotesIcon,
   BuildingOfficeIcon,
@@ -32,15 +20,16 @@ import {
 function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const [activeTab, setActiveTab] = useState("financials");
+  const [visibleCasts, setVisibleCasts] = useState(12);
 
   const {
-    data: movie,
+    data: show,
     isLoading,
     isError,
   } = useQuery<Movie>({
-    queryKey: ["movie", id],
+    queryKey: ["show", id],
     queryFn: () =>
-      getDetailMovie(id as unknown as number, {
+      getDetailShow(id as unknown as number, {
         append_to_response: "videos",
       }),
 
@@ -54,13 +43,13 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
     isError: isCastError,
   } = useQuery({
     queryKey: ["casts", id],
-    queryFn: () => getCastsDetailMovie(id as unknown as string),
+    queryFn: () => getCastsDetailShow(id as unknown as string),
     enabled: activeTab === "cast", // Only fetch when cast tab is active
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
     retry: 2,
   });
 
-  const trailer = movie?.videos?.results.find(
+  const trailer = show?.videos?.results.find(
     (video: Video) => video.site === "YouTube" && video.type === "Trailer"
   );
 
@@ -78,13 +67,13 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
     return (
       <>
         <div className="min-h-screen bg-slate-900 flex items-center justify-center">
-          <div className="text-white text-xl">Failed to load movie data</div>
+          <div className="text-white text-xl">Failed to load show data</div>
         </div>
       </>
     );
   }
 
-  if (!movie) {
+  if (!show) {
     return (
       <>
         <div className="min-h-screen bg-slate-900 flex items-center justify-center">
@@ -93,24 +82,24 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
       </>
     );
   }
-  console.log(movie);
+  console.log(show);
   console.log(casts);
 
   return (
     <>
       <Head>
-        <title>{`${movie.title} - SlashMovie`}</title>
-        <meta name="description" content={movie.overview} />
+        <title>{`${show.title} - SlashMovie`}</title>
+        <meta name="description" content={show.overview} />
       </Head>
 
       <div className="min-h-screen bg-slate-900">
         <main>
           {/* Backdrop Image */}
           <div className="relative h-[31rem] md:h-[35rem] lg:h-[45rem]">
-            {movie.backdrop_path && (
+            {show.backdrop_path && (
               <Image
-                src={`https://image.tmdb.org/t/p/original${movie.backdrop_path}`}
-                alt={movie.title ?? movie.name ?? ""}
+                src={`https://image.tmdb.org/t/p/original${show.backdrop_path}`}
+                alt={show.title ?? show.name ?? ""}
                 fill
                 priority
                 className="object-fill opacity-30"
@@ -124,10 +113,10 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
               {/* Poster */}
               <div className="w-auto">
                 <div className="relative lg:h-[30rem] sm:h-[18rem] md:[22rem] lg:w-[20rem] sm:w-[12rem] md:w-[16rem] rounded-xl overflow-hidden shadow-xl">
-                  {movie.poster_path && (
+                  {show.poster_path && (
                     <Image
-                      src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-                      alt={movie.title ?? movie.name ?? ""}
+                      src={`https://image.tmdb.org/t/p/w500${show.poster_path}`}
+                      alt={show.title ?? show.name ?? ""}
                       fill
                       priority
                       className="object-cover"
@@ -138,23 +127,23 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
 
               {/* Details */}
               <div className="w-full md:w-2/3 text-white">
-                <h1 className="text-4xl font-bold mb-4">{movie.title}</h1>
+                <h1 className="text-4xl font-bold mb-4">{show.name}</h1>
 
                 <div className="flex items-center gap-4 mb-6">
-                  <Rating value={movie.vote_average} />
+                  <Rating value={show.vote_average} />
                   <span className="text-slate-400">
-                    {new Date(movie.release_date).toLocaleDateString()}
+                    {new Date(show.first_air_date).toLocaleDateString()}
                   </span>
-                  {movie.runtime && (
-                    <span className="text-slate-400">{movie.runtime} mins</span>
+                  {show.runtime && (
+                    <span className="text-slate-400">{show.runtime} mins</span>
                   )}
                   {/* add if statement for adult and add the logo */}
-                  {movie.adult && <span className="text-red-500">18+</span>}
+                  {show.adult && <span className="text-red-500">18+</span>}
                 </div>
 
-                {movie.genres && (
+                {show.genres && (
                   <div className="flex flex-wrap gap-4 mb-6">
-                    {movie.genres.map((genre: Genre) => (
+                    {show.genres.map((genre: Genre) => (
                       <span
                         key={genre.id}
                         className="px-3 py-1 bg-cyan-500 rounded-full text-sm"
@@ -165,7 +154,7 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
                   </div>
                 )}
 
-                <p className="text-lg text-slate-300 mb-8">{movie.overview}</p>
+                <p className="text-lg text-slate-300 mb-8">{show.overview}</p>
                 <div className="flex gap-5">
                   {trailer && <TrailerModal videoKey={trailer.key} />}
                   <div className="flex gap-3">
@@ -220,8 +209,8 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
                         <div className="text-right">
                           <p className="text-sm text-cyan-300 mb-1">Budget</p>
                           <p className="text-2xl font-bold text-white">
-                            {movie.budget
-                              ? `$${movie.budget.toLocaleString()}`
+                            {show.budget
+                              ? `$${show.budget.toLocaleString()}`
                               : "-"}
                           </p>
                         </div>
@@ -231,8 +220,8 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
                           className="h-full bg-cyan-500 transition-all duration-1000"
                           style={{
                             width: `${Math.min(
-                              ((movie?.budget ?? 0) /
-                                (movie?.revenue ?? (movie?.budget ?? 0) * 2)) *
+                              ((show?.budget ?? 0) /
+                                (show?.revenue ?? (show?.budget ?? 0) * 2)) *
                                 100,
                               100
                             )}%`,
@@ -249,8 +238,8 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
                             Revenue
                           </p>
                           <p className="text-2xl font-bold text-white">
-                            {movie.revenue
-                              ? `$${movie.revenue.toLocaleString()}`
+                            {show.revenue
+                              ? `$${show.revenue.toLocaleString()}`
                               : "-"}
                           </p>
                         </div>
@@ -260,9 +249,9 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
                           className="h-full bg-emerald-500 transition-all duration-1000"
                           style={{
                             width: `${Math.min(
-                              ((movie?.revenue ?? 0) /
-                                ((movie?.budget ?? 0) * 4 ||
-                                  (movie?.revenue ?? 0) * 2)) *
+                              ((show?.revenue ?? 0) /
+                                ((show?.budget ?? 0) * 4 ||
+                                  (show?.revenue ?? 0) * 2)) *
                                 100,
                               100
                             )}%`,
@@ -276,7 +265,7 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
                 {/* Production Tab */}
                 {activeTab === "production" && (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    {movie.production_companies?.map((company: any) => (
+                    {show.production_companies?.map((company: any) => (
                       <div
                         key={company.id}
                         className="gradient-card hover:transform hover:-translate-y-1 transition-all duration-300"
@@ -306,7 +295,7 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
                 {/* Languages Tab */}
                 {activeTab === "languages" && (
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
-                    {movie.spoken_languages?.map((lang) => (
+                    {show.spoken_languages?.map((lang) => (
                       <div
                         key={lang.iso_639_1}
                         className="gradient-card p-4 text-center group hover:bg-white/5"
@@ -347,7 +336,7 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
                             Release Status
                           </h3>
                           <p className="text-xl font-semibold text-white">
-                            {movie.status}
+                            {show.status}
                           </p>
                         </div>
                       </div>
@@ -367,7 +356,7 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
                           <p className="text-xl font-semibold text-white">
                             {new Intl.DisplayNames(["en"], {
                               type: "language",
-                            }).of(movie.original_language)}
+                            }).of(show.original_language)}
                           </p>
                         </div>
                       </div>
@@ -395,52 +384,81 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
                       </div>
                     ) : (
                       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                        {casts?.cast?.map((member: any) => (
-                          <div
-                            key={member.id}
-                            className="group relative aspect-[2/3] transition-transform duration-300 hover:-translate-y-2"
-                          >
-                            {/* Image Container */}
-                            <div className="absolute inset-0 rounded-2xl overflow-hidden shadow-xl">
-                              {member.profile_path ? (
-                                <Image
-                                  src={`https://image.tmdb.org/t/p/w500${member.profile_path}`}
-                                  alt={member.name}
-                                  fill
-                                  className="object-cover transition-transform duration-500 group-hover:scale-105"
-                                  sizes="(max-width: 768px) 50vw, 33vw"
-                                />
-                              ) : (
-                                <div className="w-full h-full bg-gradient-to-br from-cyan-500 to-purple-600 flex items-center justify-center">
-                                  <span className="text-2xl font-bold text-white uppercase">
-                                    {member.name
-                                      .split(" ")
-                                      .map((n: string) => n[0])
-                                      .join("")}
-                                  </span>
-                                </div>
-                              )}
-                              {/* Gradient Overlay */}
-                              <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-transparent to-transparent" />
-                            </div>
-
-                            {/* Text Content */}
-                            <div className="absolute inset-0 p-4 flex flex-col justify-end space-y-1">
-                              <h3 className="text-white font-semibold truncate drop-shadow-lg">
-                                {member.name}
-                              </h3>
-                              <p className="text-sm text-cyan-300 truncate font-medium opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                                {member.character}
-                              </p>
-                              <div className="absolute right-3 top-3 flex items-center justify-center w-8 h-8 rounded-full bg-cyan-500/20 backdrop-blur-sm text-cyan-400 text-sm font-bold transition-opacity opacity-0 group-hover:opacity-100">
-                                {member.order + 1}
+                        {casts?.cast
+                          ?.slice(0, visibleCasts)
+                          .map((member: any) => (
+                            <div
+                              key={member.id}
+                              className="group relative aspect-[2/3] transition-transform duration-300 hover:-translate-y-2"
+                            >
+                              {/* Image Container */}
+                              <div className="absolute inset-0 rounded-2xl overflow-hidden shadow-xl">
+                                {member.profile_path ? (
+                                  <Image
+                                    src={`https://image.tmdb.org/t/p/w500${member.profile_path}`}
+                                    alt={member.name}
+                                    fill
+                                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                                    sizes="(max-width: 768px) 50vw, 33vw"
+                                  />
+                                ) : (
+                                  <div className="w-full h-full bg-gradient-to-br from-cyan-500 to-purple-600 flex items-center justify-center">
+                                    <span className="text-2xl font-bold text-white uppercase">
+                                      {member.name
+                                        .split(" ")
+                                        .map((n: string) => n[0])
+                                        .join("")}
+                                    </span>
+                                  </div>
+                                )}
+                                {/* Gradient Overlay */}
+                                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-transparent to-transparent" />
                               </div>
-                            </div>
 
-                            {/* Hover Border Effect */}
-                            <div className="absolute inset-0 rounded-2xl border-2 border-transparent transition-all duration-300 group-hover:border-cyan-400/30 pointer-events-none" />
+                              {/* Text Content */}
+                              <div className="absolute inset-0 p-4 flex flex-col justify-end space-y-1">
+                                <h3 className="text-white font-semibold truncate drop-shadow-lg">
+                                  {member.name}
+                                </h3>
+                                <p className="text-sm text-cyan-300 truncate font-medium opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                                  {member.character}
+                                </p>
+                                <div className="absolute right-3 top-3 flex items-center justify-center w-8 h-8 rounded-full bg-cyan-500/20 backdrop-blur-sm text-cyan-400 text-sm font-bold transition-opacity opacity-0 group-hover:opacity-100">
+                                  {member.order + 1}
+                                </div>
+                              </div>
+
+                              {/* Hover Border Effect */}
+                              <div className="absolute inset-0 rounded-2xl border-2 border-transparent transition-all duration-300 group-hover:border-cyan-400/30 pointer-events-none" />
+                            </div>
+                          ))}
+                        {casts?.cast?.length > visibleCasts && (
+                          <div className="flex justify-center mt-8">
+                            <button
+                              onClick={() =>
+                                setVisibleCasts((prev) => prev + 6)
+                              }
+                              className="px-8 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full font-semibold text-white 
+                        transform transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-cyan-500/30
+                        flex items-center gap-2 group"
+                            >
+                              <span>Load More</span>
+                              <svg
+                                className="w-4 h-4 group-hover:translate-x-1 transition-transform"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="2"
+                                  d="M17 8l4 4m0 0l-4 4m4-4H3"
+                                />
+                              </svg>
+                            </button>
                           </div>
-                        ))}
+                        )}
                       </div>
                     )}
                   </div>

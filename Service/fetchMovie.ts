@@ -17,6 +17,33 @@ export const getSearch = async (q: string) => {
   }
 };
 
+export const getSearchFilter = async (q: string, type: string) => {
+  try {
+    const response = await axios.get(
+      `${url}/search/${type}?api_key=${api_key}&query=${q}&page=1&`
+    );
+
+    const data = await response.data;
+    return data;
+  } catch (error) {
+    return error;
+  }
+};
+
+// Search TV Show
+export const getSearchShow = async (q: string) => {
+  try {
+    const response = await axios.get(
+      `${url}/search/movie?api_key=${api_key}&query=${q}&page=1&`
+    );
+
+    const data = await response.data;
+    return data;
+  } catch (error) {
+    return error;
+  }
+};
+
 // API MOVIE
 export const getNowPlaying = async () => {
   try {
@@ -124,10 +151,31 @@ export const getDetailMovie = async (id: number, params = {}) => {
   }
 };
 
+export const getDetailShow = async (id: number, params = {}) => {
+  try {
+    const response = await axios.get(`${url}/tv/${id}?api_key=${api_key}`);
+
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
 export const getCastsDetailMovie = async (id: string) => {
   try {
     const response = await axios.get(
       `${url}/movie/${id}/credits?api_key=${api_key}`
+    );
+
+    const data = await response.data;
+    return data;
+  } catch (error) {
+    return error;
+  }
+};
+export const getCastsDetailShow = async (id: string) => {
+  try {
+    const response = await axios.get(
+      `${url}/show/${id}/credits?api_key=${api_key}`
     );
 
     const data = await response.data;

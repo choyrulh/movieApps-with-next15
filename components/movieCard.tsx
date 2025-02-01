@@ -1,11 +1,20 @@
+"use client";
+
 import { Movie } from "@/types/movie.";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { Rating } from "./common/Rating";
 import { memo } from "react";
+import { useShallow } from "zustand/react/shallow";
+import { State, useStore } from "@/store/useStore";
 
 const MovieCard = ({ movie }: { movie: Movie }) => {
+  const { selectedType } = useStore(
+    useShallow((state) => ({
+      selectedType: state.selectedType,
+    }))
+  );
   return (
     <motion.div
       className="group relative bg-slate-800 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow"
@@ -13,7 +22,7 @@ const MovieCard = ({ movie }: { movie: Movie }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
     >
-      <Link href={`/${movie.id}`}>
+      <Link href={`/${selectedType}/${movie.id}`}>
         <div className="relative aspect-[2/3]">
           <Image
             src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
@@ -26,11 +35,13 @@ const MovieCard = ({ movie }: { movie: Movie }) => {
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent" />
         <div className="absolute bottom-0 left-0 right-0 p-4">
           <h3 className="text-white text-lg font-semibold truncate">
-            {movie.title}
+            {movie.title ?? movie.name ?? ""}
           </h3>
           <div className="flex items-center justify-between mt-2">
             <span className="text-cyan-400 text-sm">
-              {new Date(movie.release_date).getFullYear()}
+              {new Date(
+                movie.release_date ?? movie.first_air_date
+              ).getFullYear()}
             </span>
             <Rating value={movie.vote_average} />
           </div>

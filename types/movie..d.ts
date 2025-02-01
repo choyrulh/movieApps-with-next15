@@ -9,6 +9,7 @@ export interface Movie {
   overview?: string;
   adult?: boolean;
   release_date: string;
+  first_air_date: string;
   original_language: string;
   vote_average?: number;
   vote_count?: number;

@@ -3,15 +3,30 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Loader2 } from "lucide-react";
-import { getSearch } from "@/Service/fetchMovie";
+import { Search, Loader2, Filter, Film, Tv, Users, Layout } from "lucide-react";
+import { getSearch, getSearchFilter } from "@/Service/fetchMovie";
 import MovieCardSkeleton from "@/components/MovieCardSkeleton";
 import { Movie } from "@/types/movie.";
 import MovieCard from "@/components/movieCard";
+import { useStore } from "@/store/useStore";
+import { useShallow } from "zustand/react/shallow";
+
+const contentTypes = [
+  { value: "movie", label: "Movies", icon: Film },
+  { value: "tv", label: "TV Shows", icon: Tv },
+  { value: "person", label: "People", icon: Users },
+  { value: "multi", label: "All", icon: Layout },
+];
 
 const SearchResultsPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
+  const { selectedType, setSelectedType } = useStore(
+    useShallow((state) => ({
+      selectedType: state.selectedType,
+      setSelectedType: state.setSelectedType,
+    }))
+  );
 
   // Debounce search input
   useEffect(() => {
@@ -23,9 +38,9 @@ const SearchResultsPage = () => {
   }, [searchQuery]);
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["searchMovies", debouncedQuery],
-    queryFn: () => getSearch(debouncedQuery),
-    enabled: debouncedQuery.length > 0,
+    queryKey: ["searchMovies", debouncedQuery, selectedType],
+    queryFn: () => getSearchFilter(debouncedQuery, selectedType),
+    enabled: debouncedQuery.length > 3,
     staleTime: 5 * 60 * 1000,
   });
 
@@ -55,6 +70,34 @@ const SearchResultsPage = () => {
           </div>
         </div>
       </motion.div>
+
+      {/* Filter Buttons */}
+      <div className="grid grid-cols-4 gap-2 p-1 bg-slate-700/50 rounded-lg">
+        {contentTypes.map((type) => {
+          const Icon = type.icon;
+          const isSelected = selectedType === type.value;
+          return (
+            <button
+              key={type.value}
+              onClick={() => setSelectedType(type.value)}
+              className={`
+                      flex flex-col items-center justify-center p-3 rounded-lg
+                      transition-all duration-200 gap-2
+                      ${
+                        isSelected
+                          ? "bg-cyan-500/20 text-cyan-400 shadow-lg"
+                          : "hover:bg-slate-600/50 text-slate-400 hover:text-slate-200"
+                      }
+                    `}
+            >
+              <Icon
+                className={`h-5 w-5 ${isSelected ? "text-cyan-400" : ""}`}
+              />
+              <span className="text-xs font-medium">{type.label}</span>
+            </button>
+          );
+        })}
+      </div>
 
       {/* Results Section */}
       <div className="container mx-auto px-4 py-8">
