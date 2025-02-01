@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useState, useRef, useEffect, Suspense } from "react";
 import { Skeleton } from "./skeleton";
 import SearchBar from "../common/SearchBar";
+import { usePathname } from "next/navigation";
 
 const navigation = [
   { title: "Dashboard", path: "/dashboard" },
@@ -16,6 +17,8 @@ const navigation = [
 // Profile Dropdown
 const ProfileDropDown = ({ props }: any) => {
   const [state, setState] = useState(false);
+  
+
 
   const profileRef: any = useRef();
   useEffect(() => {
@@ -72,6 +75,8 @@ export const Navbar = () => {
   const [menuState, setMenuState] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
+  const pathname = usePathname();
+
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 0);
@@ -84,12 +89,13 @@ export const Navbar = () => {
   const navigation = [
     { title: "Home", path: "/" },
     { title: "TV/Show", path: "/show" },
-    { title: "Anime", path: "/anime" },
+    { title: "Cast", path: "/cast" },
+    { title: "Search", path: "/search" },
     { title: "Contact", path: "/contact" },
   ];
   return (
     <nav
-      className={`fixed left-0 right-0 z-50 ${
+      className={`${pathname === "/search" ? "relative" : "fixed"} left-0 right-0 z-50 ${
         isScrolled
           ? "bg-slate-900/95 backdrop-blur-sm shadow-xl"
           : "bg-black bg-opacity-50"
@@ -104,7 +110,7 @@ export const Navbar = () => {
           >
             <ul className=" space-y-5 lg:flex lg:space-x-6 lg:space-y-0 lg:mt-0">
               {navigation.map((item, idx) => (
-                <li key={idx} className="text-gray-600 hover:text-gray-900">
+                <li key={idx} className="text-gray-400 hover:text-gray-100">
                   <Link href={item.path}>{item.title}</Link>
                 </li>
               ))}

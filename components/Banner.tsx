@@ -187,7 +187,7 @@ function Banner({ type }: { type: string }) {
               <Play className="w-5 h-5 fill-current" />
               Watch Now
             </motion.button>
-            <Link href={`/${currentMovie.id}`}>
+            <Link href={`/${type}/${currentMovie.id}`}>
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}

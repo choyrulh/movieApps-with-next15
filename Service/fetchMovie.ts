@@ -175,7 +175,7 @@ export const getCastsDetailMovie = async (id: string) => {
 export const getCastsDetailShow = async (id: string) => {
   try {
     const response = await axios.get(
-      `${url}/show/${id}/credits?api_key=${api_key}`
+      `${url}/tv/${id}/credits?api_key=${api_key}`
     );
 
     const data = await response.data;

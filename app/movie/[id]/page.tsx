@@ -94,8 +94,6 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
       </>
     );
   }
-  console.log(movie);
-  console.log(casts);
 
   return (
     <>
@@ -450,9 +448,9 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
                               onClick={() =>
                                 setVisibleCasts((prev) => prev + 6)
                               }
-                              className="px-8 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full font-semibold text-white 
-                        transform transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-cyan-500/30
-                        flex items-center gap-2 group"
+                              className="w-full sm:w-auto px-6 sm:px-8 py-2 sm:py-3 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full font-semibold text-white 
+      transform transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-cyan-500/30
+      flex items-center justify-center gap-2 group text-sm sm:text-base"
                             >
                               <span>Load More</span>
                               <svg

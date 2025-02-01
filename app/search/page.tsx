@@ -10,6 +10,7 @@ import { Movie } from "@/types/movie.";
 import MovieCard from "@/components/movieCard";
 import { useStore } from "@/store/useStore";
 import { useShallow } from "zustand/react/shallow";
+import CastsCard from "@/components/CastsCard";
 
 const contentTypes = [
   { value: "movie", label: "Movies", icon: Film },
@@ -168,7 +169,12 @@ const SearchResultsPage = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}
                 >
-                  <MovieCard movie={movie} />
+                  {selectedType === "person" ? (
+                    <CastsCard member={movie} />
+                  ) : (
+                    <MovieCard movie={movie} />
+                  )}
+                  {/* <MovieCard movie={movie} /> */}
                 </motion.div>
               ))}
             </motion.div>
