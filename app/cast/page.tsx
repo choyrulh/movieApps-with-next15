@@ -24,7 +24,7 @@ export type Person = {
   id: number;
   name: string;
   profile_path: string;
-  popularity: number | string;
+  popularity: any;
   known_for_department: string;
   known_for: Array<{
     title?: string;
