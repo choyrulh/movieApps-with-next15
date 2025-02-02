@@ -172,6 +172,7 @@ export const getCastsDetailMovie = async (id: string) => {
     return error;
   }
 };
+
 export const getCastsDetailShow = async (id: string) => {
   try {
     const response = await axios.get(
@@ -221,6 +222,34 @@ export const getSearchByGenre = async (genreId: string, page: unknown) => {
   try {
     const response = await axios.get(
       `${url}/discover/movie?api_key=${api_key}&with_genres=${genreId}&page=${page}`
+    );
+
+    const data = await response.data;
+    return data;
+  } catch (error) {
+    return error;
+  }
+};
+
+// get popular casts
+export const getPopularCasts = async ( page: string) => {
+  try {
+    const response = await axios.get(
+      `${url}/person/popular?api_key=${api_key}&page=${page}`
+    );
+
+    const data = await response.data;
+    return data;
+  } catch (error) {
+    return error;
+  }
+};
+
+// get detail cast
+export const getDetailCasts = async (id: string) => {
+  try {
+    const response = await axios.get(
+      `${url}/person/${id}/credits?api_key=${api_key}`
     );
 
     const data = await response.data;
