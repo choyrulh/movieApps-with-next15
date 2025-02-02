@@ -3,7 +3,16 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Loader2, Filter, Film, Tv, Users, Layout } from "lucide-react";
+import {
+  Search,
+  Loader2,
+  Filter,
+  Film,
+  Tv,
+  Users,
+  Layout,
+  X,
+} from "lucide-react";
 import { getSearch, getSearchFilter } from "@/Service/fetchMovie";
 import MovieCardSkeleton from "@/components/MovieCardSkeleton";
 import { Movie } from "@/types/movie.";
@@ -56,7 +65,14 @@ const SearchResultsPage = () => {
         <div className="container mx-auto px-4 py-6">
           <div className="relative max-w-2xl mx-auto">
             <div className="absolute left-3 top-1/2 -translate-y-1/2">
-              <Search className="h-5 w-5 text-slate-400" />
+              {searchQuery.length > 0 ? (
+                <X
+                  onClick={() => setSearchQuery("")}
+                  className="stroke-slate-400 h-5 w-5 text-slate-400 cursor-pointer transition-all duration-200"
+                />
+              ) : (
+                <Search className="h-5 w-5 text-slate-400" />
+              )}
             </div>
             <input
               type="text"
@@ -170,11 +186,10 @@ const SearchResultsPage = () => {
                   transition={{ delay: index * 0.05 }}
                 >
                   {selectedType === "person" ? (
-                    <CastsCard member={movie} />
+                    <CastsCard numberOrder={false} member={movie} />
                   ) : (
                     <MovieCard movie={movie} />
                   )}
-                  {/* <MovieCard movie={movie} /> */}
                 </motion.div>
               ))}
             </motion.div>

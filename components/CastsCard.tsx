@@ -1,6 +1,12 @@
 import Image from "next/image";
 
-const CastsCard = ({ member }: { member: any }) => {
+const CastsCard = ({
+  member,
+  numberOrder,
+}: {
+  member: any;
+  numberOrder: boolean;
+}) => {
   return (
     <div
       key={member.id}
@@ -38,9 +44,11 @@ const CastsCard = ({ member }: { member: any }) => {
         <p className="text-sm text-cyan-300 truncate font-medium opacity-0 transition-opacity duration-300 group-hover:opacity-100">
           {member.character}
         </p>
-        <div className="absolute right-3 top-3 flex items-center justify-center w-8 h-8 rounded-full bg-cyan-500/20 backdrop-blur-sm text-cyan-400 text-sm font-bold transition-opacity opacity-0 group-hover:opacity-100">
-          {member.order + 1}
-        </div>
+        {numberOrder && (
+          <div className="absolute right-3 top-3 flex items-center justify-center w-8 h-8 rounded-full bg-cyan-500/20 backdrop-blur-sm text-cyan-400 text-sm font-bold transition-opacity opacity-0 group-hover:opacity-100">
+            {member.order + 1}
+          </div>
+        )}
       </div>
 
       {/* Hover Border Effect */}
