@@ -86,7 +86,7 @@ export const Navbar = () => {
   const navigation = [
     { title: "Home", path: "/" },
     { title: "TV/Show", path: "/show" },
-    { title: "Cast", path: "/cast" },
+    { title: "Cast", path: "/person" },
     { title: "Search", path: "/search" },
     { title: "Contact", path: "/contact" },
   ];
