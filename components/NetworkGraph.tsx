@@ -18,6 +18,7 @@ export const NetworkGraph = ({ people }: { people: Person[] }) => {
       .slice(0, 2),
     recentFilms: 3 + Math.floor(Math.random() * 4), // Random number of recent films
   }));
+  console.log("actorDetails", actorDetails);
 
   return (
     <motion.div
@@ -94,7 +95,7 @@ export const NetworkGraph = ({ people }: { people: Person[] }) => {
               <div className="bg-white/10 rounded-lg p-4 text-center">
                 <Star className="w-6 h-6 text-yellow-400 mx-auto mb-2" />
                 <div className="text-2xl font-bold text-white">
-                  {actorDetails[selectedActor].rating}
+                  {actorDetails[selectedActor]?.rating}
                 </div>
                 <div className="text-xs text-white/60">Rating</div>
               </div>
@@ -102,7 +103,7 @@ export const NetworkGraph = ({ people }: { people: Person[] }) => {
               <div className="bg-white/10 rounded-lg p-4 text-center">
                 <Award className="w-6 h-6 text-purple-400 mx-auto mb-2" />
                 <div className="text-2xl font-bold text-white">
-                  {actorDetails[selectedActor].awards}
+                  {actorDetails[selectedActor]?.awards}
                 </div>
                 <div className="text-xs text-white/60">Awards</div>
               </div>
@@ -110,7 +111,7 @@ export const NetworkGraph = ({ people }: { people: Person[] }) => {
               <div className="bg-white/10 rounded-lg p-4 text-center">
                 <Film className="w-6 h-6 text-blue-400 mx-auto mb-2" />
                 <div className="text-2xl font-bold text-white">
-                  {actorDetails[selectedActor].recentFilms}
+                  {actorDetails[selectedActor]?.recentFilms}
                 </div>
                 <div className="text-xs text-white/60">Recent Films</div>
               </div>
@@ -122,7 +123,7 @@ export const NetworkGraph = ({ people }: { people: Person[] }) => {
                 <span className="text-white/60">Top Genres</span>
               </div>
               <div className="flex gap-2">
-                {actorDetails[selectedActor].topGenres.map(
+                {actorDetails[selectedActor]?.topGenres.map(
                   (genre: any, index: number) => (
                     <span
                       key={index}

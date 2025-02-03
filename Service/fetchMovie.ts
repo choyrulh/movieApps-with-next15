@@ -232,7 +232,7 @@ export const getSearchByGenre = async (genreId: string, page: unknown) => {
 };
 
 // get popular casts
-export const getPopularCasts = async ( page: string) => {
+export const getPopularCasts = async (page: string) => {
   try {
     const response = await axios.get(
       `${url}/person/popular?api_key=${api_key}&page=${page}`
@@ -258,18 +258,25 @@ export const getDetailCasts = async (id: string) => {
     return error;
   }
 };
+export const getDetailPerson = async (id: string) => {
+  try {
+    const response = await axios.get(`${url}/person/${id}?api_key=${api_key}`);
 
-export default {
-  // getNowPlaying,
-  getGenres,
-  getSearch,
-  //   getGenrestv,
-  getTopRated,
-  getUpcoming,
-  getTrending,
-  //   getTrendingShow,
-  //   getPopularTV,
-  //   getTopRatedTV,
-  getDetailMovie,
-  getSearchByGenre,
+    const data = await response.data;
+    return data;
+  } catch (error) {
+    return error;
+  }
+};
+export const getCreditPerson = async (id: string) => {
+  try {
+    const response = await axios.get(
+      `${url}/person/${id}/combined_credits?api_key=${api_key}`
+    );
+
+    const data = await response.data;
+    return data;
+  } catch (error) {
+    return error;
+  }
 };

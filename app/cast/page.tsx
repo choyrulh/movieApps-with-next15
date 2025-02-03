@@ -6,6 +6,7 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { getPopularCasts } from "@/Service/fetchMovie";
 import {
+  Activity,
   Award,
   ChevronDown,
   ChevronRight,
@@ -15,10 +16,13 @@ import {
   Star,
   TrendingUp,
   Tv,
+  UserPlus,
+  Users,
   Zap,
 } from "lucide-react";
 import { PopularityChart } from "@/components/PopularityChart";
 import { NetworkGraph } from "@/components/NetworkGraph";
+import Link from "next/link";
 
 export type Person = {
   id: number;
@@ -30,12 +34,15 @@ export type Person = {
     title?: string;
     name?: string;
     media_type: string;
+    poster_path?: string;
   }>;
 };
 
 type ViewMode = "simple" | "detailed";
 
 const HighlightPerson = ({ person }: { person: Person }) => {
+  const [glowPosition, setGlowPosition] = useState({ x: 50, y: 50 });
+
   const containerVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
@@ -55,24 +62,27 @@ const HighlightPerson = ({ person }: { person: Person }) => {
 
   return (
     <motion.div
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-      className="relative rounded-2xl overflow-hidden shadow-2xl shadow-purple-500/30 isolate"
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      className="relative rounded-2xl overflow-hidden shadow-2xl group"
+      onMouseMove={(e) => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        setGlowPosition({
+          x: ((e.clientX - rect.left) / rect.width) * 100,
+          y: ((e.clientY - rect.top) / rect.height) * 100,
+        });
+      }}
     >
       {/* Animated gradient background */}
       <div className="absolute inset-0 bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700">
-        <motion.div
-          className="absolute inset-0 opacity-50"
-          animate={{
-            background: [
-              "radial-gradient(circle at 0% 0%, purple 0%, transparent 50%)",
-              "radial-gradient(circle at 100% 100%, blue 0%, transparent 50%)",
-              "radial-gradient(circle at 0% 100%, indigo 0%, transparent 50%)",
-              "radial-gradient(circle at 0% 0%, purple 0%, transparent 50%)",
-            ],
+        <div
+          className="absolute inset-0 opacity-30 transition-opacity duration-300 group-hover:opacity-50"
+          style={{
+            background: `radial-gradient(circle at ${glowPosition.x}% ${glowPosition.y}%, 
+            rgba(139, 92, 246, 0.4) 0%, 
+            rgba(59, 130, 246, 0.2) 50%, 
+            transparent 100%)`,
           }}
-          transition={{ duration: 10, repeat: Infinity }}
         />
       </div>
 
@@ -97,25 +107,33 @@ const HighlightPerson = ({ person }: { person: Person }) => {
         />
       ))}
 
-      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+      <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/dark-stripes.png')] opacity-10" />
 
-      <div className="relative flex flex-col md:flex-row items-center p-8 gap-8">
+      <div className="relative flex flex-col md:flex-row items-center p-8 gap-8 backdrop-blur-sm">
         {/* Profile Image */}
         <motion.div
-          variants={itemVariants}
-          whileHover={{ scale: 1.05 }}
-          className="w-48 h-48 rounded-full overflow-hidden border-4 border-white/20 shadow-2xl relative group"
+          whileHover="hover"
+          className="relative w-48 h-48 rounded-2xl overflow-hidden border-4 border-white/20 shadow-2xl"
         >
           <Image
             src={`https://image.tmdb.org/t/p/w500${person.profile_path}`}
             alt={person.name}
             width={200}
             height={200}
-            className="object-cover transform group-hover:scale-110 transition-transform duration-500"
+            className="object-cover transform group-hover:scale-105 transition-transform duration-500"
           />
           <motion.div
-            className="absolute inset-0 bg-gradient-to-t from-purple-500/30 to-transparent"
-            whileHover={{ opacity: 0 }}
+            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-0 group-hover:opacity-40"
+            initial={{ x: "-100%" }}
+            animate={{
+              x: glowPosition.x > 50 ? "100%" : "-100%",
+              opacity: [0, 0.4, 0],
+            }}
+            transition={{
+              duration: 1.5,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
           />
 
           {/* Popularity rank badge */}
@@ -129,85 +147,96 @@ const HighlightPerson = ({ person }: { person: Person }) => {
         </motion.div>
 
         {/* Content Section */}
-        <div className="text-white space-y-6 flex-1">
-          <motion.div variants={itemVariants}>
-            <h1 className="text-5xl font-bold">
-              <span className="bg-gradient-to-r from-pink-300 via-purple-300 to-blue-300 bg-clip-text text-transparent">
-                {person.name}
-              </span>
+        <div className="flex-1 space-y-6">
+          {/* Name with animated underline */}
+          <div className="relative inline-block">
+            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-300 via-pink-300 to-blue-300 bg-clip-text text-transparent">
+              {person.name}
             </h1>
-            <p className="text-lg text-white/80 mt-2">
-              {person.known_for_department} Artist
-            </p>
-          </motion.div>
+            <motion.div
+              className="absolute bottom-0 h-1 bg-gradient-to-r from-purple-500 to-blue-500"
+              initial={{ width: 0 }}
+              animate={{ width: "100%" }}
+              transition={{ duration: 1, delay: 0.5 }}
+            />
+          </div>
 
-          {/* Stats */}
-          <motion.div variants={itemVariants} className="flex gap-4 flex-wrap">
+          {/* Stats grid */}
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
             <motion.div
-              whileHover={{
-                scale: 1.05,
-                backgroundColor: "rgba(255, 255, 255, 0.15)",
-              }}
-              className="bg-white/10 backdrop-blur-sm px-6 py-2.5 rounded-xl flex items-center gap-2 border border-white/20 transition-all duration-300"
+              whileHover={{ y: -5 }}
+              className="p-4 bg-white/5 rounded-xl backdrop-blur-sm border border-white/10 hover:border-white/20 transition-all"
             >
-              <Star className="text-yellow-400 text-lg" />
-              <span className="font-medium">
-                {person.popularity.toFixed(1)} Rating
-              </span>
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-purple-500/20 rounded-lg">
+                  <Activity className="text-purple-400 text-xl" />
+                </div>
+                <div>
+                  <div className="text-sm text-gray-300">Popularity</div>
+                  <div className="text-xl font-bold text-white">
+                    {person.popularity.toFixed(0)}
+                  </div>
+                </div>
+              </div>
             </motion.div>
-            <motion.div
-              whileHover={{
-                scale: 1.05,
-                backgroundColor: "rgba(255, 255, 255, 0.15)",
-              }}
-              className="bg-white/10 backdrop-blur-sm px-6 py-2.5 rounded-xl flex items-center gap-2 border border-white/20 transition-all duration-300"
-            >
-              <TrendingUp className="text-green-400 text-lg" />
-              <span className="font-medium">
-                Trending #{Math.floor(Math.random() * 50 + 1)}
-              </span>
-            </motion.div>
-            <motion.div
-              whileHover={{
-                scale: 1.05,
-                backgroundColor: "rgba(255, 255, 255, 0.15)",
-              }}
-              className="bg-white/10 backdrop-blur-sm px-6 py-2.5 rounded-xl flex items-center gap-2 border border-white/20 transition-all duration-300"
-            >
-              <Award className="text-blue-400 text-lg" />
-              <span className="font-medium">
-                {person.known_for.length} Notable Works
-              </span>
-            </motion.div>
-          </motion.div>
 
-          {/* Notable Works */}
-          <motion.div variants={itemVariants} className="space-y-4">
-            <h3 className="text-xl font-semibold text-white/90 flex items-center gap-2">
-              <Film className="text-purple-400" />
-              Featured Productions
-            </h3>
-            <div className="flex flex-wrap gap-3">
-              {person.known_for.slice(0, 3).map((work, index) => (
-                <motion.div
-                  key={index}
-                  whileHover={{
-                    scale: 1.05,
-                    backgroundColor: "rgba(255, 255, 255, 0.15)",
-                  }}
-                  className="group px-4 py-2.5 bg-white/10 rounded-xl text-sm backdrop-blur-sm flex items-center gap-3 border border-white/20 transition-all duration-300"
-                >
-                  {work.media_type === "movie" ? (
-                    <Film className="text-pink-400" />
-                  ) : (
-                    <Tv className="text-blue-400" />
-                  )}
-                  <span className="font-medium">{work.title || work.name}</span>
-                  <ChevronRight className="text-white/60 group-hover:translate-x-1 transition-transform" />
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
+            <motion.div
+              whileHover={{ y: -5 }}
+              className="p-4 bg-white/5 rounded-xl backdrop-blur-sm border border-white/10 hover:border-white/20 transition-all"
+            >
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-blue-500/20 rounded-lg">
+                  <Users className="text-blue-400 text-xl" />
+                </div>
+                <div>
+                  <div className="text-sm text-gray-300">Department</div>
+                  <div className="text-xl font-bold text-white">
+                    {person.known_for_department}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.div
+              whileHover={{ y: -5 }}
+              className="p-4 bg-white/5 rounded-xl backdrop-blur-sm border border-white/10 hover:border-white/20 transition-all"
+            >
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-pink-500/20 rounded-lg">
+                  <Award className="text-pink-400 text-xl" />
+                </div>
+                <div>
+                  <div className="text-sm text-gray-300">Known For</div>
+                  <div className="text-xl font-bold text-white">
+                    {person.known_for.length} works
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Notable works carousel */}
+          <div className="flex gap-4 overflow-x-auto pb-4">
+            {person.known_for.slice(0, 5).map((work, index) => (
+              <motion.div
+                key={index}
+                whileHover={{ scale: 1.05 }}
+                className="flex-shrink-0 relative w-32 h-48 rounded-xl overflow-hidden border border-white/10 hover:border-white/20 transition-all"
+              >
+                <Image
+                  src={`https://image.tmdb.org/t/p/w300${work?.poster_path}`}
+                  alt={work.title || work.name || ""}
+                  fill
+                  className="object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent p-3 flex items-end">
+                  <span className="text-sm font-medium text-white">
+                    {work.title || work.name}
+                  </span>
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </div>
     </motion.div>
@@ -221,149 +250,160 @@ const PersonCard = ({
   person: Person;
   viewMode: ViewMode;
 }) => {
-  const renderBadge = (
-    icon: React.ReactNode,
-    text: string,
-    colorClass: string
-  ) => (
-    <motion.span
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
-      className={`${colorClass} px-3 py-1 rounded-full text-sm flex items-center gap-1.5 border shadow-sm backdrop-blur-sm transition-all duration-300`}
-    >
-      {icon}
-      <span className="font-medium">{text}</span>
-    </motion.span>
-  );
+  const [isHovered, setIsHovered] = useState(false);
+  const [isTouched, setIsTouched] = useState(false);
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -5, scale: 1.02 }}
-      transition={{
-        duration: 0.3,
-        type: "spring",
-        stiffness: 300,
-      }}
-      className="bg-white dark:bg-gray-800/90 rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 group relative overflow-hidden backdrop-blur-sm border border-white/10"
+      transition={{ duration: 0.25 }}
+      className="relative group bg-white dark:bg-gray-900 rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 border border-transparent hover:border-purple-100/30 dark:hover:border-purple-900/50 overflow-hidden"
+      onHoverStart={() => setIsHovered(true)}
+      onHoverEnd={() => setIsHovered(false)}
+      onTouchStart={() => setIsTouched(true)}
+      onTouchEnd={() => setIsTouched(false)}
     >
-      {/* Animated background gradient */}
-      <motion.div
-        className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-blue-500/10 to-pink-500/10"
-        animate={{
-          opacity: [0, 0.5, 0],
-          backgroundPosition: ["0% 0%", "100% 100%"],
-        }}
-        transition={{
-          duration: 5,
-          repeat: Infinity,
-          repeatType: "reverse",
-        }}
-      />
-
-      {/* Spotlight effect */}
-      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 via-transparent to-blue-500/20 animate-pulse" />
+      {/* Dynamic Background Pattern */}
+      <div className="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,#8B5CF640_0%,transparent_70%)] animate-pulse" />
       </div>
 
-      <div className="relative flex gap-6">
-        {/* Profile Image Section */}
-        <div className="flex-shrink-0 relative">
+      {/* Hover-Activated Glow */}
+      <motion.div
+        className="absolute inset-0 pointer-events-none"
+        animate={{
+          opacity: isHovered || isTouched ? 0.3 : 0,
+          background: `radial-gradient(circle at ${
+            isHovered ? "70%" : "30%"
+          } 50%, rgba(139, 92, 246, 0.15), transparent 60%)`,
+        }}
+        transition={{ duration: 0.4 }}
+      />
+
+      <div className="relative flex flex-col p-5 gap-4">
+        {/* Interactive Header */}
+        <div className="flex items-start gap-4">
+          {/* Dynamic Avatar */}
           <motion.div
-            whileHover={{ scale: 1.05 }}
-            className="w-24 h-24 rounded-xl overflow-hidden border-2 border-white/20 shadow-lg relative group"
+            animate={{
+              transform: isHovered
+                ? "translateY(-3px) scale(1.05)"
+                : "translateY(0) scale(1)",
+            }}
+            className="relative flex-shrink-0"
           >
-            <Image
-              src={
-                person.profile_path
-                  ? `https://image.tmdb.org/t/p/w200${person.profile_path}`
-                  : "/placeholder.png"
-              }
-              alt={person.name}
-              width={96}
-              height={96}
-              className="object-cover transform group-hover:scale-110 transition-transform duration-500"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="w-16 h-16 rounded-xl overflow-hidden border-2 border-white/20 shadow-xl relative">
+              <Image
+                src={
+                  person.profile_path
+                    ? `https://image.tmdb.org/t/p/w200${person.profile_path}`
+                    : "/placeholder.png"
+                }
+                alt={person.name}
+                width={64}
+                height={64}
+                className="object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+            </div>
+            <div className="absolute -bottom-2 -right-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white px-2 py-1 rounded-full text-xs font-bold flex items-center gap-1 shadow-lg border border-white/20">
+              <span>#{person.id.toString().padStart(2, "0")}</span>
+            </div>
           </motion.div>
 
-          {/* Enhanced ID Badge */}
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            className="absolute -bottom-2 -right-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white px-2.5 py-1 rounded-full text-xs shadow-lg flex items-center gap-1.5 border border-white/20"
-          >
-            <Zap className="w-3 h-3" />
-            <span className="font-semibold">#{person.id}</span>
-          </motion.div>
+          {/* Smart Metadata */}
+          <div className="flex-1 space-y-1.5">
+            <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100">
+              {person.name}
+            </h3>
+
+            {/* Contextual Status Bar */}
+            <div className="w-full h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+              <motion.div
+                className="h-full bg-gradient-to-r from-purple-500 to-blue-500"
+                initial={{ width: 0 }}
+                animate={{ width: `${(person.popularity / 100) * 100}%` }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+              />
+            </div>
+          </div>
         </div>
 
-        {/* Content Section */}
-        <div className="space-y-3 flex-1">
-          <motion.h3
-            layout
-            className="text-xl font-bold dark:text-white group-hover:text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-blue-500 transition-all duration-300"
-          >
-            {person.name}
-          </motion.h3>
-
-          {/* Badges Section */}
-          <div className="flex gap-2 flex-wrap">
-            {renderBadge(
-              <Star className="w-4 h-4 text-yellow-500" />,
-              person.popularity.toFixed(0),
-              "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-100 border-yellow-200/50 dark:border-yellow-700/50"
-            )}
+        {/* Adaptive Content Area */}
+        <div className="space-y-3">
+          {/* Dynamic Badge System */}
+          <div className="flex flex-wrap gap-2">
+            <div className="flex items-center gap-2 bg-purple-100/70 dark:bg-purple-900/30 px-3 py-1.5 rounded-full text-sm backdrop-blur-sm border border-purple-200/50 dark:border-purple-700/50">
+              <TrendingUp className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+              <span className="text-purple-700 dark:text-purple-300 font-medium">
+                Top {Math.ceil(person.popularity / 10)}% Ranked
+              </span>
+            </div>
 
             {viewMode === "detailed" && (
-              <>
-                {renderBadge(
-                  <Filter className="w-4 h-4 text-blue-500" />,
-                  person.known_for_department,
-                  "bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-100 border-blue-200/50 dark:border-blue-700/50"
-                )}
-
-                {person.known_for.length > 0 && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="w-full mt-2"
-                  >
-                    <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300 text-sm">
-                      <Film className="w-4 h-4" />
-                      <p className="font-medium">
-                        Known for:{" "}
-                        <span className="text-purple-600 dark:text-purple-400">
-                          {person.known_for
-                            .slice(0, 2)
-                            .map((item) => item.title || item.name)
-                            .join(", ")}
-                        </span>
-                      </p>
-                    </div>
-                  </motion.div>
-                )}
-              </>
+              <div className="flex items-center gap-2 bg-blue-100/70 dark:bg-blue-900/30 px-3 py-1.5 rounded-full text-sm backdrop-blur-sm border border-blue-200/50 dark:border-blue-700/50">
+                <Film className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                <span className="text-blue-700 dark:text-blue-300 font-medium">
+                  {person.known_for_department}
+                </span>
+              </div>
             )}
           </div>
 
-          {/* Extra Details for Detailed View */}
-          {viewMode === "detailed" && (
+          {/* Smart Preview Panel */}
+          {viewMode === "detailed" && person.known_for.length > 0 && (
             <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="pt-2"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              className="pt-2 space-y-2"
             >
-              <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                <TrendingUp className="w-4 h-4" />
-                <span>
-                  Trending Score: {(person.popularity / 10).toFixed(1)}
-                </span>
+              <p className="text-sm text-gray-600 dark:text-gray-300 font-medium">
+                Featured In:
+              </p>
+              <div className="flex gap-2 overflow-x-auto pb-2">
+                {person.known_for.slice(0, 3).map((work, index) => (
+                  <div
+                    key={index}
+                    className="flex-shrink-0 relative w-20 h-28 rounded-lg overflow-hidden border border-white/20 group/work"
+                  >
+                    <Image
+                      src={
+                        work.poster_path
+                          ? `https://image.tmdb.org/t/p/w200${work.poster_path}`
+                          : "/placeholder.png"
+                      }
+                      alt={work.title || work.name || ""}
+                      fill
+                      className="object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover/work:opacity-100 transition-opacity p-2 flex items-end">
+                      <span className="text-xs font-medium text-white line-clamp-2">
+                        {work.title || work.name}
+                      </span>
+                    </div>
+                  </div>
+                ))}
               </div>
             </motion.div>
           )}
         </div>
+
+        {/* Contextual Action Layer */}
+        <motion.div
+          className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity"
+          animate={{ opacity: isHovered ? 1 : 0 }}
+        >
+          <Link
+            href={`cast/${person.id}`}
+            className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 rounded-full shadow-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+          >
+            <UserPlus className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+            <span className="font-medium text-gray-800 dark:text-gray-100">
+              View Full Profile
+            </span>
+          </Link>
+        </motion.div>
       </div>
     </motion.div>
   );
@@ -404,70 +444,6 @@ const DepartmentFilter = ({
     </motion.div>
   );
 };
-
-// const PopularityChart = ({ people }: { people: Person[] }) => (
-//   <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-xl">
-//     <h3 className="text-2xl font-bold mb-6 dark:text-white">
-//       Popularity Distribution
-//     </h3>
-//     <ResponsiveContainer width="100%" height={300}>
-//       <BarChart data={people.slice(0, 8)}>
-//         <XAxis dataKey="name" tick={{ fill: "#6B7280" }} />
-//         <YAxis tick={{ fill: "#6B7280" }} />
-//         <Tooltip
-//           contentStyle={{
-//             background: "#4F46E5",
-//             color: "#fff",
-//             borderRadius: "12px",
-//           }}
-//           itemStyle={{ color: "#fff" }}
-//         />
-//         <Bar
-//           dataKey="popularity"
-//           fill="#8B5CF6"
-//           radius={[4, 4, 0, 0]}
-//           animationDuration={800}
-//         />
-//       </BarChart>
-//     </ResponsiveContainer>
-//   </div>
-// );
-
-// const NetworkGraph = ({ people }: { people: Person[] }) => (
-//   <motion.div
-//     initial={{ opacity: 0 }}
-//     animate={{ opacity: 1 }}
-//     className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl p-8 shadow-2xl"
-//   >
-//     <h3 className="text-2xl font-bold text-white mb-6">
-//       Collaboration Network
-//     </h3>
-//     <div className="grid grid-cols-3 md:grid-cols-5 gap-6">
-//       {people.slice(0, 5).map((person) => (
-//         <div key={person.id} className="text-center">
-//           <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-white mx-auto shadow-lg">
-//             <Image
-//               src={`https://image.tmdb.org/t/p/w200${person.profile_path}`}
-//               alt={person.name}
-//               width={64}
-//               height={64}
-//               className="object-cover"
-//             />
-//           </div>
-//           <p className="text-sm text-white mt-2 font-medium">{person.name}</p>
-//         </div>
-//       ))}
-//       <div className="col-span-3 md:col-span-5 flex justify-center items-center my-4">
-//         <div className="h-1 bg-white/20 w-full rounded-full" />
-//       </div>
-//       <div className="text-center col-span-3 md:col-span-5">
-//         <p className="text-white/80 text-lg">
-//           Connected through 128 common projects
-//         </p>
-//       </div>
-//     </div>
-//   </motion.div>
-// );
 
 const ViewToggle = ({
   viewMode,
@@ -536,33 +512,6 @@ export default function PopularPeoplePage() {
     },
     initialPageParam: 1,
   });
-
-  // if (isLoading)
-  //   return (
-  //     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-8">
-  //       <div className="max-w-7xl mx-auto space-y-8">
-  //         <motion.div
-  //           initial={{ opacity: 0 }}
-  //           animate={{ opacity: 1 }}
-  //           className="h-96 bg-gradient-to-r from-purple-500/10 to-blue-500/10 rounded-2xl animate-pulse border border-dashed border-gray-300 dark:border-gray-700"
-  //         />
-  //         <div className="h-12 bg-gray-200 dark:bg-gray-800 rounded-full w-1/3 animate-pulse" />
-  //         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-  //           {[...Array(6)].map((_, i) => (
-  //             <div
-  //               key={i}
-  //               className="h-48 bg-gray-200 dark:bg-gray-800 rounded-xl animate-pulse"
-  //             />
-  //           ))}
-  //         </div>
-  //       </div>
-  //     </div>
-  //   );
-
-  // if (error)
-  //   return (
-  //     <div className="text-center p-8 text-red-500">Error loading data</div>
-  //   );
 
   // Flatten all pages into single array
   const allPeople = data?.pages.flatMap((page) => page.results) || [];
