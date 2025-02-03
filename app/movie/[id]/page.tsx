@@ -9,19 +9,8 @@ import Head from "next/head";
 import Image from "next/image";
 import { Rating } from "@/components/common/Rating";
 import TrailerModal from "@/components/TrailerModal";
-import {
-  Bookmark,
-  CalendarIcon,
-  Download,
-  ForwardIcon,
-  Heart,
-  LucideShare2,
-  Share,
-  Share2,
-  Share2Icon,
-  UserIcon,
-} from "lucide-react";
-import Recommendation from "@/Fragments/Recommendation";
+import { AddToWatchListButton } from "@/components/AddWatchListButton";
+import { CalendarIcon, ForwardIcon, Heart } from "lucide-react";
 import {
   BanknotesIcon,
   BuildingOfficeIcon,
@@ -174,6 +163,9 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
                     <button className="w-10 h-10 flex items-center justify-center bg-gray-700 rounded-full hover:bg-gray-600 transition">
                       <ForwardIcon className="text-white w-7 h-7" />
                     </button>
+                    <AddToWatchListButton
+                      item={{ ...movie, title: movie.title ?? "" }}
+                    />
                   </div>
                 </div>
               </div>

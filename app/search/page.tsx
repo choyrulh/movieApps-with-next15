@@ -20,6 +20,7 @@ import MovieCard from "@/components/movieCard";
 import { useStore } from "@/store/useStore";
 import { useShallow } from "zustand/react/shallow";
 import CastsCard from "@/components/CastsCard";
+import Link from "next/link";
 
 const contentTypes = [
   { value: "movie", label: "Movies", icon: Film },
@@ -179,18 +180,20 @@ const SearchResultsPage = () => {
               className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"
             >
               {data?.results.map((movie: Movie, index: number) => (
-                <motion.div
-                  key={movie.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                >
-                  {selectedType === "person" ? (
-                    <CastsCard numberOrder={false} member={movie} />
-                  ) : (
-                    <MovieCard movie={movie} />
-                  )}
-                </motion.div>
+                <Link href={`/${selectedType}/${movie.id}`} key={movie.id}>
+                  <motion.div
+                    key={movie.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                  >
+                    {selectedType === "person" ? (
+                      <CastsCard numberOrder={false} member={movie} />
+                    ) : (
+                      <MovieCard movie={movie} />
+                    )}
+                  </motion.div>
+                </Link>
               ))}
             </motion.div>
           )}
