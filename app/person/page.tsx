@@ -258,7 +258,7 @@ const PersonCard = ({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.25 }}
-      className="relative group bg-white dark:bg-gray-900 rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 border border-transparent hover:border-purple-100/30 dark:hover:border-purple-900/50 overflow-hidden"
+      className="relative group bg-transparent/35 dark:bg-gray-900 rounded-2xl backdrop-blur-lg shadow-2xl hover:shadow-3xl transition-all duration-300 border border-transparent hover:border-purple-100/30 dark:hover:border-purple-900/50 overflow-hidden"
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
       onTouchStart={() => setIsTouched(true)}
@@ -314,7 +314,7 @@ const PersonCard = ({
 
           {/* Smart Metadata */}
           <div className="flex-1 space-y-1.5">
-            <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100">
+            <h3 className="text-lg font-bold text-gray-300 dark:text-gray-100">
               {person.name}
             </h3>
 
@@ -336,7 +336,7 @@ const PersonCard = ({
           <div className="flex flex-wrap gap-2">
             <div className="flex items-center gap-2 bg-purple-100/70 dark:bg-purple-900/30 px-3 py-1.5 rounded-full text-sm backdrop-blur-sm border border-purple-200/50 dark:border-purple-700/50">
               <TrendingUp className="w-4 h-4 text-purple-600 dark:text-purple-400" />
-              <span className="text-purple-700 dark:text-purple-300 font-medium">
+              <span className="text-purple-900 dark:text-purple-300 font-medium">
                 Top {Math.ceil(person.popularity / 10)}% Ranked
               </span>
             </div>
@@ -422,7 +422,7 @@ const DepartmentFilter = ({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-gray-100 dark:bg-gray-800 p-4 rounded-2xl backdrop-blur-sm border border-gray-200 dark:border-gray-700"
+      className="bg-gray-100 dark:bg-gray-800 p-4 rounded-2xl backdrop-blur-sm dark:border-gray-700"
     >
       <div className="flex flex-wrap gap-3">
         {departments.map((dept) => (
@@ -523,8 +523,8 @@ export default function PopularPeoplePage() {
   if (error) return <ErrorState />;
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-8">
-      <div className="max-w-7xl mx-auto space-y-12">
+    <div className="min-h-screen dark:bg-gray-900 p-8">
+      <div className="max-w-7xl pt-12 mx-auto space-y-12">
         {allPeople.length > 0 && <HighlightPerson person={allPeople[0]} />}
 
         <DepartmentFilter
@@ -544,7 +544,7 @@ export default function PopularPeoplePage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-2xl border border-gray-100 dark:border-gray-700"
+          className="bg-trasnparent/20  dark:bg-gray-800 rounded-2xl p-8 backdrop-blur-lg shadow-2xl border border-purple-500 dark:border-gray-700"
         >
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
             <motion.h2

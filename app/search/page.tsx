@@ -160,7 +160,7 @@ const SearchResultsPage = () => {
                 Try Again
               </button>
             </motion.div>
-          ) : data?.results.length === 0 ? (
+          ) : data?.results?.length === 0 ? (
             <motion.div
               key="no-results"
               initial={{ opacity: 0 }}
@@ -179,7 +179,7 @@ const SearchResultsPage = () => {
               exit={{ opacity: 0 }}
               className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"
             >
-              {data?.results.map((movie: Movie, index: number) => (
+              {data?.results?.map((movie: Movie, index: number) => (
                 <Link href={`/${selectedType}/${movie.id}`} key={movie.id}>
                   <motion.div
                     key={movie.id}

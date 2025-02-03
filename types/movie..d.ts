@@ -7,9 +7,31 @@ export interface Movie {
   poster_path: string;
   backdrop_path?: string;
   overview?: string;
+  episode_run_time?: number[];
   adult?: boolean;
   release_date: string;
-  first_air_date: string;
+  first_air_date?: string;
+  last_air_date?: string;
+  number_of_episodes?: number;
+  number_of_seasons?: number;
+  next_episode_to_air: {
+    air_date: string;
+    episode_number: number;
+    name: string;
+    overview: string;
+    production_code: string;
+    season_number: number;
+    show_id: number;
+    still_path: string;
+    vote_average: number;
+    vote_count: number;
+  };
+  networks?: {
+    name: string;
+    id: number;
+    logo_path: string;
+    origin_country: string;
+  };
   original_language: string;
   vote_average?: number;
   vote_count?: number;

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Person } from "@/app/cast/page";
+import { Person } from "@/app/person/page";
 
 export const PopularityChart = ({ people }: { people: Person[] }) => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);

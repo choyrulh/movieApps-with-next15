@@ -164,7 +164,11 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
                       <ForwardIcon className="text-white w-7 h-7" />
                     </button>
                     <AddToWatchListButton
-                      item={{ ...movie, title: movie.title ?? "" }}
+                      item={{
+                        ...movie,
+                        title: movie.title ?? "",
+                        media_type: "movie",
+                      }}
                     />
                   </div>
                 </div>

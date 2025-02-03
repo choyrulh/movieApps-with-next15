@@ -16,10 +16,11 @@ import {
   CurrencyDollarIcon,
   GlobeAltIcon,
 } from "@heroicons/react/24/solid";
+import { AddToWatchListButton } from "@/components/AddWatchListButton";
 
-function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
+function DetailShow({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
-  const [activeTab, setActiveTab] = useState("financials");
+  const [activeTab, setActiveTab] = useState("details");
   const [visibleCasts, setVisibleCasts] = useState(12);
 
   const {
@@ -77,11 +78,12 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
     return (
       <>
         <div className="min-h-screen bg-slate-900 flex items-center justify-center">
-          <div className="text-white text-xl">Movie not found</div>
+          <div className="text-white text-xl">series not found</div>
         </div>
       </>
     );
   }
+  console.log(show);
 
   return (
     <>
@@ -130,11 +132,14 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
                 <div className="flex items-center gap-4 mb-6">
                   <Rating value={show.vote_average} />
                   <span className="text-slate-400">
-                    {new Date(show.first_air_date).toLocaleDateString()}
+                    {new Date(show?.first_air_date).toLocaleDateString()}
                   </span>
-                  {show.runtime && (
-                    <span className="text-slate-400">{show.runtime} mins</span>
-                  )}
+                  {show.runtime ||
+                    (show.episode_run_time && (
+                      <span className="text-slate-400">
+                        {show.runtime || show.episode_run_time} mins
+                      </span>
+                    ))}
                   {/* add if statement for adult and add the logo */}
                   {show.adult && <span className="text-red-500">18+</span>}
                 </div>
@@ -162,6 +167,13 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
                     <button className="w-10 h-10 flex items-center justify-center bg-gray-700 rounded-full hover:bg-gray-600 transition">
                       <ForwardIcon className="text-white w-7 h-7" />
                     </button>
+                    <AddToWatchListButton
+                      item={{
+                        ...show,
+                        title: show.title ?? "",
+                        media_type: "tv",
+                      }}
+                    />
                   </div>
                 </div>
               </div>
@@ -171,6 +183,7 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
               <div className="relative mb-8">
                 <div className="flex space-x-4 overflow-x-auto pb-2 scrollbar-hide">
                   {[
+                    "Details",
                     "Financials",
                     "Production",
                     "Languages",
@@ -198,6 +211,103 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
 
               {/* Tab Content Container */}
               <div className="transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]">
+                {activeTab === "details" && (
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    {/* Seasons */}
+                    <div className="gradient-card p-6">
+                      <div className="flex items-center space-x-4">
+                        <div className="w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center">
+                          <span className="text-purple-400 font-bold">S</span>
+                        </div>
+                        <div>
+                          <h3 className="text-sm text-purple-300 mb-1">
+                            Seasons
+                          </h3>
+                          <p className="text-xl font-semibold text-white">
+                            {show.number_of_seasons}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Episodes */}
+                    <div className="gradient-card p-6">
+                      <div className="flex items-center space-x-4">
+                        <div className="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center">
+                          <span className="text-green-400 font-bold">E</span>
+                        </div>
+                        <div>
+                          <h3 className="text-sm text-green-300 mb-1">
+                            Episodes
+                          </h3>
+                          <p className="text-xl font-semibold text-white">
+                            {show.number_of_episodes}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* First Air */}
+                    <div className="gradient-card p-6">
+                      <div className="flex items-center space-x-4">
+                        <div className="w-12 h-12 rounded-full bg-cyan-500/20 flex items-center justify-center">
+                          <CalendarIcon className="w-6 h-6 text-cyan-400" />
+                        </div>
+                        <div>
+                          <h3 className="text-sm text-cyan-300 mb-1">
+                            First Air
+                          </h3>
+                          <p className="text-white">
+                            {new Date(
+                              show?.first_air_date
+                            ).toLocaleDateString()}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Last Air */}
+                    <div className="gradient-card p-6">
+                      <div className="flex items-center space-x-4">
+                        <div className="w-12 h-12 rounded-full bg-cyan-500/20 flex items-center justify-center">
+                          <CalendarIcon className="w-6 h-6 text-cyan-400" />
+                        </div>
+                        <div>
+                          <h3 className="text-sm text-cyan-300 mb-1">
+                            Last Air
+                          </h3>
+                          <p className="text-white">
+                            {new Date(show?.last_air_date).toLocaleDateString()}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Next Episode */}
+                    {show.next_episode_to_air && (
+                      <div className="gradient-card p-6">
+                        <div className="flex items-center space-x-4">
+                          <div className="w-12 h-12 rounded-full bg-cyan-500/20 flex items-center justify-center">
+                            <CalendarIcon className="w-6 h-6 text-cyan-400" />
+                          </div>
+                          <div>
+                            <h3 className="text-sm text-cyan-300 mb-1">
+                              Next Episode
+                            </h3>
+                            <p className="text-white">
+                              {new Date(
+                                show.next_episode_to_air.air_date
+                              ).toLocaleDateString()}
+                              <br />
+                              Episode {show.next_episode_to_air.episode_number}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 {/* Financials Tab */}
                 {activeTab === "financials" && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -263,6 +373,7 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
                 {/* Production Tab */}
                 {activeTab === "production" && (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {/* Production Companies */}
                     {show.production_companies?.map((company: any) => (
                       <div
                         key={company.id}
@@ -287,6 +398,33 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
                         </div>
                       </div>
                     ))}
+
+                    {/* Networks */}
+                    {Array.isArray(show.networks) &&
+                      show.networks.map((network: any) => (
+                        <div
+                          key={network.id}
+                          className="gradient-card hover:transform hover:-translate-y-1 transition-all duration-300"
+                        >
+                          <div className="flex flex-col items-center text-center p-4">
+                            {network.logo_path ? (
+                              <div className="relative h-16 w-full mb-4">
+                                <Image
+                                  src={`https://image.tmdb.org/t/p/w500${network.logo_path}`}
+                                  alt={network.name}
+                                  fill
+                                  className="object-contain"
+                                />
+                              </div>
+                            ) : (
+                              <GlobeAltIcon className="w-12 h-12 text-slate-400 mb-4" />
+                            )}
+                            <span className="text-white font-medium text-sm">
+                              {network.name}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
                   </div>
                 )}
 
@@ -470,4 +608,4 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
   );
 }
 
-export default DetailMovie;
+export default DetailShow;

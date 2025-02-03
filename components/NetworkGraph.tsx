@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Star, Award, Film, TrendingUp } from "lucide-react";
-import { Person } from "@/app/cast/page";
+import { Person } from "@/app/person/page";
 
 export const NetworkGraph = ({ people }: { people: Person[] }) => {
   const [selectedActor, setSelectedActor] = useState<number>(0);
