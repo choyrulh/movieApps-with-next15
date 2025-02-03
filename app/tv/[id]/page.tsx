@@ -132,7 +132,9 @@ function DetailShow({ params }: { params: Promise<{ id: string }> }) {
                 <div className="flex items-center gap-4 mb-6">
                   <Rating value={show.vote_average} />
                   <span className="text-slate-400">
-                    {new Date(show?.first_air_date).toLocaleDateString()}
+                    {show?.first_air_date
+                      ? new Date(show.first_air_date).toLocaleDateString()
+                      : "N/A"}
                   </span>
                   {show.runtime ||
                     (show.episode_run_time && (
@@ -258,9 +260,11 @@ function DetailShow({ params }: { params: Promise<{ id: string }> }) {
                             First Air
                           </h3>
                           <p className="text-white">
-                            {new Date(
-                              show?.first_air_date
-                            ).toLocaleDateString()}
+                            {show?.first_air_date
+                              ? new Date(
+                                  show.first_air_date
+                                ).toLocaleDateString()
+                              : "N/A"}
                           </p>
                         </div>
                       </div>
@@ -277,7 +281,11 @@ function DetailShow({ params }: { params: Promise<{ id: string }> }) {
                             Last Air
                           </h3>
                           <p className="text-white">
-                            {new Date(show?.last_air_date).toLocaleDateString()}
+                            {show?.first_air_date
+                              ? new Date(
+                                  show.first_air_date
+                                ).toLocaleDateString()
+                              : "N/A"}
                           </p>
                         </div>
                       </div>

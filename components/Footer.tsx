@@ -162,7 +162,7 @@ const Footer = () => {
         {/* Bottom Section */}
         <div className="border-t border-white/10 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="text-gray-400 text-sm text-center">
-            © {new Date().getFullYear()} CineVerse. All rights reserved.
+            © {new Date().getFullYear()} SlashVerse. All rights reserved.
           </div>
 
           <div className="flex items-center gap-6">
