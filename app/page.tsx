@@ -1,5 +1,6 @@
 "use client";
 
+import { BannerSkeleton } from "@/components/Banner";
 import { DropdownGenre } from "@/components/DropdownGenre";
 import MovieCard from "@/components/movieCard";
 import MovieCardSkeleton from "@/components/MovieCardSkeleton";
@@ -69,7 +70,7 @@ export default function Home() {
   const data = movies;
   return (
     <main className="min-h-screen">
-      <Suspense>
+      <Suspense fallback={<BannerSkeleton />}>
         <Banner type={pathname === "/" ? "movie" : "tv"} />
       </Suspense>
       <div className="container mx-auto px-4 py-8">

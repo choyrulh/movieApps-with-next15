@@ -273,5 +273,20 @@ function Banner({ type }: { type: string }) {
     </div>
   );
 }
+export const BannerSkeleton = () => {
+  return (
+    <div className="relative h-[60vh] md:h-[100vh]">
+      <div className="h-full w-full rounded-none" />
+      <div className="absolute bottom-[15rem] left-0 right-0 p-4 md:p-8 space-y-4">
+        <div className="h-8 w-3/4 bg-gray-500" />
+        <div className="h-4 w-1/2 bg-gray-500" />
+        <div className="flex gap-4">
+          <div className="h-10 w-32 rounded-lg bg-gray-500" />
+          <div className="h-10 w-32 rounded-lg bg-gray-500" />
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default memo(Banner);
