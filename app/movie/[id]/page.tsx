@@ -157,12 +157,12 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
                 <div className="flex gap-5">
                   {trailer && <TrailerModal videoKey={trailer.key} />}
                   <div className="flex gap-3">
-                    <button className="w-10 h-10 flex items-center justify-center bg-gray-700 rounded-full hover:bg-gray-600 transition">
+                    {/* <button className="w-10 h-10 flex items-center justify-center bg-gray-700 rounded-full hover:bg-gray-600 transition">
                       <Heart className="text-white w-7 h-7" />
                     </button>
                     <button className="w-10 h-10 flex items-center justify-center bg-gray-700 rounded-full hover:bg-gray-600 transition">
                       <ForwardIcon className="text-white w-7 h-7" />
-                    </button>
+                    </button> */}
                     <AddToWatchListButton
                       item={{
                         ...movie,
