@@ -16,7 +16,7 @@ function GoWatchButton({ params, children, typeData, season, episode }: Props) {
   const handleClick = () => {
     if (typeData === "movie") {
       router.push(`/movie/${params}/watch`);
-    } else if (typeData === "tv" && season && episode) {
+    } else if (typeData === "tv") {
       router.push(`/tv/${params}/watch`);
     }
   };

@@ -3,21 +3,21 @@ import { create } from "zustand";
 export interface State {
   genresId: string | null;
   selectedType: string;
-  detailData: any;
+  historyData: any;
 
   setSelectedGenresId: (genresId: string | null) => void;
   setSelectedType: (selectedType: string) => void;
-  setDetailData: (detailData: any) => void;
+  setHistoryData: (historyData: any) => void;
 }
 
 export const useStore = create<State>((set) => ({
   // state
   genresId: "",
   selectedType: "movie",
-  detailData: {},
+  historyData: {},
 
   // actions
   setSelectedGenresId: (genresId: string | null) => set({ genresId }),
   setSelectedType: (selectedType) => set(() => ({ selectedType })),
-  setDetailData: (detailData) => set(() => ({ detailData })),
+  setHistoryData: (historyData) => set(() => ({ historyData })),
 }));

@@ -1,15 +1,20 @@
 "use client";
 
 import { getDetailShow } from "@/Service/fetchMovie";
-import { Movie } from "@/types/movie.";
+import { useStore } from "@/store/useStore";
 import { useQuery } from "@tanstack/react-query";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useShallow } from "zustand/react/shallow";
 
 function page() {
   const pathname = usePathname();
   const id = pathname.split("/")[2];
-  const router = useRouter();
+  const { historyData } = useStore(
+    useShallow((state) => ({
+      historyData: state.historyData,
+    }))
+  );
   const [season, setSeason] = useState("1");
   const [episode, setEpisode] = useState("1");
   const [mediaDataHistory, setMediaDataHistory] = useState<any>();
@@ -32,8 +37,10 @@ function page() {
       }
       setMediaDataHistory(event?.data);
     });
+    if (historyData) {
+      setEpisode(historyData.last_episode_watched);
+    }
   }, [id]);
-  console.log("mediaDataHistory", mediaDataHistory);
 
   const totalSeasons = data?.number_of_seasons || 0;
   const selectedSeasonData = data?.seasons?.find(

@@ -5,6 +5,7 @@ import { DropdownGenre } from "@/components/DropdownGenre";
 import MovieCard from "@/components/movieCard";
 import MovieCardSkeleton from "@/components/MovieCardSkeleton";
 import { Button } from "@/components/ui/button";
+import HistoryTontonan from "@/Fragments/HistoryWatch";
 import { getPopularMovie, getSearchByGenre } from "@/Service/fetchMovie";
 import { useStore } from "@/store/useStore";
 import { Movie } from "@/types/movie.";
@@ -22,9 +23,10 @@ export default function Home() {
   const [page, setPage] = useState(1);
   const [allMovies, setAllMovies] = useState<Movie[]>([]);
   const pathname = usePathname();
-  const { genresId, setSelectedGenresId } = useStore(
+  const { genresId, setSelectedGenresId, historyData } = useStore(
     useShallow((state) => ({
       genresId: state.genresId,
+      historyData: state.historyData,
       setSelectedGenresId: state.setSelectedGenresId,
     }))
   );
@@ -68,12 +70,14 @@ export default function Home() {
   }, [movies, moviesGenre, genresId]);
 
   const data = movies;
+  console.log("historyData Home: ", historyData)
   return (
     <main className="min-h-screen">
       <Suspense fallback={<BannerSkeleton />}>
         <Banner type={pathname === "/" ? "movie" : "tv"} />
       </Suspense>
       <div className="container mx-auto px-4 py-8">
+        <HistoryTontonan />
         <div className="flex items-center gap-4 mb-4">
           <DropdownGenre />
           {genresId && (
