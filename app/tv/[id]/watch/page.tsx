@@ -35,11 +35,7 @@ function page() {
         const mediaData = event.data.data;
         localStorage.setItem("vidLinkProgress", JSON.stringify(mediaData));
       }
-      setMediaDataHistory(event?.data);
     });
-    // if (historyData) {
-    //   setEpisode(historyData.last_episode_watched);
-    // }
   }, [id]);
 
   const totalSeasons = data?.number_of_seasons || 0;

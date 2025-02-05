@@ -19,29 +19,21 @@ const HistoryTontonan = () => {
       const parsedData = JSON.parse(localData);
       setMediaDataHistory(Object.values(parsedData));
     }
-
-    const handleMessage = (event: MessageEvent) => {
-      if (event.origin !== "https://vidlink.pro") return;
-
-      if (event.data?.type === "MEDIA_DATA") {
-        const mediaData = event.data.data;
-        const dataArray = Object.values(mediaData);
-
-        // Simpan sebagai objek ke localStorage
-        localStorage.setItem("vidLinkProgress", JSON.stringify(mediaData));
-        // Update state dengan array
-        setMediaDataHistory(dataArray);
-        setHistoryData(event.data);
-      }
-    };
-
-    window.addEventListener("message", handleMessage);
-
-    return () => window.removeEventListener("message", handleMessage);
   }, []);
 
-  if (!mediaDataHistory || mediaDataHistory.length === 0) return null;
-  console.log("mediaDataHistory: ", mediaDataHistory);
+  const handleDelete = (mediaId: number, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const localData = localStorage.getItem("vidLinkProgress");
+    if (localData) {
+      const parsedData = JSON.parse(localData);
+      delete parsedData[mediaId];
+
+      localStorage.setItem("vidLinkProgress", JSON.stringify(parsedData));
+      setMediaDataHistory(Object.values(parsedData));
+    }
+  };
 
   // Calculate progress percentage
   const calculateProgress = (media: any) => {
@@ -54,6 +46,8 @@ const HistoryTontonan = () => {
     return Math.round((watched / duration) * 100);
   };
 
+  if (!mediaDataHistory || mediaDataHistory.length === 0) return null;
+
   return (
     <div className="px-4 py-6">
       <h2 className="text-xl font-bold mb-4 text-gray-200">History Tontonan</h2>
@@ -64,8 +58,29 @@ const HistoryTontonan = () => {
             <Link
               href={`/${media.type}/${media.id}/watch`}
               key={index}
-              className="flex-shrink-0 w-48 bg-gray-700 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300"
+              className="flex-shrink-0 w-48 bg-gray-700 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 relative group"
             >
+              {/* Delete Button */}
+              <button
+                onClick={(e) => handleDelete(media.id, e)}
+                className="absolute top-1 right-1 z-10 p-1 bg-black/50 rounded-full hover:bg-black/80 transition-colors opacity-0 group-hover:opacity-100"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4 text-white"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+
               <div className="relative h-32 rounded-t-lg overflow-hidden">
                 <Image
                   src={`https://image.tmdb.org/t/p/original${media.backdrop_path}`}
@@ -87,7 +102,11 @@ const HistoryTontonan = () => {
                 <div className="w-full bg-gray-200 rounded-full h-1.5">
                   <div
                     className="bg-blue-500 rounded-full h-1.5 transition-all duration-300"
-                    style={{ width: `${progressPercentage}%` }}
+                    style={{
+                      width: progressPercentage
+                        ? `${progressPercentage}%`
+                        : "0%",
+                    }}
                   />
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
