@@ -37,9 +37,9 @@ function page() {
       }
       setMediaDataHistory(event?.data);
     });
-    if (historyData) {
-      setEpisode(historyData.last_episode_watched);
-    }
+    // if (historyData) {
+    //   setEpisode(historyData.last_episode_watched);
+    // }
   }, [id]);
 
   const totalSeasons = data?.number_of_seasons || 0;
