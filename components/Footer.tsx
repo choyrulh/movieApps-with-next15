@@ -185,14 +185,14 @@ const Footer = () => {
             {socials.map((social) => {
               const Icon = social.icon;
               return (
-                <a
+                <Link
                   key={social.name}
                   href={social.href}
                   className="text-gray-400 hover:text-white transition-colors"
                 >
                   <span className="sr-only">{social.name}</span>
                   <Icon className="w-5 h-5" />
-                </a>
+                </Link>
               );
             })}
           </div>

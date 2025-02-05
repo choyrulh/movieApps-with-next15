@@ -17,6 +17,7 @@ import {
   GlobeAltIcon,
 } from "@heroicons/react/24/solid";
 import { AddToWatchListButton } from "@/components/AddWatchListButton";
+import GoWatchButton from "@/components/ui/GoWatchButton";
 
 function DetailShow({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -83,7 +84,6 @@ function DetailShow({ params }: { params: Promise<{ id: string }> }) {
       </>
     );
   }
-  console.log(show);
 
   return (
     <>
@@ -176,6 +176,9 @@ function DetailShow({ params }: { params: Promise<{ id: string }> }) {
                         media_type: "tv",
                       }}
                     />
+                    <GoWatchButton params={id} typeData={"tv"}>
+                      Watch
+                    </GoWatchButton>
                   </div>
                 </div>
               </div>

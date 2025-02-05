@@ -55,12 +55,12 @@ const ProfileDropDown = ({ props }: any) => {
       >
         {navigation.map((item, idx) => (
           <li key={idx}>
-            <a
+            <Link
               className="block text-gray-600 lg:hover:bg-gray-50 lg:p-2.5"
               href={item.path}
             >
               {item.title}
-            </a>
+            </Link>
           </li>
         ))}
       </ul>

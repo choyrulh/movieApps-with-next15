@@ -17,6 +17,7 @@ import {
   CurrencyDollarIcon,
   GlobeAltIcon,
 } from "@heroicons/react/24/solid";
+import GoWatchButton from "@/components/ui/GoWatchButton";
 
 function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -170,6 +171,9 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
                         media_type: "movie",
                       }}
                     />
+                    <GoWatchButton params={id} typeData={"movie"}>
+                      Watch
+                    </GoWatchButton>
                   </div>
                 </div>
               </div>

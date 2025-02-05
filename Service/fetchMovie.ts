@@ -153,9 +153,14 @@ export const getDetailMovie = async (id: number, params = {}) => {
 
 export const getDetailShow = async (id: number, params = {}) => {
   try {
-    const response = await axios.get(`${url}/tv/${id}?api_key=${api_key}`);
+    // const response = await axios.get(`${url}/tv/${id}?api_key=${api_key}`);
+    const response = await fetch(`${url}/tv/${id}?api_key=${api_key}`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
 
-    return response.data;
+    const data = await response.json();
+    return data;
   } catch (error) {
     return error;
   }
@@ -273,6 +278,17 @@ export const getCreditPerson = async (id: string) => {
     const response = await axios.get(
       `${url}/person/${id}/combined_credits?api_key=${api_key}`
     );
+
+    const data = await response.data;
+    return data;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const getPlayerMovie = async (id: string) => {
+  try {
+    const response = await axios.get(`https://vidlink.pro/movie/${id}`);
 
     const data = await response.data;
     return data;
