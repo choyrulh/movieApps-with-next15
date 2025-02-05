@@ -33,7 +33,7 @@ export default function RootLayout({
       >
         <Navbar />
         <ReactQueryProvider>{children}</ReactQueryProvider>
-        {/* <Footer /> */}
+        <Footer />
       </body>
     </html>
   );
