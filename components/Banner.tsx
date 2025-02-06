@@ -254,7 +254,7 @@ function Banner({ type }: { type: string }) {
                 >
                   <div className={`relative w-40 h-24 overflow-hidden`}>
                     <Image
-                      src={`https://image.tmdb.org/t/p/w500${movie.backdrop_path}`}
+                      src={`https://image.tmdb.org/t/p/w1280${movie.backdrop_path}`}
                       alt={movie.title ?? movie.name ?? ""}
                       fill
                       className="object-cover"

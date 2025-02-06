@@ -5,11 +5,11 @@ import { useShallow } from "zustand/react/shallow";
 import { useStore } from "@/store/useStore";
 
 const HistoryTontonan = () => {
-  const { setHistoryData } = useStore(
-    useShallow((state) => ({
-      setHistoryData: state.setHistoryData,
-    }))
-  );
+  // const { setHistoryData } = useStore(
+  //   useShallow((state) => ({
+  //     setHistoryData: state.setHistoryData,
+  //   }))
+  // );
   const [mediaDataHistory, setMediaDataHistory] = useState<any[]>([]);
 
   useEffect(() => {
@@ -19,6 +19,25 @@ const HistoryTontonan = () => {
       const parsedData = JSON.parse(localData);
       setMediaDataHistory(Object.values(parsedData));
     }
+
+    // const handleMessage = (event: MessageEvent) => {
+    //   if (event.origin !== "https://vidlink.pro") return;
+
+    //   if (event.data?.type === "MEDIA_DATA") {
+    //     const mediaData = event.data.data;
+    //     const dataArray = Object.values(mediaData);
+
+    //     // Simpan sebagai objek ke localStorage
+    //     localStorage.setItem("vidLinkProgress", JSON.stringify(mediaData));
+    //     // Update state dengan array
+    //     setMediaDataHistory(dataArray);
+    //     console.log("event Home:", event);
+    //   }
+    // };
+
+    // window.addEventListener("message", handleMessage);
+
+    // return () => window.removeEventListener("message", handleMessage);
   }, []);
 
   const handleDelete = (mediaId: number, e: React.MouseEvent) => {
@@ -99,16 +118,16 @@ const HistoryTontonan = () => {
                 </div>
               </div>
               <div className="p-2">
-                <div className="w-full bg-gray-200 rounded-full h-1.5">
+                <div className="w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
                   <div
-                    className="bg-blue-500 rounded-full h-1.5 transition-all duration-300"
-                    style={{
-                      width: progressPercentage
-                        ? `${progressPercentage}%`
-                        : "0%",
-                    }}
-                  />
+            className="bg-blue-500 rounded-full h-full transition-all duration-300"
+            style={{ 
+              width: `${Math.max(1, Math.min(progressPercentage || 0, 100))}%`,
+              minWidth: '2px'
+            }}
+          />
                 </div>
+
                 <p className="text-xs text-gray-500 mt-1">
                   Tonton {progressPercentage}%
                 </p>
