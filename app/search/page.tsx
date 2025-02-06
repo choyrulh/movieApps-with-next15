@@ -54,6 +54,16 @@ const SearchResultsPage = () => {
     enabled: debouncedQuery.length > 3,
     staleTime: 5 * 60 * 1000,
   });
+  
+let typeSearch; // Declare typeSearch outside the conditional
+
+if (selectedType === "movie"){
+  typeSearch = "🎬";
+} else if (selectedType === "tv"){
+  typeSearch = "📺";
+} else {
+  typeSearch = "👤";
+}
 
   return (
     <div className="min-h-screen bg-slate-900">
@@ -128,8 +138,8 @@ const SearchResultsPage = () => {
               exit={{ opacity: 0 }}
               className="text-center py-20 text-slate-400"
             >
-              <div className="text-4xl mb-4">🎬</div>
-              <p className="text-xl">Start typing to search movies</p>
+              <div className="text-4xl mb-4">{typeSearch}</div>
+              <p className="text-xl">{`Start typing to search ${selectedType} `}</p>
             </motion.div>
           ) : isLoading ? (
             <motion.div

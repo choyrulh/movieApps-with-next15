@@ -95,7 +95,7 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
       <div className="min-h-screen bg-slate-900">
         <main>
           {/* Backdrop Image */}
-          <div className="relative h-[31rem] md:h-[35rem] lg:h-[45rem]">
+          <div className="relative h-[31rem] md:h-[35rem] lg:h-[45rem] pb-8">
             {movie.backdrop_path && (
               <Image
                 src={`https://image.tmdb.org/t/p/original${movie.backdrop_path}`}

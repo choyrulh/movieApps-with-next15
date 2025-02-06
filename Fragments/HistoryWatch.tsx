@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useShallow } from "zustand/react/shallow";
 import { useStore } from "@/store/useStore";
-import useIsMobile from "@/hook/useIsMobile"
+import useIsMobile from "@/hook/useIsMobile";
 
 const HistoryTontonan = () => {
   // const { setHistoryData } = useStore(
@@ -116,11 +116,11 @@ const handleScroll = (direction: "left" | "right") => {
               {/* Delete Button */}
               <button
                 onClick={(e) => handleDelete(media.id, e)}
-                className="absolute top-1 right-1 z-10 p-1 bg-black/50 rounded-full hover:bg-black/80 transition-colors opacity-0 group-hover:opacity-100"
+                className={`absolute top-1 left-1 z-10 p-1 bg-black/50 rounded-full hover:bg-black/80 transition-colors ${isMobile ? "opacity-100" : "opacity-0"} group-hover:opacity-100`}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4 text-white"
+                  className="h-4 w-4 text-gray-400"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -147,7 +147,7 @@ const handleScroll = (direction: "left" | "right") => {
                     {media.title}
                   </span>
                   <span className="text-gray-200 text-xs">
-                    {media.last_episode_watched ? `Eps${media.last_episode_watched}` : null}
+                    {media.last_episode_watched ? `Eps: ${media.last_episode_watched}` : null}
                   </span>
                 </div>
               </div>

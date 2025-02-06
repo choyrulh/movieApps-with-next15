@@ -9,11 +9,13 @@ import { Movie } from "@/types/movie.";
 import { ChevronLeft, ChevronRight, Info, Play, Star } from "lucide-react";
 import Link from "next/link";
 import { memo } from "react";
+import useIsMobile from "@/hook/useIsMobile";
 
 function Banner({ type }: { type: string }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [pauseAutoSlide, setPauseAutoSlide] = useState(false);
   const [progress, setProgress] = useState(0);
+  const isMobile = useIsMobile();
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["trendingMovies", type],
@@ -224,7 +226,7 @@ function Banner({ type }: { type: string }) {
       </div>
 
       {/* Slide Indicators */}
-      <div className="absolute bottom-8 lg:right-[18rem] md:right-[12rem] h-32 z-50">
+      <div className={`absolute bottom-8 ${isMobile ? "right-[12rem]" : "right-[18rem]"} h-32 z-50`}>
         <div className="relative max-w-4xl mx-auto">
           {/* Center highlight zone */}
           <div className="absolute left-1/2 -translate-x-1/2 w-24 h-32 bg-black/20 backdrop-blur-sm rounded-lg z-10" />
