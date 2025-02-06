@@ -34,22 +34,10 @@ function page() {
 
       if (event.data?.type === "MEDIA_DATA") {
         const mediaData = event.data.data;
-        // localStorage.setItem("vidLinkProgress", JSON.stringify(mediaData));
-      }
-    });
-  }, []);
-
-  useEffect(() => {
-    window.addEventListener("message", (event) => {
-      if (event.origin !== "https://vidlink.pro") return;
-      console.log(event);
-
-      if (event.data?.type === "MEDIA_DATA") {
-        const mediaData = event.data.data;
         localStorage.setItem("vidLinkProgress", JSON.stringify(mediaData));
       }
     });
-  }, [season, episode]);
+  }, []);
 
   const totalSeasons = data?.number_of_seasons || 0;
   const selectedSeasonData = data?.seasons?.find(

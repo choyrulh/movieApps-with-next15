@@ -31,8 +31,6 @@ export default function Home() {
     }))
   );
 
-  // Menyimpan hasil fetching ke dalam state movies tanpa menghapus yang sebelumnya
-
   const {
     data: movies,
     isLoading,
@@ -70,7 +68,6 @@ export default function Home() {
   }, [movies, moviesGenre, genresId]);
 
   const data = movies;
-  console.log("historyData Home: ", historyData)
   return (
     <main className="min-h-screen">
       <Suspense fallback={<BannerSkeleton />}>
