@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useShallow } from "zustand/react/shallow";
 import { useStore } from "@/store/useStore";
+import useIsMobile from "@/hook/useIsMobile"
 
 const HistoryTontonan = () => {
   // const { setHistoryData } = useStore(
@@ -11,6 +12,9 @@ const HistoryTontonan = () => {
   //   }))
   // );
   const [mediaDataHistory, setMediaDataHistory] = useState<any[]>([]);
+  const isMobile = useIsMobile();
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
 
   useEffect(() => {
     // Ambil data dari localStorage dan konversi ke array
@@ -20,24 +24,6 @@ const HistoryTontonan = () => {
       setMediaDataHistory(Object.values(parsedData));
     }
 
-    // const handleMessage = (event: MessageEvent) => {
-    //   if (event.origin !== "https://vidlink.pro") return;
-
-    //   if (event.data?.type === "MEDIA_DATA") {
-    //     const mediaData = event.data.data;
-    //     const dataArray = Object.values(mediaData);
-
-    //     // Simpan sebagai objek ke localStorage
-    //     localStorage.setItem("vidLinkProgress", JSON.stringify(mediaData));
-    //     // Update state dengan array
-    //     setMediaDataHistory(dataArray);
-    //     console.log("event Home:", event);
-    //   }
-    // };
-
-    // window.addEventListener("message", handleMessage);
-
-    // return () => window.removeEventListener("message", handleMessage);
   }, []);
 
   const handleDelete = (mediaId: number, e: React.MouseEvent) => {
@@ -65,12 +51,60 @@ const HistoryTontonan = () => {
     return Math.round((watched / duration) * 100);
   };
 
+const handleScroll = (direction: "left" | "right") => {
+    const container = scrollContainerRef.current;
+    if (container) {
+      const scrollAmount = container.children[0]?.clientWidth + 16; // item width + gap (1rem = 16px)
+      container.scrollBy({
+        left: direction === "left" ? -scrollAmount : scrollAmount,
+        behavior: "smooth"
+      });
+    }
+  };
+
   if (!mediaDataHistory || mediaDataHistory.length === 0) return null;
 
   return (
     <div className="px-4 py-6">
+    <div className="flex justify-between">
       <h2 className="text-xl font-bold mb-4 text-gray-200">History Tontonan</h2>
-      <div className="flex space-x-4 overflow-x-auto pb-4 scrollbar-hide">
+      {!isMobile && mediaDataHistory.length > 5 && (
+        <>
+          <div className="relative">
+            <button
+              onClick={() => handleScroll("left")}
+              className=" z-20 bg-gradient-to-r from-gray-800/90 to-transparent rounded-l-md hover:from-gray-700/90 transition-all"
+            >
+              <svg
+                className="w-6 h-6 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <button
+              onClick={() => handleScroll("right")}
+              className=" z-20 bg-gradient-to-l from-gray-800/90 to-transparent rounded-r-md hover:from-gray-700/90 transition-all"
+            >
+              <svg
+                className="w-6 h-6 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </div>
+        </>
+      )}
+    </div>
+
+      
+
+      <div ref={scrollContainerRef} className="flex space-x-4 overflow-x-auto pb-4 scrollbar-hide">
         {mediaDataHistory?.map((media, index) => {
           const progressPercentage = calculateProgress(media);
           return (
@@ -113,19 +147,19 @@ const HistoryTontonan = () => {
                     {media.title}
                   </span>
                   <span className="text-gray-200 text-xs">
-                    Eps {media.last_episode_watched}
+                    {media.last_episode_watched ? `Eps${media.last_episode_watched}` : null}
                   </span>
                 </div>
               </div>
               <div className="p-2">
                 <div className="w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
                   <div
-            className="bg-blue-500 rounded-full h-full transition-all duration-300"
-            style={{ 
-              width: `${Math.max(1, Math.min(progressPercentage || 0, 100))}%`,
-              minWidth: '2px'
-            }}
-          />
+                    className="bg-blue-500 rounded-full h-full transition-all duration-300"
+                    style={{ 
+                      width: `${Math.max(1, Math.min(progressPercentage || 0, 100))}%`,
+                      minWidth: '2px'
+                    }}
+                  />
                 </div>
 
                 <p className="text-xs text-gray-500 mt-1">

@@ -395,7 +395,7 @@ const PersonCard = ({
           animate={{ opacity: isHovered ? 1 : 0 }}
         >
           <Link
-            href={`cast/${person.id}`}
+            href={`person/${person.id}`}
             className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 rounded-full shadow-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
           >
             <UserPlus className="w-5 h-5 text-purple-600 dark:text-purple-400" />

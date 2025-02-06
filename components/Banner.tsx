@@ -136,6 +136,7 @@ function Banner({ type }: { type: string }) {
                   : currentMovie.original_name
               }
               blurDataURL={`https://image.tmdb.org/t/p/w120${currentMovie.backdrop_path}`}
+              placeholder="blur"
               fill
               priority
               className="object-cover"
@@ -179,14 +180,16 @@ function Banner({ type }: { type: string }) {
           </p>
 
           <div className="flex gap-4">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="flex items-center gap-2 px-6 py-2 bg-white/90 text-slate-900 rounded-lg font-semibold hover:bg-white transition-colors hover:cursor-pointer"
-            >
-              <Play className="w-5 h-5 fill-current" />
-              Watch Now
-            </motion.button>
+            <Link href={`/${type}/${currentMovie.id}/watch`}>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="flex items-center gap-2 px-6 py-2 bg-white/90 text-slate-900 rounded-lg font-semibold hover:bg-white transition-colors hover:cursor-pointer"
+              >
+                <Play className="w-5 h-5 fill-current" />
+                Watch Now
+              </motion.button>
+            </Link>
             <Link href={`/${type}/${currentMovie.id}`}>
               <motion.button
                 whileHover={{ scale: 1.05 }}
@@ -254,11 +257,11 @@ function Banner({ type }: { type: string }) {
                 >
                   <div className={`relative w-40 h-24 overflow-hidden`}>
                     <Image
-                      src={`https://image.tmdb.org/t/p/w1280${movie.backdrop_path}`}
+                      src={`https://image.tmdb.org/t/p/w780${movie.backdrop_path}`}
                       alt={movie.title ?? movie.name ?? ""}
                       fill
                       className="object-cover"
-                      sizes="80px"
+                      // sizes="80px"
                     />
                     {index === activeIndex && (
                       <div className="absolute inset-0 bg-red-500/10" />
