@@ -13,9 +13,10 @@ export default function Icon() {
     (
       // ImageResponse JSX element
       <div
-      className="bg-slate-100 text-gray-300"
+      className="bg-slate-100"
         style={{
           fontSize: 24,
+          color: 'white',
           width: '100%',
           height: '100%',
           display: 'flex',

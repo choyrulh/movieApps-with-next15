@@ -8,8 +8,6 @@ import Link from "next/link";
 
 const WatchlistPage = () => {
   const { watchlist, removeFromWatchlist } = useWatchlistStore();
-  console.log("watchlist: ", watchlist);
-
   return (
     <div className="min-h-screen dark:bg-gray-900 p-8 pt-28">
       <div className="max-w-7xl mx-auto">
