@@ -25,6 +25,7 @@ const ProfileDropDown = ({ props }: any) => {
     document.addEventListener("click", handleDropDown);
   }, []);
 
+
   return (
     <div className={`relative ${props}`}>
       <Avatar className="flex items-center space-x-4">
@@ -110,14 +111,14 @@ export const Navbar = () => {
               </span>
             </Link>
             <div
-              className={`bg-slate-900/95 lg:bg-inherit absolute z-20 w-full top-16 left-0 p-4 border-b lg:static lg:block lg:border-none ${
+              className={`bg-slate-900/95 lg:bg-inherit absolute z-20 w-full top-16 left-0 p-4 border-b lg:static lg:block lg:border-none transition-all duration-300 ease-in-out ${
                 menuState ? "" : "hidden"
               }`}
             >
               <ul className=" space-y-5 lg:flex lg:space-x-6 lg:space-y-0 lg:mt-0">
                 {navigation.map((item, idx) => (
                   <li key={idx} className="text-gray-400 hover:text-gray-100">
-                    <Link href={item.path}>{item.title}</Link>
+                    <Link onClick={() => setMenuState(!menuState)} href={item.path}>{item.title}</Link>
                   </li>
                 ))}
               </ul>
