@@ -48,10 +48,7 @@ const WatchlistPage = () => {
             >
               <AnimatePresence>
                 {watchlist.map((item: any) => (
-                  <Link
-                    key={item.id}
-                    href={`/${item.media_type}/${item.id}`}
-                  >
+                 
                     <motion.div
                       key={item.id}
                       layout
@@ -67,20 +64,23 @@ const WatchlistPage = () => {
                       >
                         <Trash2 className="w-5 h-5 text-red-800 dark:text-gray-200 hover:text-white" />
                       </button>
-
-                      <div className="relative aspect-[2/3]">
-                        <Image
-                          src={
-                            item.poster_path
-                              ? `https://image.tmdb.org/t/p/w500${item.poster_path}`
-                              : "/placeholder.png"
-                          }
-                          alt={item.title || item.name}
-                          fill
-                          className="object-cover"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                      </div>
+                       <Link
+                          href={`/${item.media_type}/${item.id}`}
+                        >
+                          <div className="relative aspect-[2/3]">
+                            <Image
+                              src={
+                                item.poster_path
+                                  ? `https://image.tmdb.org/t/p/w500${item.poster_path}`
+                                  : "/placeholder.png"
+                              }
+                              alt={item.title || item.name}
+                              fill
+                              className="object-cover"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                          </div>
+                        </Link>
 
                       <div className="p-3">
                         <h3 className="font-semibold text-gray-300 dark:text-white truncate">
@@ -100,7 +100,7 @@ const WatchlistPage = () => {
                         </div>
                       </div>
                     </motion.div>
-                  </Link>
+                  
                 ))}
               </AnimatePresence>
             </motion.div>

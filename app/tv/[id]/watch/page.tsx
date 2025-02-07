@@ -5,16 +5,13 @@ import { useStore } from "@/store/useStore";
 import { useQuery } from "@tanstack/react-query";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useShallow } from "zustand/react/shallow";
+import Link from "next/link";
+
 
 function page() {
   const pathname = usePathname();
   const id = pathname.split("/")[2];
-  const { historyData } = useStore(
-    useShallow((state) => ({
-      historyData: state.historyData,
-    }))
-  );
+
   const [season, setSeason] = useState("1");
   const [episode, setEpisode] = useState("1");
   const [mediaDataHistory, setMediaDataHistory] = useState<any>();
@@ -46,11 +43,14 @@ function page() {
 
   // Construct the video URL directly
   const videoUrl = `https://vidlink.pro/tv/${id}/${season}/${episode}`;
-  // const videoUrl = `https://vidlink.pro/tv/${id}/1/1`;
+  console.log("data: ", data)
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">
       <main className="max-w-7xl mx-auto px-4 pt-28 space-y-4">
+        <Link href={`/tv/${data?.id}`}>
+          <h2 className="text-white text-lg">{data?.name}</h2>
+        </Link>
         {/* Season and Episode Controls */}
         <div className="flex flex-col gap-4">
           {data && (
