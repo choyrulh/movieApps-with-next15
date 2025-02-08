@@ -111,40 +111,42 @@ const HighlightPerson = ({ person }: { person: Person }) => {
 
       <div className="relative flex flex-col md:flex-row items-center p-8 gap-8 backdrop-blur-sm">
         {/* Profile Image */}
-        <motion.div
-          whileHover="hover"
-          className="relative w-48 h-48 rounded-2xl overflow-hidden border-4 border-white/20 shadow-2xl"
-        >
-          <Image
-            src={`https://image.tmdb.org/t/p/w500${person.profile_path}`}
-            alt={person.name}
-            width={200}
-            height={200}
-            className="object-cover transform group-hover:scale-105 transition-transform duration-500"
-          />
+        <Link href={`/person/${person.id}`}>
           <motion.div
-            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-0 group-hover:opacity-40"
-            initial={{ x: "-100%" }}
-            animate={{
-              x: glowPosition.x > 50 ? "100%" : "-100%",
-              opacity: [0, 0.4, 0],
-            }}
-            transition={{
-              duration: 1.5,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-          />
-
-          {/* Popularity rank badge */}
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            className="absolute bottom-2 right-2 bg-white/90 text-purple-600 px-2 py-1 rounded-full text-xs font-bold shadow-lg"
+            whileHover="hover"
+            className="relative w-48 h-48 rounded-2xl overflow-hidden border-4 border-white/20 shadow-2xl"
           >
-            Top #{Math.floor(1000 / person.popularity)}
+            <Image
+              src={`https://image.tmdb.org/t/p/w500${person.profile_path}`}
+              alt={person.name}
+              width={200}
+              height={200}
+              className="object-cover transform group-hover:scale-105 transition-transform duration-500"
+            />
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-0 group-hover:opacity-40"
+              initial={{ x: "-100%" }}
+              animate={{
+                x: glowPosition.x > 50 ? "100%" : "-100%",
+                opacity: [0, 0.4, 0],
+              }}
+              transition={{
+                duration: 1.5,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            />
+
+            {/* Popularity rank badge */}
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              className="absolute bottom-2 right-2 bg-white/90 text-purple-600 px-2 py-1 rounded-full text-xs font-bold shadow-lg"
+            >
+              Top #{Math.floor(1000 / person.popularity)}
+            </motion.div>
           </motion.div>
-        </motion.div>
+        </Link>
 
         {/* Content Section */}
         <div className="flex-1 space-y-6">
