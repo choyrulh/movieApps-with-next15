@@ -6,6 +6,7 @@ import { useState, useRef, useEffect, Suspense } from "react";
 import { Skeleton } from "./skeleton";
 import { usePathname } from "next/navigation";
 import { BookmarkPlus, Clapperboard } from "lucide-react";
+import useIsMobile from "@/hook/useIsMobile"
 
 const navigation = [
   { title: "Dashboard", path: "/dashboard" },
@@ -16,6 +17,7 @@ const navigation = [
 // Profile Dropdown
 const ProfileDropDown = ({ props }: any) => {
   const [state, setState] = useState(false);
+  const isMobile = useIsMobile();
 
   const profileRef: any = useRef();
   useEffect(() => {
@@ -25,16 +27,16 @@ const ProfileDropDown = ({ props }: any) => {
     document.addEventListener("click", handleDropDown);
   }, []);
 
-
   return (
     <div className={`relative ${props}`}>
-      <Avatar className="flex items-center space-x-4">
+      <Avatar className={`flex items-center space-x-4  ${isMobile ? "flex-row-reverse gap-4" : "flex-row"}`}>
         <button
           ref={profileRef}
           className="w-10 h-10 outline-none rounded-full ring-offset-2 ring-gray-200 ring-2 lg:focus:ring-indigo-600"
           onClick={() => setState(!state)}
         >
           <AvatarImage
+            alt="profile picture"
             src="https://github.com/shadcn.png"
             width={40}
             height={40}
@@ -72,6 +74,7 @@ const ProfileDropDown = ({ props }: any) => {
 export const Navbar = () => {
   const [menuState, setMenuState] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const isMobile = useIsMobile();
 
   const pathname = usePathname();
 
@@ -86,7 +89,7 @@ export const Navbar = () => {
 
   const navigation = [
     { title: "Home", path: "/" },
-    { title: "TV/Show", path: "/show" },
+    { title: "TV/Show", path: "/tv" },
     { title: "Cast", path: "/person" },
     { title: "Search", path: "/search" },
     { title: "Contact", path: "/contact" },
@@ -111,18 +114,23 @@ export const Navbar = () => {
               </span>
             </Link>
             <div
-              className={`bg-slate-900/95 lg:bg-inherit absolute z-20 w-full top-16 left-0 p-4 border-b lg:static lg:block lg:border-none transition-all duration-300 ease-in-out ${
+              className={`bg-slate-900/95 lg:bg-inherit absolute z-20 w-full top-16 left-0 p-4 border-b lg:static lg:block lg:border-none transition-all duration-300 ease-in-out ${isMobile ? "text-end" : "unset"} ${
                 menuState ? "" : "hidden"
               }`}
             >
               <ul className=" space-y-5 lg:flex lg:space-x-6 lg:space-y-0 lg:mt-0">
                 {navigation.map((item, idx) => (
                   <li key={idx} className="text-gray-400 hover:text-gray-100">
-                    <Link onClick={() => setMenuState(!menuState)} href={item.path}>{item.title}</Link>
+                    <Link
+                      onClick={() => setMenuState(!menuState)}
+                      href={item.path}
+                    >
+                      {item.title}
+                    </Link>
                   </li>
                 ))}
               </ul>
-              <ProfileDropDown props="mt-5 pt-5 border-t lg:hidden " />
+              <ProfileDropDown props={`mt-5 pt-5 border-t lg:hidden ${isMobile ? "justify-self-end" : "unset" } `} />
             </div>
             <div className="flex-1 flex items-center justify-end space-x-2 sm:space-x-6">
               <Link href={"/watch-list"}>

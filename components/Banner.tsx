@@ -226,7 +226,11 @@ function Banner({ type }: { type: string }) {
       </div>
 
       {/* Slide Indicators */}
-      <div className={`absolute bottom-8 ${isMobile ? "right-[12rem]" : "right-[18rem]"} h-32 z-50`}>
+      <div
+        className={`absolute bottom-8 ${
+          isMobile ? "right-[12rem]" : "right-[18rem]"
+        } h-32 z-50`}
+      >
         <div className="relative max-w-4xl mx-auto">
           {/* Center highlight zone */}
           <div className="absolute left-1/2 -translate-x-1/2 w-24 h-32 bg-black/20 backdrop-blur-sm rounded-lg z-10" />
