@@ -12,6 +12,7 @@ export interface Movie {
   release_date: string;
   first_air_date?: string;
   last_air_date?: string;
+  media_type?: string;
   number_of_episodes?: number;
   number_of_seasons?: number;
   next_episode_to_air: {
