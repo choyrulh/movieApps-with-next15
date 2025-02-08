@@ -43,7 +43,6 @@ function page() {
 
   // Construct the video URL directly
   const videoUrl = `https://vidlink.pro/tv/${id}/${season}/${episode}`;
-  console.log("data: ", data)
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">

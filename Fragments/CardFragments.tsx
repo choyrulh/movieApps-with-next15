@@ -26,7 +26,6 @@ function CardFragments() {
     retry: 2,
   });
   const data = movies;
-  console.log("data1:", movies);
 
   return (
     <div>

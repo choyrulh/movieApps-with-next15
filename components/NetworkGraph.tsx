@@ -18,7 +18,6 @@ export const NetworkGraph = ({ people }: { people: Person[] }) => {
       .slice(0, 2),
     recentFilms: 3 + Math.floor(Math.random() * 4), // Random number of recent films
   }));
-  console.log("actorDetails", actorDetails);
 
   return (
     <motion.div
