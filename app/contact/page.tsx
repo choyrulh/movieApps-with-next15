@@ -28,7 +28,7 @@ const ContactPage = () => {
                 type="text"
                 required
                 className="w-full bg-gray-700 rounded-lg border border-gray-600 px-4 py-3 focus:outline-none focus:border-red-500 transition-colors"
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                onChange={(e: any) => setFormData({ ...formData, name: e.target.value })}
               />
             </div>
 
@@ -38,17 +38,17 @@ const ContactPage = () => {
                 type="email"
                 required
                 className="w-full bg-gray-700 rounded-lg border border-gray-600 px-4 py-3 focus:outline-none focus:border-red-500 transition-colors"
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                onChange={(e: any) => setFormData({ ...formData, email: e.target.value })}
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium mb-2">Message</label>
               <textarea
-                rows="4"
+                rows={4}
                 required
                 className="w-full bg-gray-700 rounded-lg border border-gray-600 px-4 py-3 focus:outline-none focus:border-red-500 transition-colors"
-                onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                onChange={(e: any) => setFormData({ ...formData, message: e.target.value })}
               ></textarea>
             </div>
 
