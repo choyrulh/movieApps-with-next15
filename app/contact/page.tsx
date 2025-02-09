@@ -9,7 +9,7 @@ const ContactPage = () => {
     message: ''
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: any) => {
     e.preventDefault();
     // Handle form submission
     console.log(formData);
