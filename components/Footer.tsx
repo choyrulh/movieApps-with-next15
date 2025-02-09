@@ -37,7 +37,7 @@ const Footer = () => {
   ];
 
   return (
-    <footer className=" pt-20 relative overflow-hidden">
+    <footer className="relative overflow-hidden">
       {/* Animated background elements */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute w-[500px] h-[500px] bg-purple-500/30 rounded-full -top-60 -left-60 blur-3xl animate-pulse" />
@@ -45,11 +45,11 @@ const Footer = () => {
       </div>
 
       {/* Trending marquee */}
-      <div className="border-y border-white/5">
+      <div>
         <Marquee
           speed={80}
           pauseOnHover
-          className="py-3 bg-gradient-to-r from-purple-500/20 to-blue-500/20"
+          className="py-3 backdrop-blur-md"
         >
           <div className="flex items-center gap-8 px-4">
             <span className="text-sm text-white/80">Now Trending:</span>

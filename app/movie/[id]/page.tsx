@@ -18,11 +18,13 @@ import {
   GlobeAltIcon,
 } from "@heroicons/react/24/solid";
 import GoWatchButton from "@/components/ui/GoWatchButton";
+import useIsMobile from "@/hook/useIsMobile";
 
 function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const [activeTab, setActiveTab] = useState("financials");
   const [visibleCasts, setVisibleCasts] = useState(12);
+  const isMobile = useIsMobile();
 
   const {
     data: movie,
@@ -92,13 +94,13 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
         <meta name="description" content={movie.overview} />
       </Head>
 
-      <div className="min-h-screen bg-slate-900">
+      <div className="min-h-screen bg-slate-900 pb-[5rem]">
         <main>
           {/* Backdrop Image */}
-          <div className="relative h-[31rem] md:h-[35rem] lg:h-[45rem] pb-8">
+          <div className="relative h-[100vh] pb-8">
             {movie.backdrop_path && (
               <Image
-                src={`https://image.tmdb.org/t/p/original${movie.backdrop_path}`}
+                src={`https://image.tmdb.org/t/p/original${isMobile ? movie.poster_path : movie.backdrop_path}`}
                 alt={movie.title ?? movie.name ?? ""}
                 fill
                 priority
@@ -108,8 +110,8 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
           </div>
 
           {/* Movie Content */}
-          <div className="container mx-auto px-4 lg:-mt-[26rem] sm:-mt-[14rem] md:-mt-[16rem] relative z-10">
-            <div className="flex flex-col md:flex-row gap-8 -mt-[12rem] sm:-mt-unset">
+          <div className="container mx-auto px-4 lg:-mt-[34rem] sm:-mt-[22rem] md:-mt-[24rem] relative z-10">
+            <div className="flex flex-col md:flex-row gap-8 -mt-[34rem] sm:-mt-unset">
               {/* Poster */}
               <div className="w-auto self-center sm:self-auto">
                 <div className="relative h-[18rem] lg:h-[30rem] sm:h-[18rem] md:[22rem] lg:w-[20rem] w-[12rem] sm:w-[12rem] md:w-[16rem] rounded-xl overflow-hidden shadow-xl">
