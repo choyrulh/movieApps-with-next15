@@ -3,10 +3,13 @@
 import { useWatchlistStore, WatchlistItem } from "@/store/useWatchListStore";
 import { Bookmark, Check } from "lucide-react";
 import { motion } from "framer-motion";
+import useIsMobile from "@/hook/useIsMobile"
 
 export const AddToWatchListButton = ({ item }: { item: WatchlistItem }) => {
   const { watchlist, addToWatchlist, removeFromWatchlist } =
     useWatchlistStore();
+    const isMobile = useIsMobile();
+
   const isInWatchlist = watchlist.some((i) => i.id === item.id);
 
   return (
@@ -30,7 +33,7 @@ export const AddToWatchListButton = ({ item }: { item: WatchlistItem }) => {
       ) : (
         <>
           <Bookmark className="w-5 h-5" />
-          <span>Add to Watchlist</span>
+          <span>{isMobile ? "watchlist" : "Add to Watchlist"}</span>
         </>
       )}
     </motion.button>

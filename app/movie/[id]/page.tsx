@@ -109,10 +109,10 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
 
           {/* Movie Content */}
           <div className="container mx-auto px-4 lg:-mt-[26rem] sm:-mt-[14rem] md:-mt-[16rem] relative z-10">
-            <div className="flex flex-col md:flex-row gap-8">
+            <div className="flex flex-col md:flex-row gap-8 -mt-[12rem] sm:-mt-unset">
               {/* Poster */}
-              <div className="w-auto">
-                <div className="relative lg:h-[30rem] sm:h-[18rem] md:[22rem] lg:w-[20rem] sm:w-[12rem] md:w-[16rem] rounded-xl overflow-hidden shadow-xl">
+              <div className="w-auto self-center sm:self-auto">
+                <div className="relative h-[18rem] lg:h-[30rem] sm:h-[18rem] md:[22rem] lg:w-[20rem] w-[12rem] sm:w-[12rem] md:w-[16rem] rounded-xl overflow-hidden shadow-xl">
                   {movie.poster_path && (
                     <Image
                       src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
