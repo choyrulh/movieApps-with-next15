@@ -19,6 +19,7 @@ import {
 import { AddToWatchListButton } from "@/components/AddWatchListButton";
 import GoWatchButton from "@/components/ui/GoWatchButton";
 import useIsMobile from "@/hook/useIsMobile";
+import Link from "next/link";
 
 function DetailShow({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -577,10 +578,17 @@ function DetailShow({ params }: { params: Promise<{ id: string }> }) {
                                 </div>
                               </div>
 
+                              {/* View Detail Button */}
+                              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <Link href={`/person/${member.id}`} className="px-4 py-2 bg-cyan-500/90 text-white rounded-lg hover:bg-cyan-600 backdrop-blur-sm transition-colors duration-300 shadow-lg transform hover:scale-105">
+                                  View Details
+                                </Link>
+                              </div>
+
                               {/* Hover Border Effect */}
                               <div className="absolute inset-0 rounded-2xl border-2 border-transparent transition-all duration-300 group-hover:border-cyan-400/30 pointer-events-none" />
                             </div>
-                          ))}
+                        ))}
                         {casts?.cast?.length > visibleCasts && (
                           <div className="flex justify-center mt-8">
                             <button
