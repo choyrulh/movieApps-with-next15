@@ -37,7 +37,7 @@ const PersonDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
       new Date(b.release_date || b.first_air_date).getTime() -
       new Date(a.release_date || a.first_air_date).getTime()
   );
-  const tabs = useMemo(() => ["movies", "tv"], []);
+  const tabs = ["movies", "tv"];
   const handleClick = (
     tab: "movies" | "tv",
     setActiveTab: (tab: "movies" | "tv") => void

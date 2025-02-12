@@ -203,11 +203,7 @@ const SearchResultsPage = () => {
             >
               {data?.results?.map((movie: Movie, index: number) => (
                 <Link
-                  href={`/${
-                    movie.media_type || selectedType === "person"
-                      ? "person"
-                      : null
-                  }/${movie.id}`}
+                  href={`/${movie.media_type}/${movie.id}`}
                   key={movie.id}
                 >
                   <motion.div
