@@ -17,6 +17,7 @@ import {
 import Link from "next/link";
 import { useState } from "react";
 import Marquee from "./common/Marquee";
+import { TitleText } from "./TitleText";
 
 const Footer = () => {
   const [email, setEmail] = useState("");
@@ -46,11 +47,7 @@ const Footer = () => {
 
       {/* Trending marquee */}
       <div>
-        <Marquee
-          speed={80}
-          pauseOnHover
-          className="py-3 backdrop-blur-md"
-        >
+        <Marquee speed={80} pauseOnHover className="py-3 backdrop-blur-md">
           <div className="flex items-center gap-8 px-4">
             <span className="text-sm text-white/80">Now Trending:</span>
             {[
@@ -80,9 +77,7 @@ const Footer = () => {
               className="flex items-center gap-2"
             >
               <Clapperboard className="w-8 h-8 text-purple-400" />
-              <span className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
-                SlashVerse
-              </span>
+              <TitleText />
             </motion.div>
             <p className="text-sm text-gray-400">
               Your gateway to the cinematic universe. Explore, discover, and

@@ -223,3 +223,11 @@ body {
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
+
+.text-gradient {
+  background: linear-gradient(to right, #a78bfa, #60a5fa);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  will-change: background;
+}

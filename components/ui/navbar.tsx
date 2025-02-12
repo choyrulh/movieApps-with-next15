@@ -2,17 +2,20 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import Link from "next/link";
-import { useState, useRef, useEffect, Suspense } from "react";
+import { useState, useRef, useEffect, Suspense, memo } from "react";
 import { Skeleton } from "./skeleton";
 import { usePathname } from "next/navigation";
 import { BookmarkPlus, Clapperboard } from "lucide-react";
-import useIsMobile from "@/hook/useIsMobile"
+import useIsMobile from "@/hook/useIsMobile";
+import { TitleText } from "./../TitleText";
 
 const navigation = [
   { title: "Dashboard", path: "/dashboard" },
   { title: "Settings", path: "/settings" },
   { title: "Log out", path: "/" },
 ];
+
+const MemoizedBookmarkIcon = memo(BookmarkPlus);
 
 // Profile Dropdown
 const ProfileDropDown = ({ props }: any) => {
@@ -29,7 +32,11 @@ const ProfileDropDown = ({ props }: any) => {
 
   return (
     <div className={`relative ${props}`}>
-      <Avatar className={`flex items-center space-x-4  ${isMobile ? "flex-row-reverse gap-4" : "flex-row"}`}>
+      <Avatar
+        className={`flex items-center space-x-4  ${
+          isMobile ? "flex-row-reverse gap-4" : "flex-row"
+        }`}
+      >
         <button
           ref={profileRef}
           className="w-10 h-10 outline-none rounded-full ring-offset-2 ring-gray-200 ring-2 lg:focus:ring-indigo-600"
@@ -59,7 +66,7 @@ const ProfileDropDown = ({ props }: any) => {
         {navigation.map((item, idx) => (
           <li key={idx}>
             <Link
-              className="block text-gray-600 lg:hover:bg-gray-50 lg:p-2.5"
+              className="block text-gray-200 lg:hover:bg-gray-50 lg:p-2.5"
               href={item.path}
             >
               {item.title}
@@ -109,14 +116,12 @@ export const Navbar = () => {
           <div className="flex-1 flex items-center justify-between">
             <Link href={"/"} className="flex items-center gap-2">
               <Clapperboard className="w-8 h-8 text-purple-400" />
-              <span className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
-                SlashVerse
-              </span>
+              <TitleText />
             </Link>
             <div
-              className={`bg-slate-900/95 lg:bg-inherit absolute z-20 w-full top-16 left-0 p-4 border-b lg:static lg:block lg:border-none transition-all duration-300 ease-in-out ${isMobile ? "text-end" : "unset"} ${
-                menuState ? "" : "hidden"
-              }`}
+              className={`bg-slate-900/95 lg:bg-inherit absolute z-20 w-full top-16 left-0 p-4 border-b lg:static lg:block lg:border-none transition-all duration-300 ease-in-out ${
+                isMobile ? "text-end" : "unset"
+              } ${menuState ? "" : "hidden"}`}
             >
               <ul className=" space-y-5 lg:flex lg:space-x-6 lg:space-y-0 lg:mt-0">
                 {navigation.map((item, idx) => (
@@ -130,11 +135,15 @@ export const Navbar = () => {
                   </li>
                 ))}
               </ul>
-              <ProfileDropDown props={`mt-5 pt-5 border-t lg:hidden ${isMobile ? "justify-self-end" : "unset" } `} />
+              <ProfileDropDown
+                props={`mt-5 pt-5 border-t lg:hidden ${
+                  isMobile ? "justify-self-end" : "unset"
+                } `}
+              />
             </div>
             <div className="flex-1 flex items-center justify-end space-x-2 sm:space-x-6">
-              <Link href={"/watch-list"}>
-                <BookmarkPlus className="w-6 h-6 text-gray-400" />
+              <Link href={"/watch-list"} prefetch={false}>
+                <MemoizedBookmarkIcon className="w-6 h-6 text-gray-400" />
               </Link>
               <ProfileDropDown props="hidden lg:block" />
               <button

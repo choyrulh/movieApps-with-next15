@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, use } from "react";
+import { useState, use, useMemo } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { getCreditPerson, getDetailPerson } from "@/Service/fetchMovie";
@@ -37,6 +37,13 @@ const PersonDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
       new Date(b.release_date || b.first_air_date).getTime() -
       new Date(a.release_date || a.first_air_date).getTime()
   );
+  const tabs = useMemo(() => ["movies", "tv"], []);
+  const handleClick = (
+    tab: "movies" | "tv",
+    setActiveTab: (tab: "movies" | "tv") => void
+  ) => {
+    setActiveTab(tab);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
@@ -96,10 +103,12 @@ const PersonDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
           className="space-y-6"
         >
           <div className="flex gap-4 border-b border-gray-200 dark:border-gray-700">
-            {["movies", "tv"].map((tab) => (
+            {tabs.map((tab) => (
               <button
                 key={tab}
-                onClick={() => setActiveTab(tab as "movies" | "tv")}
+                onClick={() =>
+                  handleClick(tab as "movies" | "tv", setActiveTab)
+                }
                 className={`px-6 py-2 text-lg font-medium ${
                   activeTab === tab
                     ? "border-b-2 border-purple-600 text-purple-600 dark:text-purple-400"

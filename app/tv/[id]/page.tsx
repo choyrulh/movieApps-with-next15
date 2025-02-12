@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { getCastsDetailShow, getDetailShow } from "@/Service/fetchMovie";
 import { Genre, Movie, Video } from "@/types/movie.";
-import { Suspense, use, useState } from "react";
+import { memo, Suspense, use, useMemo, useState } from "react";
 import { Loader } from "@/components/common/Loader";
 import Head from "next/head";
 import Image from "next/image";
@@ -25,7 +25,7 @@ function DetailShow({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const [activeTab, setActiveTab] = useState("details");
   const [visibleCasts, setVisibleCasts] = useState(12);
-  const isMobile = useIsMobile(); 
+  const isMobile = useIsMobile();
 
   const {
     data: show,
@@ -88,6 +88,62 @@ function DetailShow({ params }: { params: Promise<{ id: string }> }) {
     );
   }
 
+  const TabButton = memo(
+  ({
+    tab,
+    activeTab,
+    onClick,
+  }: {
+    tab: string;
+    activeTab: string;
+    onClick: (tab: string) => void;
+  }) => {
+    const isActive = activeTab === tab.toLowerCase();
+
+    return (
+      <button
+        onClick={() => onClick(tab.toLowerCase())}
+        className={`relative px-4 py-2 text-sm font-medium transition-all duration-300 ${
+          isActive ? "text-cyan-400" : "text-slate-400 hover:text-slate-300"
+        }`}
+      >
+        {tab}
+        {isActive && (
+          <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-cyan-400 animate-underline" />
+        )}
+      </button>
+    );
+  }
+);
+
+function Tabs() {
+  // Gunakan useMemo agar daftar tab tidak dihitung ulang di setiap render
+  const tabs = useMemo(
+    () => [
+      "Details",
+      "Financials",
+      "Production",
+      "Languages",
+      "Status",
+      "Cast",
+    ],
+    []
+  );
+
+  return (
+    <div className="flex space-x-4 overflow-x-auto pb-2 scrollbar-hide">
+      {tabs.map((tab) => (
+        <TabButton
+          key={tab}
+          tab={tab}
+          activeTab={activeTab}
+          onClick={setActiveTab}
+        />
+      ))}
+    </div>
+  );
+}
+
   return (
     <>
       <Head>
@@ -101,7 +157,9 @@ function DetailShow({ params }: { params: Promise<{ id: string }> }) {
           <div className="relative h-[100vh]">
             {show.backdrop_path && (
               <Image
-                src={`https://image.tmdb.org/t/p/original${isMobile ? show.poster_path : show.backdrop_path}`}
+                src={`https://image.tmdb.org/t/p/original${
+                  isMobile ? show.poster_path : show.backdrop_path
+                }`}
                 alt={show.title ?? show.name ?? ""}
                 fill
                 priority
@@ -189,31 +247,7 @@ function DetailShow({ params }: { params: Promise<{ id: string }> }) {
             <div className="mt-8 bg-slate-800/10 shadow-lg backdrop-blur-lg rounded-2xl p-6 border border-white/10">
               {/* Tab Headers with Animated Underline */}
               <div className="relative mb-8">
-                <div className="flex space-x-4 overflow-x-auto pb-2 scrollbar-hide">
-                  {[
-                    "Details",
-                    "Financials",
-                    "Production",
-                    "Languages",
-                    "Status",
-                    "Cast",
-                  ].map((tab) => (
-                    <button
-                      key={tab}
-                      onClick={() => setActiveTab(tab.toLowerCase())}
-                      className={`relative px-4 py-2 text-sm font-medium transition-all duration-300 ${
-                        activeTab === tab.toLowerCase()
-                          ? "text-cyan-400"
-                          : "text-slate-400 hover:text-slate-300"
-                      }`}
-                    >
-                      {tab}
-                      {activeTab === tab.toLowerCase() && (
-                        <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-cyan-400 animate-underline" />
-                      )}
-                    </button>
-                  ))}
-                </div>
+                <Tabs />
                 <div className="absolute bottom-0 left-0 right-0 h-px bg-white/10" />
               </div>
 
@@ -580,7 +614,10 @@ function DetailShow({ params }: { params: Promise<{ id: string }> }) {
 
                               {/* View Detail Button */}
                               <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                <Link href={`/person/${member.id}`} className="px-4 py-2 bg-cyan-500/90 text-white rounded-lg hover:bg-cyan-600 backdrop-blur-sm transition-colors duration-300 shadow-lg transform hover:scale-105">
+                                <Link
+                                  href={`/person/${member.id}`}
+                                  className="px-4 py-2 bg-cyan-500/90 text-white rounded-lg hover:bg-cyan-600 backdrop-blur-sm transition-colors duration-300 shadow-lg transform hover:scale-105"
+                                >
                                   View Details
                                 </Link>
                               </div>
@@ -588,7 +625,7 @@ function DetailShow({ params }: { params: Promise<{ id: string }> }) {
                               {/* Hover Border Effect */}
                               <div className="absolute inset-0 rounded-2xl border-2 border-transparent transition-all duration-300 group-hover:border-cyan-400/30 pointer-events-none" />
                             </div>
-                        ))}
+                          ))}
                         {casts?.cast?.length > visibleCasts && (
                           <div className="flex justify-center mt-8">
                             <button
@@ -630,3 +667,5 @@ function DetailShow({ params }: { params: Promise<{ id: string }> }) {
 }
 
 export default DetailShow;
+
+
