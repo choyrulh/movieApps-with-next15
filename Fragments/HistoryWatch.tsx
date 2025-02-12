@@ -15,7 +15,6 @@ const HistoryTontonan = () => {
   const isMobile = useIsMobile();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-
   useEffect(() => {
     // Ambil data dari localStorage dan konversi ke array
     const localData = localStorage.getItem("vidLinkProgress");
@@ -23,7 +22,6 @@ const HistoryTontonan = () => {
       const parsedData = JSON.parse(localData);
       setMediaDataHistory(Object.values(parsedData));
     }
-
   }, []);
 
   const handleDelete = (mediaId: number, e: React.MouseEvent) => {
@@ -51,13 +49,13 @@ const HistoryTontonan = () => {
     return Math.round((watched / duration) * 100);
   };
 
-const handleScroll = (direction: "left" | "right") => {
+  const handleScroll = (direction: "left" | "right") => {
     const container = scrollContainerRef.current;
     if (container) {
       const scrollAmount = container.children[0]?.clientWidth + 16; // item width + gap (1rem = 16px)
       container.scrollBy({
         left: direction === "left" ? -scrollAmount : scrollAmount,
-        behavior: "smooth"
+        behavior: "smooth",
       });
     }
   };
@@ -66,45 +64,58 @@ const handleScroll = (direction: "left" | "right") => {
 
   return (
     <div className="px-4 py-6">
-    <div className="flex justify-between">
-      <h2 className="text-xl font-bold mb-4 text-gray-200">History Tontonan</h2>
-      {!isMobile && mediaDataHistory.length > 5 && (
-        <>
-          <div className="relative">
-            <button
-              onClick={() => handleScroll("left")}
-              className=" z-20 bg-gradient-to-r from-gray-800/90 to-transparent rounded-l-md hover:from-gray-700/90 transition-all"
-            >
-              <svg
-                className="w-6 h-6 text-white"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+      <div className="flex justify-between">
+        <h2 className="text-xl font-bold mb-4 text-gray-200">
+          History Tontonan
+        </h2>
+        {!isMobile && mediaDataHistory.length > 5 && (
+          <>
+            <div className="relative">
+              <button
+                onClick={() => handleScroll("left")}
+                className=" z-20 bg-gradient-to-r from-gray-800/90 to-transparent rounded-l-md hover:from-gray-700/90 transition-all"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-            </button>
-            <button
-              onClick={() => handleScroll("right")}
-              className=" z-20 bg-gradient-to-l from-gray-800/90 to-transparent rounded-r-md hover:from-gray-700/90 transition-all"
-            >
-              <svg
-                className="w-6 h-6 text-white"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+                <svg
+                  className="w-6 h-6 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 19l-7-7 7-7"
+                  />
+                </svg>
+              </button>
+              <button
+                onClick={() => handleScroll("right")}
+                className=" z-20 bg-gradient-to-l from-gray-800/90 to-transparent rounded-r-md hover:from-gray-700/90 transition-all"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
-          </div>
-        </>
-      )}
-    </div>
+                <svg
+                  className="w-6 h-6 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+              </button>
+            </div>
+          </>
+        )}
+      </div>
 
-      
-
-      <div ref={scrollContainerRef} className="flex space-x-4 overflow-x-auto pb-4 scrollbar-hide">
+      <div
+        ref={scrollContainerRef}
+        className="flex space-x-4 overflow-x-auto pb-4 scrollbar-hide"
+      >
         {mediaDataHistory?.map((media, index) => {
           const progressPercentage = calculateProgress(media);
           return (
@@ -116,7 +127,9 @@ const handleScroll = (direction: "left" | "right") => {
               {/* Delete Button */}
               <button
                 onClick={(e) => handleDelete(media.id, e)}
-                className={`absolute top-1 left-1 z-10 p-1 bg-black/50 rounded-full hover:bg-black/80 transition-colors ${isMobile ? "opacity-100" : "opacity-0"} group-hover:opacity-100`}
+                className={`absolute top-1 left-1 z-10 p-1 bg-black/50 rounded-full hover:bg-black/80 transition-colors ${
+                  isMobile ? "opacity-100" : "opacity-0"
+                } group-hover:opacity-100`}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -136,7 +149,7 @@ const handleScroll = (direction: "left" | "right") => {
 
               <div className="relative h-32 rounded-t-lg overflow-hidden">
                 <Image
-                  src={`https://image.tmdb.org/t/p/original${media.backdrop_path}`}
+                  src={`https://image.tmdb.org/t/p/w780${media.backdrop_path}`}
                   alt={media.title}
                   layout="fill"
                   objectFit="cover"
@@ -147,7 +160,9 @@ const handleScroll = (direction: "left" | "right") => {
                     {media.title}
                   </span>
                   <span className="text-gray-200 text-xs">
-                    {media.last_episode_watched ? `Eps: ${media.last_episode_watched}` : null}
+                    {media.last_episode_watched
+                      ? `Eps: ${media.last_episode_watched}`
+                      : null}
                   </span>
                 </div>
               </div>
@@ -155,9 +170,12 @@ const handleScroll = (direction: "left" | "right") => {
                 <div className="w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
                   <div
                     className="bg-blue-500 rounded-full h-full transition-all duration-300"
-                    style={{ 
-                      width: `${Math.max(1, Math.min(progressPercentage || 0, 100))}%`,
-                      minWidth: '2px'
+                    style={{
+                      width: `${Math.max(
+                        1,
+                        Math.min(progressPercentage || 0, 100)
+                      )}%`,
+                      minWidth: "2px",
                     }}
                   />
                 </div>

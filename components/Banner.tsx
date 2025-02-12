@@ -131,7 +131,9 @@ function Banner({ type }: { type: string }) {
           {/* Background Image with Gradient Overlay */}
           {currentMovie.backdrop_path && (
             <Image
-              src={`https://image.tmdb.org/t/p/original${isMobile ? currentMovie.poster_path : currentMovie.backdrop_path }`}
+              src={`https://image.tmdb.org/t/p/original${
+                isMobile ? currentMovie.poster_path : currentMovie.backdrop_path
+              }`}
               alt={
                 currentMovie.title
                   ? currentMovie.title
@@ -156,7 +158,7 @@ function Banner({ type }: { type: string }) {
           transition={{ duration: 0.8 }}
           className="max-w-2xl space-y-4 text-white"
         >
-          <h1 className="text-3xl md:text-5xl font-bold drop-shadow-2xl">
+          <h1 className="text-xl md:text-5xl font-bold drop-shadow-2xl">
             {currentMovie.title ? currentMovie.title : currentMovie.name}
           </h1>
 
