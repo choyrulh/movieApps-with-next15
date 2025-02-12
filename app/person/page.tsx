@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { memo, useMemo, useState } from "react";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
@@ -411,6 +411,36 @@ const PersonCard = ({
   );
 };
 
+const MemoizedFilterIcon = memo(Filter);
+
+const DepartmentButton = memo(
+  ({
+    dept,
+    isSelected,
+    onClick,
+  }: {
+    dept: string;
+    isSelected: boolean;
+    onClick: (dept: string) => void;
+  }) => {
+    return (
+      <motion.button
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        onClick={() => onClick(dept)}
+        className={`px-4 py-2 rounded-full flex items-center gap-2 transition-all border ${
+          isSelected
+            ? "bg-gradient-to-r from-purple-500 to-blue-500 text-white border-transparent shadow-lg"
+            : "bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600"
+        }`}
+      >
+        <MemoizedFilterIcon className="shrink-0" />
+        {dept}
+      </motion.button>
+    );
+  }
+);
+
 const DepartmentFilter = ({
   selected,
   setSelected,
@@ -418,7 +448,15 @@ const DepartmentFilter = ({
   selected: string;
   setSelected: (s: string) => void;
 }) => {
-  const departments = ["Acting", "Directing", "Production", "Writing", "Sound"];
+  const departments = useMemo(
+    () => ["Acting", "Directing", "Production", "Writing", "Sound"],
+    []
+  );
+
+  // Gunakan fungsi tetap untuk menghindari pembuatan fungsi baru di setiap render
+  const handleSelect = (dept: string) => {
+    setSelected(dept === selected ? "" : dept);
+  };
 
   return (
     <motion.div
@@ -428,62 +466,57 @@ const DepartmentFilter = ({
     >
       <div className="flex flex-wrap gap-3">
         {departments.map((dept) => (
-          <motion.button
+          <DepartmentButton
             key={dept}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setSelected(dept === selected ? "" : dept)}
-            className={`px-4 py-2 rounded-full flex items-center gap-2 transition-all border ${
-              selected === dept
-                ? "bg-gradient-to-r from-purple-500 to-blue-500 text-white border-transparent shadow-lg"
-                : "bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600"
-            }`}
-          >
-            <Filter className="shrink-0" /> {dept}
-          </motion.button>
+            dept={dept}
+            isSelected={selected === dept}
+            onClick={handleSelect}
+          />
         ))}
       </div>
     </motion.div>
   );
 };
 
-const ViewToggle = ({
-  viewMode,
-  setViewMode,
-}: {
-  viewMode: ViewMode;
-  setViewMode: (mode: ViewMode) => void;
-}) => (
-  <motion.div
-    className="flex gap-2 bg-gray-100 dark:bg-gray-700 p-2 rounded-full border border-gray-200 dark:border-gray-600"
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-  >
-    <motion.button
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
-      onClick={() => setViewMode("simple")}
-      className={`px-6 py-2 rounded-full flex items-center gap-2 transition-all ${
-        viewMode === "simple"
-          ? "bg-gradient-to-r from-purple-500 to-blue-500 text-white shadow-lg"
-          : "text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
-      }`}
+const ViewToggle = memo(
+  ({
+    viewMode,
+    setViewMode,
+  }: {
+    viewMode: ViewMode;
+    setViewMode: (mode: ViewMode) => void;
+  }) => (
+    <motion.div
+      className="flex gap-2 bg-gray-100 dark:bg-gray-700 p-2 rounded-full border border-gray-200 dark:border-gray-600"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
     >
-      <Film /> Simple
-    </motion.button>
-    <motion.button
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
-      onClick={() => setViewMode("detailed")}
-      className={`px-6 py-2 rounded-full flex items-center gap-2 transition-all ${
-        viewMode === "detailed"
-          ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg"
-          : "text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
-      }`}
-    >
-      <Tv /> Detailed
-    </motion.button>
-  </motion.div>
+      <motion.button
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        onClick={() => setViewMode("simple")}
+        className={`px-6 py-2 rounded-full flex items-center gap-2 transition-all ${
+          viewMode === "simple"
+            ? "bg-gradient-to-r from-purple-500 to-blue-500 text-white shadow-lg"
+            : "text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+        }`}
+      >
+        <Film /> Simple
+      </motion.button>
+      <motion.button
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        onClick={() => setViewMode("detailed")}
+        className={`px-6 py-2 rounded-full flex items-center gap-2 transition-all ${
+          viewMode === "detailed"
+            ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg"
+            : "text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+        }`}
+      >
+        <Tv /> Detailed
+      </motion.button>
+    </motion.div>
+  )
 );
 
 // Add page parameter to the query function

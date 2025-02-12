@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -29,6 +29,9 @@ const contentTypes = [
   { value: "multi", label: "All", icon: Layout },
 ];
 
+const MemoizedSearchIcon = memo(Search);
+const MemoizedClearIcon = memo(X);
+
 const SearchResultsPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
@@ -46,7 +49,6 @@ const SearchResultsPage = () => {
     }, 500);
 
     return () => clearTimeout(timer);
-
   }, [searchQuery]);
 
   const { data, isLoading, isError } = useQuery({
@@ -55,18 +57,25 @@ const SearchResultsPage = () => {
     enabled: debouncedQuery.length > 3,
     staleTime: 5 * 60 * 1000,
   });
-  
-let typeSearch; // Declare typeSearch outside the conditional
 
-if (selectedType === "movie"){
-  typeSearch = "🎬";
-} else if (selectedType === "tv"){
-  typeSearch = "📺";
-} else {
-  typeSearch = "👤";
-}
+  let typeSearch; // Declare typeSearch outside the conditional
 
-console.log("data:", data)
+  if (selectedType === "movie") {
+    typeSearch = "🎬";
+  } else if (selectedType === "tv") {
+    typeSearch = "📺";
+  } else {
+    typeSearch = "👤";
+  }
+
+  // Gunakan useCallback agar fungsi tidak dibuat ulang di setiap render
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  }, []);
+
+  const handleClear = useCallback(() => {
+    setSearchQuery("");
+  }, []);
 
   return (
     <div className="min-h-screen bg-slate-900">
@@ -80,18 +89,18 @@ console.log("data:", data)
           <div className="relative max-w-2xl mx-auto">
             <div className="absolute left-3 top-1/2 -translate-y-1/2">
               {searchQuery.length > 0 ? (
-                <X
-                  onClick={() => setSearchQuery("")}
+                <MemoizedClearIcon
+                  onClick={handleClear}
                   className="stroke-slate-400 h-5 w-5 text-slate-400 cursor-pointer transition-all duration-200"
                 />
               ) : (
-                <Search className="h-5 w-5 text-slate-400" />
+                <MemoizedSearchIcon className="h-5 w-5 text-slate-400" />
               )}
             </div>
             <input
               type="text"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={handleChange}
               placeholder="Search movies..."
               className="w-full pl-10 pr-4 py-3 rounded-lg bg-slate-700 text-white placeholder-slate-400 
                 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent
@@ -193,14 +202,23 @@ console.log("data:", data)
               className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"
             >
               {data?.results?.map((movie: Movie, index: number) => (
-                <Link href={`/${movie.media_type || selectedType === "person" ? "person" : null}/${movie.id}`} key={movie.id}>
+                <Link
+                  href={`/${
+                    movie.media_type || selectedType === "person"
+                      ? "person"
+                      : null
+                  }/${movie.id}`}
+                  key={movie.id}
+                >
                   <motion.div
                     key={movie.id}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.05 }}
                   >
-                    {(selectedType === 'multi' && movie.media_type === 'person') || selectedType === 'person' ? (
+                    {(selectedType === "multi" &&
+                      movie.media_type === "person") ||
+                    selectedType === "person" ? (
                       <CastsCard numberOrder={false} member={movie} />
                     ) : (
                       <MovieCard movie={movie} />
