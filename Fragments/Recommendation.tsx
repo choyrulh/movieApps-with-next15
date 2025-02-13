@@ -61,13 +61,13 @@ function Recommendation({ id, type }: { id: string, type: string }) {
             <div className="hidden md:flex gap-2">
               <button
                 onClick={() => handleScrollSimilar("left")}
-                className="carousel-prev rounded-full bg-white/10 p-2 hover:bg-white/20"
+                className=" rounded-full bg-white/10 p-2 hover:bg-white/20"
               >
                 <ChevronLeftIcon className="h-6 w-6 text-white" />
               </button>
               <button
                 onClick={() => handleScrollSimilar("right")}
-                className="carousel-next rounded-full bg-white/10 p-2 hover:bg-white/20"
+                className=" rounded-full bg-white/10 p-2 hover:bg-white/20"
               >
                 <ChevronRightIcon className="h-6 w-6 text-white" />
               </button>
@@ -109,13 +109,13 @@ function Recommendation({ id, type }: { id: string, type: string }) {
             <div className="hidden md:flex gap-2">
               <button
                 onClick={() => handleScrollRecommended("left")}
-                className="carousel-prev rounded-full bg-white/10 p-2 hover:bg-white/20"
+                className=" rounded-full bg-white/10 p-2 hover:bg-white/20"
               >
                 <ChevronLeftIcon className="h-6 w-6 text-white" />
               </button>
               <button
                 onClick={() => handleScrollRecommended("right")}
-                className="carousel-next rounded-full bg-white/10 p-2 hover:bg-white/20"
+                className=" rounded-full bg-white/10 p-2 hover:bg-white/20"
               >
                 <ChevronRightIcon className="h-6 w-6 text-white" />
               </button>
