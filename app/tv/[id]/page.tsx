@@ -75,7 +75,6 @@ function DetailShow({ params }: { params: Promise<{ id: string }> }) {
   const trailer = trailers?.results?.find(
     (video: Video) => video.site === "YouTube" && video.type === "Trailer"
   );
-  console.log("trailers: ", trailers);
 
   if (isLoading) {
     return (
