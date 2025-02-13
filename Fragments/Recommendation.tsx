@@ -1,5 +1,5 @@
 // import { MovieCardSecond } from '@/components/MovieCardSecond';
-// import  MovieCard  from '@/components/movieCard';
+import  MovieCard  from '@/components/movieCard';
 import { getRecommendedMovies, getSimilarMovies } from '@/Service/fetchMovie';
 import { Movie } from '@/types/movie.';
 import { useQuery } from '@tanstack/react-query';
@@ -31,7 +31,6 @@ function Recommendation({ id, type }: { id: string, type: string }) {
   
     const handleScrollSimilar = (direction: "left" | "right") => {
       const container = scrollContainerRefSimilar.current;
-      console.log("container similar: ", container);
       if (container) {
         const scrollAmount = container.children[0]?.clientWidth + 16; // item width + gap (1rem = 16px)
         container.scrollBy({
@@ -42,7 +41,6 @@ function Recommendation({ id, type }: { id: string, type: string }) {
     };
     const handleScrollRecommended = (direction: "left" | "right") => {
       const container = scrollContainerRefRecommended.current;
-      console.log("container recommended: ", container);
       if (container) {
         const scrollAmount = container.children[0]?.clientWidth + 16; // item width + gap (1rem = 16px)
         container.scrollBy({
@@ -91,7 +89,7 @@ function Recommendation({ id, type }: { id: string, type: string }) {
               <div className="flex gap-4">
                 {similarMovies?.results?.map((movie: Movie) => (
                   <div key={movie.id} className="w-[200px] flex-shrink-0">
-                    <DynamicMovieCard movie={movie} />
+                    <MovieCard movie={movie} />
                   </div>
                 ))}
               </div>
@@ -139,7 +137,7 @@ function Recommendation({ id, type }: { id: string, type: string }) {
               <div className="flex gap-4">
                 {recommendedMovies?.results?.map((movie: Movie) => (
                   <div key={movie.id} className="w-[200px] flex-shrink-0">
-                    <DynamicMovieCard movie={movie} />
+                    <MovieCard movie={movie} />
                   </div>
                 ))}
               </div>
