@@ -1,5 +1,5 @@
 // import { MovieCardSecond } from '@/components/MovieCardSecond';
-import  MovieCard  from '@/components/movieCard';
+// import  MovieCard  from '@/components/movieCard';
 import { getRecommendedMovies, getSimilarMovies } from '@/Service/fetchMovie';
 import { Movie } from '@/types/movie.';
 import { useQuery } from '@tanstack/react-query';
@@ -8,7 +8,8 @@ import React, { useRef } from 'react'
 import dynamic from 'next/dynamic';
 const DynamicMovieCard = dynamic(() => import('@/components/movieCard'), {
   ssr: false,
-})
+  loading: () => <div className="w-[200px] h-[300px] bg-gray-800 animate-pulse rounded-lg" />, 
+});
 
 function Recommendation({ id, type }: { id: string, type: string }) {
     const scrollContainerRefSimilar = useRef<HTMLDivElement>(null);
@@ -89,7 +90,7 @@ function Recommendation({ id, type }: { id: string, type: string }) {
               <div className="flex gap-4">
                 {similarMovies?.results?.map((movie: Movie) => (
                   <div key={movie.id} className="w-[200px] flex-shrink-0">
-                    <MovieCard movie={movie} />
+                    <DynamicMovieCard movie={movie} />
                   </div>
                 ))}
               </div>
@@ -137,7 +138,7 @@ function Recommendation({ id, type }: { id: string, type: string }) {
               <div className="flex gap-4">
                 {recommendedMovies?.results?.map((movie: Movie) => (
                   <div key={movie.id} className="w-[200px] flex-shrink-0">
-                    <MovieCard movie={movie} />
+                    <DynamicMovieCard movie={movie} />
                   </div>
                 ))}
               </div>
