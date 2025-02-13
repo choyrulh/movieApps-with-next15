@@ -1,7 +1,11 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { getCastsDetailShow, getDetailShow } from "@/Service/fetchMovie";
+import {
+  getCastsDetailShow,
+  getDetailShow,
+  getTrailerTV,
+} from "@/Service/fetchMovie";
 import { Genre, Movie, Video } from "@/types/movie.";
 import { memo, Suspense, use, useMemo, useState } from "react";
 import { Loader } from "@/components/common/Loader";
@@ -54,9 +58,19 @@ function DetailShow({ params }: { params: Promise<{ id: string }> }) {
     retry: 2,
   });
 
-  const trailer = show?.videos?.results.find(
+  
+  
+  const { data: trailers, isLoading: isLoadingTrailer } = useQuery({
+    queryKey: ["trailer tv", id],
+    queryFn: () => getTrailerTV(id as unknown as string),
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+    retry: 2,
+  });
+  
+  const trailer = trailers?.results.find(
     (video: Video) => video.site === "YouTube" && video.type === "Trailer"
   );
+  console.log("trailers: ", trailers);
 
   if (isLoading) {
     return (
@@ -89,60 +103,60 @@ function DetailShow({ params }: { params: Promise<{ id: string }> }) {
   }
 
   const TabButton = memo(
-  ({
-    tab,
-    activeTab,
-    onClick,
-  }: {
-    tab: string;
-    activeTab: string;
-    onClick: (tab: string) => void;
-  }) => {
-    const isActive = activeTab === tab.toLowerCase();
+    ({
+      tab,
+      activeTab,
+      onClick,
+    }: {
+      tab: string;
+      activeTab: string;
+      onClick: (tab: string) => void;
+    }) => {
+      const isActive = activeTab === tab.toLowerCase();
+
+      return (
+        <button
+          onClick={() => onClick(tab.toLowerCase())}
+          className={`relative px-4 py-2 text-sm font-medium transition-all duration-300 ${
+            isActive ? "text-cyan-400" : "text-slate-400 hover:text-slate-300"
+          }`}
+        >
+          {tab}
+          {isActive && (
+            <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-cyan-400 animate-underline" />
+          )}
+        </button>
+      );
+    }
+  );
+
+  function Tabs() {
+    // Gunakan useMemo agar daftar tab tidak dihitung ulang di setiap render
+    const tabs = useMemo(
+      () => [
+        "Details",
+        "Financials",
+        "Production",
+        "Languages",
+        "Status",
+        "Cast",
+      ],
+      []
+    );
 
     return (
-      <button
-        onClick={() => onClick(tab.toLowerCase())}
-        className={`relative px-4 py-2 text-sm font-medium transition-all duration-300 ${
-          isActive ? "text-cyan-400" : "text-slate-400 hover:text-slate-300"
-        }`}
-      >
-        {tab}
-        {isActive && (
-          <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-cyan-400 animate-underline" />
-        )}
-      </button>
+      <div className="flex space-x-4 overflow-x-auto pb-2 scrollbar-hide">
+        {tabs.map((tab) => (
+          <TabButton
+            key={tab}
+            tab={tab}
+            activeTab={activeTab}
+            onClick={setActiveTab}
+          />
+        ))}
+      </div>
     );
   }
-);
-
-function Tabs() {
-  // Gunakan useMemo agar daftar tab tidak dihitung ulang di setiap render
-  const tabs = useMemo(
-    () => [
-      "Details",
-      "Financials",
-      "Production",
-      "Languages",
-      "Status",
-      "Cast",
-    ],
-    []
-  );
-
-  return (
-    <div className="flex space-x-4 overflow-x-auto pb-2 scrollbar-hide">
-      {tabs.map((tab) => (
-        <TabButton
-          key={tab}
-          tab={tab}
-          activeTab={activeTab}
-          onClick={setActiveTab}
-        />
-      ))}
-    </div>
-  );
-}
 
   return (
     <>
@@ -667,5 +681,3 @@ function Tabs() {
 }
 
 export default DetailShow;
-
-

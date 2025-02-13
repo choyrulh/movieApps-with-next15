@@ -296,3 +296,15 @@ export const getPlayerMovie = async (id: string) => {
     return error;
   }
 };
+
+export const getTrailerTV = async (id: string) => {
+  try {
+    const response = await axios.get(
+      `${url}/tv/${id}/videos?api_key=${api_key}`
+    );
+    const data = await response.data;
+    return data;
+  } catch (error) {
+    return error;
+  }
+};
