@@ -24,6 +24,11 @@ import { AddToWatchListButton } from "@/components/AddWatchListButton";
 import GoWatchButton from "@/components/ui/GoWatchButton";
 import useIsMobile from "@/hook/useIsMobile";
 import Link from "next/link";
+import dynamic from 'next/dynamic';
+
+const DynamicRecommendation = dynamic(() => import('@/Fragments/Recommendation'), {
+  ssr: false,
+})
 
 function DetailShow({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -67,7 +72,7 @@ function DetailShow({ params }: { params: Promise<{ id: string }> }) {
     retry: 2,
   });
   
-  const trailer = trailers?.results.find(
+  const trailer = trailers?.results?.find(
     (video: Video) => video.site === "YouTube" && video.type === "Trailer"
   );
   console.log("trailers: ", trailers);
@@ -674,6 +679,10 @@ function DetailShow({ params }: { params: Promise<{ id: string }> }) {
               </div>
             </div>
           </div>
+
+          <Suspense fallback={<p>Loading...</p>}>
+            <DynamicRecommendation id={id} type={"tv"}/>
+          </Suspense>
         </main>
       </div>
     </>

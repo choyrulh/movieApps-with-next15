@@ -1,16 +1,27 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { getCastsDetailMovie, getDetailMovie } from "@/Service/fetchMovie";
+import {
+  getCastsDetailMovie,
+  getDetailMovie,
+  getSimilarMovies,
+  getRecommendedMovies,
+} from "@/Service/fetchMovie";
 import { Genre, Movie, Video } from "@/types/movie.";
-import { memo, Suspense, use, useMemo, useState } from "react";
+import { memo, Suspense, use, useMemo, useRef, useState } from "react";
 import { Loader } from "@/components/common/Loader";
 import Head from "next/head";
 import Image from "next/image";
 import { Rating } from "@/components/common/Rating";
 import TrailerModal from "@/components/TrailerModal";
 import { AddToWatchListButton } from "@/components/AddWatchListButton";
-import { CalendarIcon, ForwardIcon, Heart } from "lucide-react";
+import {
+  CalendarIcon,
+  ForwardIcon,
+  Heart,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+} from "lucide-react";
 import {
   BanknotesIcon,
   BuildingOfficeIcon,
@@ -20,12 +31,20 @@ import {
 import GoWatchButton from "@/components/ui/GoWatchButton";
 import useIsMobile from "@/hook/useIsMobile";
 import Link from "next/link";
+import { MovieCardSecond } from "@/components/MovieCardSecond";
+import Recommendation from "@/Fragments/Recommendation";
+import dynamic from 'next/dynamic';
+
+const DynamicRecommendation = dynamic(() => import('@/Fragments/Recommendation'), {
+  ssr: false,
+})
 
 function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const [activeTab, setActiveTab] = useState("financials");
   const [visibleCasts, setVisibleCasts] = useState(12);
   const isMobile = useIsMobile();
+
 
   const {
     data: movie,
@@ -89,53 +108,53 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
   }
 
   const TabButton = memo(
-  ({
-    tab,
-    activeTab,
-    onClick,
-  }: {
-    tab: string;
-    activeTab: string;
-    onClick: (tab: string) => void;
-  }) => {
-    const isActive = activeTab === tab.toLowerCase();
+    ({
+      tab,
+      activeTab,
+      onClick,
+    }: {
+      tab: string;
+      activeTab: string;
+      onClick: (tab: string) => void;
+    }) => {
+      const isActive = activeTab === tab.toLowerCase();
+
+      return (
+        <button
+          onClick={() => onClick(tab.toLowerCase())}
+          className={`relative px-4 py-2 text-sm font-medium transition-all duration-300 ${
+            isActive ? "text-cyan-400" : "text-slate-400 hover:text-slate-300"
+          }`}
+        >
+          {tab}
+          {isActive && (
+            <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-cyan-400 animate-underline" />
+          )}
+        </button>
+      );
+    }
+  );
+
+  function Tabs() {
+    // Gunakan useMemo agar daftar tab tidak dihitung ulang di setiap render
+    const tabs = useMemo(
+      () => ["Financials", "Production", "Languages", "Status", "Cast"],
+      []
+    );
 
     return (
-      <button
-        onClick={() => onClick(tab.toLowerCase())}
-        className={`relative px-4 py-2 text-sm font-medium transition-all duration-300 ${
-          isActive ? "text-cyan-400" : "text-slate-400 hover:text-slate-300"
-        }`}
-      >
-        {tab}
-        {isActive && (
-          <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-cyan-400 animate-underline" />
-        )}
-      </button>
+      <div className="flex space-x-4 overflow-x-auto pb-2 scrollbar-hide">
+        {tabs.map((tab) => (
+          <TabButton
+            key={tab}
+            tab={tab}
+            activeTab={activeTab}
+            onClick={setActiveTab}
+          />
+        ))}
+      </div>
     );
   }
-);
-
-function Tabs() {
-  // Gunakan useMemo agar daftar tab tidak dihitung ulang di setiap render
-  const tabs = useMemo(
-    () => ["Financials", "Production", "Languages", "Status", "Cast"],
-    []
-  );
-
-  return (
-    <div className="flex space-x-4 overflow-x-auto pb-2 scrollbar-hide">
-      {tabs.map((tab) => (
-        <TabButton
-          key={tab}
-          tab={tab}
-          activeTab={activeTab}
-          onClick={setActiveTab}
-        />
-      ))}
-    </div>
-  );
-}
 
   return (
     <>
@@ -517,12 +536,13 @@ function Tabs() {
               </div>
             </div>
           </div>
+          <Suspense fallback={<p>Loading...</p>}>
+            <DynamicRecommendation id={id} type={"movie"}/>
+          </Suspense>
         </main>
       </div>
     </>
   );
 }
 
-
 export default DetailMovie;
-

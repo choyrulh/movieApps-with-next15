@@ -1,130 +1,156 @@
-import { Rating } from "@/components/common/Rating";
-import { getSearch } from "@/Service/fetchMovie";
-import { Movie } from "@/types/movie.";
-import { useQueryClient, useQuery } from "@tanstack/react-query";
-import { Loader, StarIcon } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
+// import { MovieCardSecond } from '@/components/MovieCardSecond';
+// import  MovieCard  from '@/components/movieCard';
+import { getRecommendedMovies, getSimilarMovies } from '@/Service/fetchMovie';
+import { Movie } from '@/types/movie.';
+import { useQuery } from '@tanstack/react-query';
+import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
+import React, { useRef } from 'react'
+import dynamic from 'next/dynamic';
+const DynamicMovieCard = dynamic(() => import('@/components/movieCard'), {
+  ssr: false,
+})
 
-const Recommendation = ({ movieTitle }: { movieTitle: string }) => {
-  const queryClient = useQueryClient();
+function Recommendation({ id, type }: { id: string, type: string }) {
+    const scrollContainerRefSimilar = useRef<HTMLDivElement>(null);
+    const scrollContainerRefRecommended = useRef<HTMLDivElement>(null);
 
-  const { data, isLoading, isError, isRefetching } = useQuery<{
-    results: Movie[];
-  }>({
-    queryKey: ["recommendations", movieTitle],
-    queryFn: () => getSearch(movieTitle.substring(0, 3)),
-    staleTime: 5 * 60 * 1000,
-    retry: 2,
-  });
 
-  if (isLoading) {
-    return <RecommendationSkeleton />;
-  }
-
-  if (isError) {
-    return null;
-  }
-  if (data?.results.length === 0) {
-    return (
-      <section className="mt-16 pb-16 relative">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-white mb-8">
-            Recommended Movies
-          </h2>
-          <div className="text-slate-400 text-center py-8">
-            No recommendations available
-          </div>
-        </div>
-      </section>
+  const { data: similarMovies, isLoading: isSimilarLoading } = useQuery({
+      queryKey: ["similarMovies", id],
+      queryFn: () => getSimilarMovies(id as unknown as string, type),
+      staleTime: 5 * 60 * 1000,
+    });
+  
+    const { data: recommendedMovies, isLoading: isRecommendedLoading } = useQuery(
+      {
+        queryKey: ["recommendedMovies", id],
+        queryFn: () => getRecommendedMovies(id as unknown as string, type ),
+        staleTime: 5 * 60 * 1000,
+      }
     );
-  }
-
+  
+    const handleScrollSimilar = (direction: "left" | "right") => {
+      const container = scrollContainerRefSimilar.current;
+      console.log("container similar: ", container);
+      if (container) {
+        const scrollAmount = container.children[0]?.clientWidth + 16; // item width + gap (1rem = 16px)
+        container.scrollBy({
+          left: direction === "left" ? -scrollAmount : scrollAmount,
+          behavior: "smooth",
+        });
+      }
+    };
+    const handleScrollRecommended = (direction: "left" | "right") => {
+      const container = scrollContainerRefRecommended.current;
+      console.log("container recommended: ", container);
+      if (container) {
+        const scrollAmount = container.children[0]?.clientWidth + 16; // item width + gap (1rem = 16px)
+        container.scrollBy({
+          left: direction === "left" ? -scrollAmount : scrollAmount,
+          behavior: "smooth",
+        });
+      }
+    };
   return (
-    <section className="mt-16 pb-16 relative" aria-label="Recommended movies">
-      <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold text-white mb-8">
-          Recommended Movies
-        </h2>
-
-        <div className="relative group">
-          <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-slate-900 via-slate-900/80 to-transparent z-20 pointer-events-none" />
-          <div className="absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-slate-900 via-slate-900/80 to-transparent z-20 pointer-events-none" />
-
-          <div className="flex gap-6 overflow-x-auto pb-8 scrollbar-hide">
-            {data?.results.slice(0, 8).map((movie) => (
-              <MovieCard key={movie.id} movie={movie} />
-            ))}
+    <div className="mt-12 space-y-16 container mx-auto px-4">
+      {/* Similar Movies Section */}
+      {similarMovies?.results?.length > 0 && (
+        <section>
+          <div className="mb-8 flex items-center justify-between">
+            <h2 className="text-2xl font-bold text-white">{`Similar ${type === "tv" ? "Series" : "Movie" }`}</h2>
+            <div className="hidden md:flex gap-2">
+              <button
+                onClick={() => handleScrollSimilar("left")}
+                className="carousel-prev rounded-full bg-white/10 p-2 hover:bg-white/20"
+              >
+                <ChevronLeftIcon className="h-6 w-6 text-white" />
+              </button>
+              <button
+                onClick={() => handleScrollSimilar("right")}
+                className="carousel-next rounded-full bg-white/10 p-2 hover:bg-white/20"
+              >
+                <ChevronRightIcon className="h-6 w-6 text-white" />
+              </button>
+            </div>
           </div>
-        </div>
-      </div>
-    </section>
-  );
-};
 
-// Extracted Movie Card Component
-const MovieCard = ({ movie }: { movie: Movie }) => (
-  <Link
-    href={`/movie/${movie.id}`}
-    className="group relative min-w-[260px] flex-1 transition-transform duration-300 hover:z-10"
-    aria-label={`View details for ${movie.title}`}
-  >
-    <div className="relative aspect-[2/3] rounded-xl overflow-hidden shadow-lg transform transition-all duration-300 group-hover:scale-105 group-hover:shadow-2xl">
-      {movie.poster_path ? (
-        <Image
-          src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-          alt={movie.title || "Movie poster"}
-          fill
-          className="object-cover"
-          sizes="(max-width: 768px) 100vw, 260px"
-          loading="lazy"
-          placeholder="blur"
-          blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=="
-        />
-      ) : (
-        <div className="w-full h-full bg-slate-800 flex items-center justify-center">
-          <span className="text-slate-500 text-center px-2">
-            No image available
-          </span>
-        </div>
+          {isSimilarLoading ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+              {[...Array(6)].map((_, i) => (
+                <div
+                  key={i}
+                  className="aspect-[2/3] animate-pulse rounded-2xl bg-slate-800"
+                />
+              ))}
+            </div>
+          ) : (
+            <div
+              ref={scrollContainerRefSimilar}
+              className="scrollbar-hide relative overflow-x-auto pb-4"
+            >
+              <div className="flex gap-4">
+                {similarMovies?.results?.map((movie: Movie) => (
+                  <div key={movie.id} className="w-[200px] flex-shrink-0">
+                    <DynamicMovieCard movie={movie} />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </section>
+      )}  
+      
+
+      {/* Recommended Movies Section */}
+      {recommendedMovies?.results?.length > 0 && (
+        <section>
+          <div className="mb-8 flex items-center justify-between">
+            <h2 className="text-2xl font-bold text-white">{`Recommended ${type === "tv" ? "Series" : "Movie" }`}</h2>
+            <div className="hidden md:flex gap-2">
+              <button
+                onClick={() => handleScrollRecommended("left")}
+                className="carousel-prev rounded-full bg-white/10 p-2 hover:bg-white/20"
+              >
+                <ChevronLeftIcon className="h-6 w-6 text-white" />
+              </button>
+              <button
+                onClick={() => handleScrollRecommended("right")}
+                className="carousel-next rounded-full bg-white/10 p-2 hover:bg-white/20"
+              >
+                <ChevronRightIcon className="h-6 w-6 text-white" />
+              </button>
+            </div>
+          </div>
+
+          {isRecommendedLoading ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+              {[...Array(6)].map((_, i) => (
+                <div
+                  key={i}
+                  className="aspect-[2/3] animate-pulse rounded-2xl bg-slate-800"
+                />
+              ))}
+            </div>
+          ) : (
+            <div
+              ref={scrollContainerRefRecommended}
+              className="scrollbar-hide relative overflow-x-auto pb-4"
+            >
+              <div className="flex gap-4">
+                {recommendedMovies?.results?.map((movie: Movie) => (
+                  <div key={movie.id} className="w-[200px] flex-shrink-0">
+                    <DynamicMovieCard movie={movie} />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </section>
       )}
 
-      <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/20 to-transparent" />
-
-      <div className="absolute bottom-0 left-0 right-0 p-4 space-y-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-        <p className="text-white font-semibold line-clamp-2">{movie.title}</p>
-        <div className="flex items-center gap-2 text-sm">
-          <Rating value={movie.vote_average / 2} />{" "}
-          {/* Adjust for 5-star scale */}
-          <span className="text-slate-400">
-            {movie.release_date?.split("-")[0] || "N/A"}
-          </span>
-        </div>
-      </div>
+      
     </div>
+  );
+}
 
-    <div className="absolute top-4 right-4 flex items-center gap-1 px-2 py-1 bg-slate-900/80 rounded-full backdrop-blur-sm">
-      <StarIcon className="w-4 h-4 text-amber-400" />
-      <span className="text-white text-sm">
-        {movie.vote_average.toFixed(1)}
-      </span>
-    </div>
-  </Link>
-);
-
-// Extracted Skeleton Component
-const RecommendationSkeleton = () => (
-  <div className="mt-16 pb-16">
-    <div className="h-8 w-40 bg-slate-800 rounded-full mb-8 animate-pulse" />
-    <div className="flex gap-6 overflow-x-auto pb-4">
-      {[...Array(8)].map((_, i) => (
-        <div key={i} className="min-w-[260px] flex-1">
-          <div className="relative aspect-[2/3] bg-slate-800 rounded-xl overflow-hidden shadow-lg animate-pulse" />
-          <div className="h-4 bg-slate-800 rounded-full mt-4 w-3/4 mx-auto" />
-        </div>
-      ))}
-    </div>
-  </div>
-);
-
-export default Recommendation;
+export default Recommendation

@@ -308,3 +308,27 @@ export const getTrailerTV = async (id: string) => {
     return error;
   }
 };
+
+export const getSimilarMovies = async (id: string, type: string) => {
+  try {
+    const response = await axios.get(
+      `${url}/${type}/${id}/similar?api_key=${api_key}`
+    );
+    const data = await response.data;
+    return data;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const getRecommendedMovies = async (id: string, type: string) => {
+  try {
+    const response = await axios.get(
+      `${url}/${type}/${id}/recommendations?api_key=${api_key}`
+    );
+    const data = await response.data;
+    return data;
+  } catch (error) {
+    return error;
+  }
+};
