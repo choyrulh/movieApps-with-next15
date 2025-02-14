@@ -65,7 +65,7 @@ const WatchlistPage = () => {
   );
 };
 
-const TabButton = ({ isActive, onClick, label, icon }) => (
+const TabButton = ({ isActive, onClick, label, icon }: any) => (
   <motion.button
     whileHover={{ scale: 1.03 }}
     onClick={onClick}
