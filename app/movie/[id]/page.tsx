@@ -31,6 +31,7 @@ import {
 import GoWatchButton from "@/components/ui/GoWatchButton";
 import useIsMobile from "@/hook/useIsMobile";
 import Link from "next/link";
+import { MovieCardSecond } from "@/components/MovieCardSecond";
 import Recommendation from "@/Fragments/Recommendation";
 import dynamic from 'next/dynamic';
 
@@ -536,7 +537,7 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
             </div>
           </div>
           <Suspense fallback={<p>Loading...</p>}>
-            <DynamicRecommendation id={id} type={"movie"}/>
+            <Recommendation id={id} type={"movie"}/>
           </Suspense>
         </main>
       </div>

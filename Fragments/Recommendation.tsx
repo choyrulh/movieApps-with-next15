@@ -1,63 +1,64 @@
-// import { MovieCardSecond } from '@/components/MovieCardSecond';
-// import  MovieCard  from '@/components/movieCard';
-import { getRecommendedMovies, getSimilarMovies } from '@/Service/fetchMovie';
-import { Movie } from '@/types/movie.';
-import { useQuery } from '@tanstack/react-query';
-import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
-import React, { useRef } from 'react'
-import dynamic from 'next/dynamic';
-const DynamicMovieCard = dynamic(() => import('@/components/movieCard'), {
-  ssr: false,
-  loading: () => <div className="w-[200px] h-[300px] bg-gray-800 animate-pulse rounded-lg" />, 
-});
+"use client";
 
-function Recommendation({ id, type }: { id: string, type: string }) {
-    const scrollContainerRefSimilar = useRef<HTMLDivElement>(null);
-    const scrollContainerRefRecommended = useRef<HTMLDivElement>(null);
+import { MovieCardSecond } from "@/components/MovieCardSecond";
+import { getRecommendedMovies, getSimilarMovies } from "@/Service/fetchMovie";
+import { Movie } from "@/types/movie.";
+import { useQuery } from "@tanstack/react-query";
+import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import { useRef } from "react";
+import useIsMobile from "@/hook/useIsMobile";
 
+function Recommendation({ id, type }: { id: string; type: string }) {
+  const scrollContainerRefSimilar = useRef<HTMLDivElement>(null);
+  const scrollContainerRefRecommended = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
 
   const { data: similarMovies, isLoading: isSimilarLoading } = useQuery({
-      queryKey: ["similarMovies", id],
-      queryFn: () => getSimilarMovies(id as unknown as string, type),
+    queryKey: ["similarMovies", id],
+    queryFn: () => getSimilarMovies(id as unknown as string, type),
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const { data: recommendedMovies, isLoading: isRecommendedLoading } = useQuery(
+    {
+      queryKey: ["recommendedMovies", id],
+      queryFn: () => getRecommendedMovies(id as unknown as string, type),
       staleTime: 5 * 60 * 1000,
-    });
-  
-    const { data: recommendedMovies, isLoading: isRecommendedLoading } = useQuery(
-      {
-        queryKey: ["recommendedMovies", id],
-        queryFn: () => getRecommendedMovies(id as unknown as string, type ),
-        staleTime: 5 * 60 * 1000,
-      }
-    );
-  
-    const handleScrollSimilar = (direction: "left" | "right") => {
-      const container = scrollContainerRefSimilar.current;
-      if (container) {
-        const scrollAmount = container.children[0]?.clientWidth + 16; // item width + gap (1rem = 16px)
-        container.scrollBy({
-          left: direction === "left" ? -scrollAmount : scrollAmount,
-          behavior: "smooth",
-        });
-      }
-    };
-    const handleScrollRecommended = (direction: "left" | "right") => {
-      const container = scrollContainerRefRecommended.current;
-      if (container) {
-        const scrollAmount = container.children[0]?.clientWidth + 16; // item width + gap (1rem = 16px)
-        container.scrollBy({
-          left: direction === "left" ? -scrollAmount : scrollAmount,
-          behavior: "smooth",
-        });
-      }
-    };
+    }
+  );
+
+  const handleScrollSimilar = (direction: "left" | "right") => {
+    const container = scrollContainerRefSimilar.current;
+    if (container) {
+      const scrollAmount = container.children[0]?.clientWidth + 16; // item width + gap (1rem = 16px)
+      container.scrollBy({
+        left: direction === "left" ? -scrollAmount : scrollAmount,
+        behavior: "smooth",
+      });
+    }
+  };
+  const handleScrollRecommended = (direction: "left" | "right") => {
+    const container = scrollContainerRefRecommended.current;
+    if (container) {
+      const scrollAmount = container.children[0]?.clientWidth + 16; // item width + gap (1rem = 16px)
+      container.scrollBy({
+        left: direction === "left" ? -scrollAmount : scrollAmount,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  const imagePath = "https://image.tmdb.org/t/p/w500";
   return (
     <div className="mt-12 space-y-16 container mx-auto px-4">
       {/* Similar Movies Section */}
       {similarMovies?.results?.length > 0 && (
         <section>
           <div className="mb-8 flex items-center justify-between">
-            <h2 className="text-2xl font-bold text-white">{`Similar ${type === "tv" ? "Series" : "Movie" }`}</h2>
-            <div className="hidden md:flex gap-2">
+            <h2 className="text-2xl font-bold text-white">{`Similar ${
+              type === "tv" ? "Series" : "Movie"
+            }`}</h2>
+            <div className={`${isMobile ? "hidden" : "flex"} gap-2`}>
               <button
                 onClick={() => handleScrollSimilar("left")}
                 className=" rounded-full bg-white/10 p-2 hover:bg-white/20"
@@ -90,22 +91,24 @@ function Recommendation({ id, type }: { id: string, type: string }) {
               <div className="flex gap-4">
                 {similarMovies?.results?.map((movie: Movie) => (
                   <div key={movie.id} className="w-[200px] flex-shrink-0">
-                    <DynamicMovieCard movie={movie} />
+                    {/*add movie card*/}
+                    <MovieCardSecond movie={movie} type={type} />
                   </div>
                 ))}
               </div>
             </div>
           )}
         </section>
-      )}  
-      
+      )}
 
       {/* Recommended Movies Section */}
       {recommendedMovies?.results?.length > 0 && (
         <section>
           <div className="mb-8 flex items-center justify-between">
-            <h2 className="text-2xl font-bold text-white">{`Recommended ${type === "tv" ? "Series" : "Movie" }`}</h2>
-            <div className="hidden md:flex gap-2">
+            <h2 className="text-2xl font-bold text-white">{`Recommended ${
+              type === "tv" ? "Series" : "Movie"
+            }`}</h2>
+            <div className={`${isMobile ? "hidden" : "flex"} gap-2`}>
               <button
                 onClick={() => handleScrollRecommended("left")}
                 className=" rounded-full bg-white/10 p-2 hover:bg-white/20"
@@ -138,7 +141,8 @@ function Recommendation({ id, type }: { id: string, type: string }) {
               <div className="flex gap-4">
                 {recommendedMovies?.results?.map((movie: Movie) => (
                   <div key={movie.id} className="w-[200px] flex-shrink-0">
-                    <DynamicMovieCard movie={movie} />
+                    {/*add movie card*/}
+                    <MovieCardSecond movie={movie} type={type} />
                   </div>
                 ))}
               </div>
@@ -146,10 +150,8 @@ function Recommendation({ id, type }: { id: string, type: string }) {
           )}
         </section>
       )}
-
-      
     </div>
   );
 }
 
-export default Recommendation
+export default Recommendation;
