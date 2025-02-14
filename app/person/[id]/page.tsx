@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { getCreditPerson, getDetailPerson } from "@/Service/fetchMovie";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-
+import { AddFavoriteButton } from "@/components/AddFavoriteButton"
 const PersonDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = use(params);
   const [activeTab, setActiveTab] = useState<"movies" | "tv">("movies");
@@ -90,6 +90,13 @@ const PersonDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
                   Popularity: {Math.round(personData?.popularity)}
                 </span>
               </div>
+              <AddFavoriteButton
+                item={{
+                        ...personData,
+                        name: personData.name ?? "",
+                        media_type: "person",
+                      }}
+              />
             </div>
           </div>
         </motion.div>

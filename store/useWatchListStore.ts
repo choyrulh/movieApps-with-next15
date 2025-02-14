@@ -6,8 +6,8 @@ export interface WatchlistItem {
   id: number;
   title: string;
   poster_path: string;
-  media_type?: "movie" | "tv";
-  release_date: string;
+  media_type?: "movie" | "tv" | "person";
+  release_date?: string;
 }
 
 export interface WatchlistState {
