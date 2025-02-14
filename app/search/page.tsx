@@ -77,6 +77,7 @@ const SearchResultsPage = () => {
     setSearchQuery("");
   }, []);
 
+
   return (
     <div className="min-h-screen bg-slate-900">
       {/* Search Header */}
@@ -203,7 +204,7 @@ const SearchResultsPage = () => {
             >
               {data?.results?.map((movie: Movie, index: number) => (
                 <Link
-                  href={`/${movie.media_type}/${movie.id}`}
+                  href={`/${selectedType === "multi" ? movie.media_type : selectedType}/${movie.id}`}
                   key={movie.id}
                 >
                   <motion.div
