@@ -306,7 +306,7 @@ const ActorGrid = ({ items, removeFromWatchlist }: any) => (
   </motion.div>
 );
 
-const RemoveButton = ({ onRemove: any, isRound = false}) => (
+const RemoveButton = ({ onRemove, isRound}: any) => (
   <motion.button
     whileHover={{ scale: 1.1 }}
     whileTap={{ scale: 0.9 }}
