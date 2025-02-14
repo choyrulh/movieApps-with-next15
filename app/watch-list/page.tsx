@@ -110,7 +110,7 @@ const EmptyState = () => (
   </motion.div>
 );
 
-const MovieGrid = ({ items, removeFromWatchlist }) => (
+const MovieGrid = ({ items, removeFromWatchlist }: any) => (
   <motion.div
     key="movie-grid"
     initial={{ opacity: 0 }}
@@ -165,7 +165,7 @@ const MovieGrid = ({ items, removeFromWatchlist }) => (
   </motion.div>
 );
 
-const TVShowGrid = ({ items, removeFromWatchlist }) => (
+const TVShowGrid = ({ items, removeFromWatchlist }: any) => (
   <motion.div
     key="tvshow-grid"
     initial={{ opacity: 0 }}
@@ -220,7 +220,7 @@ const TVShowGrid = ({ items, removeFromWatchlist }) => (
   </motion.div>
 );
 
-const ActorGrid = ({ items, removeFromWatchlist }) => (
+const ActorGrid = ({ items, removeFromWatchlist }: any) => (
   <motion.div
     key="actor-grid"
     initial={{ opacity: 0 }}
@@ -307,7 +307,7 @@ const ActorGrid = ({ items, removeFromWatchlist }) => (
   </motion.div>
 );
 
-const RemoveButton = ({ onRemove, isRound = false }) => (
+const RemoveButton = ({ onRemove: any, isRound = false }) => (
   <motion.button
     whileHover={{ scale: 1.1 }}
     whileTap={{ scale: 0.9 }}
