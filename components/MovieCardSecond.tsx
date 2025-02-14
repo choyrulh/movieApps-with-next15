@@ -31,7 +31,7 @@ export const MovieCardSecond = ({
               className="object-cover group-hover:opacity-75 transition-opacity"
             />
           ) : (
-            <div className="aspect-[2/3] w-full bg-slate-800 flex items-center justify-center">
+            <div className="w-[10.42vw] h-[15.63vw] bg-slate-800 flex items-center justify-center">
               <span className="text-sm text-white/60">No poster available</span>
             </div>
           )}
