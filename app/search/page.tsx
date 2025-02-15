@@ -21,7 +21,6 @@ import { useStore } from "@/store/useStore";
 import { useShallow } from "zustand/react/shallow";
 import CastsCard from "@/components/CastsCard";
 import Link from "next/link";
-import { Movie } from "@/types/movie.";
 import {ScrollToTopButton} from "@/components/ScrollToTopButton"
 
 const contentTypes = [
