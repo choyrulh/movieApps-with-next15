@@ -52,7 +52,6 @@ const SearchResultsPage = () => {
     queryFn: () => getSearchFilter(debouncedQuery, selectedType, page.toString()),
     enabled: debouncedQuery.length > 3,
     staleTime: 5 * 60 * 1000,
-    keepPreviousData: true,
   });
 
   // Debounce search input
