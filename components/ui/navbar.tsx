@@ -25,9 +25,13 @@ const ProfileDropDown = ({ props }: any) => {
   const profileRef: any = useRef();
   useEffect(() => {
     const handleDropDown = (e: any) => {
-      if (!profileRef.current.contains(e.target)) setState(false);
+      if (profileRef.current && !profileRef.current.contains(e.target)) setState(false);
     };
-    document.addEventListener("click", handleDropDown);
+     document.addEventListener("click", handleDropDown);
+
+  return () => {
+    document.removeEventListener("click", handleDropDown);
+  };
   }, []);
 
   return (

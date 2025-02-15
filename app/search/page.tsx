@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, memo, useCallback } from "react";
+import { useState, useEffect, memo, useCallback, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -12,6 +12,7 @@ import {
   Users,
   Layout,
   X,
+  ChevronLeft, ChevronRight
 } from "lucide-react";
 import { getSearch, getSearchFilter } from "@/Service/fetchMovie";
 import MovieCardSkeleton from "@/components/MovieCardSkeleton";
@@ -36,7 +37,7 @@ const MemoizedClearIcon = memo(X);
 
 const SearchResultsPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [allMovies, setAllMovies] = useState<Movie[]>([]);
+  // const [allMovies, setAllMovies] = useState<Movie[]>([]);
   const [page, setPage] = useState(1);
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const { selectedType, setSelectedType } = useStore(
@@ -46,51 +47,73 @@ const SearchResultsPage = () => {
     }))
   );
 
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isError, fetchNextPage, hasNextPage, isFetchingNextPage } = useQuery({
     queryKey: ["searchMovies", debouncedQuery, selectedType, page],
-    queryFn: () => getSearchFilter(debouncedQuery, selectedType, page as unknown as string),
+    queryFn: () => getSearchFilter(debouncedQuery, selectedType, page.toString()),
     enabled: debouncedQuery.length > 3,
     staleTime: 5 * 60 * 1000,
+    keepPreviousData: true,
   });
 
   // Debounce search input
   useEffect(() => {
+    if (searchQuery.length <= 3) {
+      setDebouncedQuery("");
+      return;
+    }
+
     const timer = setTimeout(() => {
       setDebouncedQuery(searchQuery);
+      setPage(1); // Reset page when search query changes
     }, 500);
 
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  useEffect(() => {
-    if (data) {
-      setAllMovies((prevMovies) => {
-        const movieSet = new Set(prevMovies.map((m: any) => m.id));
-        const uniqueMovies = data?.results?.filter((m: any) => !movieSet.has(m.id));
-        return [...prevMovies, ...uniqueMovies];
+  // useEffect(() => {
+  //   if (data) {
+  //     setAllMovies((prevMovies) => {
+  //       const movieSet = new Set(prevMovies.map((m: any) => m.id));
+  //       const uniqueMovies = data?.results?.filter((m: any) => !movieSet.has(m.id));
+  //       return [...prevMovies, ...uniqueMovies];
+  //     });
+  //   }
+  // }, [data, page]);
+
+
+    // useEffect(() => {
+    //   if (!data) return;
+
+    //   setPage(1);
+    //   setAllMovies(data.results ?? []);
+    // }, [debouncedQuery, selectedType]);
+
+    const allMovies = useMemo(() => {
+      if (!data?.results) return [];
+      
+      const movieSet = new Set();
+      return data.results.filter((movie: Movie) => {
+        if (movieSet.has(movie.id)) return false;
+        movieSet.add(movie.id);
+        return true;
       });
+    }, [data?.results]);
+
+
+  // let typeSearch; // Declare typeSearch outside the conditional
+
+  const typeSearch = useMemo(() => {
+    switch (selectedType) {
+      case "movie":
+        return "🎬";
+      case "tv":
+        return "📺";
+      case "person":
+        return "👤";
+      default:
+        return "🔍";
     }
-  }, [data, page]);
-
-
-    useEffect(() => {
-      if (!data) return;
-
-      setPage(1);
-      setAllMovies(data.results ?? []);
-    }, [debouncedQuery, selectedType]);
-
-
-
-  let typeSearch; // Declare typeSearch outside the conditional
-
-  if (selectedType === "movie") {
-    typeSearch = "🎬";
-  } else if (selectedType === "tv") {
-    typeSearch = "📺";
-  } else {
-    typeSearch = "👤";
-  }
+  }, [selectedType]);
 
   // Gunakan useCallback agar fungsi tidak dibuat ulang di setiap render
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -99,7 +122,30 @@ const SearchResultsPage = () => {
 
   const handleClear = useCallback(() => {
     setSearchQuery("");
+    setDebouncedQuery("");
+    setPage(1);
   }, []);
+
+ const handlePageChange = useCallback((newPage: number) => {
+    setPage(newPage);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
+  const totalPages = data?.total_pages || 0;
+  const currentPage = page;
+
+  const paginationRange = useMemo(() => {
+    const range = [];
+    const maxPages = 5;
+    const startPage = Math.max(1, currentPage - Math.floor(maxPages / 2));
+    const endPage = Math.min(totalPages, startPage + maxPages - 1);
+
+    for (let i = startPage; i <= endPage; i++) {
+      range.push(i);
+    }
+
+    return range;
+  }, [currentPage, totalPages]);
 
 
   return (
@@ -113,7 +159,7 @@ const SearchResultsPage = () => {
         <div className="container mx-auto px-4 py-6">
           <div className="relative max-w-2xl mx-auto">
             <div className="absolute left-3 top-1/2 -translate-y-1/2">
-              {searchQuery.length > 0 ? (
+              {searchQuery ? (
                 <MemoizedClearIcon
                   onClick={handleClear}
                   className="stroke-slate-400 h-5 w-5 text-slate-400 cursor-pointer transition-all duration-200"
@@ -126,7 +172,7 @@ const SearchResultsPage = () => {
               type="text"
               value={searchQuery}
               onChange={handleChange}
-              placeholder="Search movies..."
+              placeholder={`Search ${selectedType}...`}
               className="w-full pl-10 pr-4 py-3 rounded-lg bg-slate-700 text-white placeholder-slate-400 
                 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent
                 transition-all duration-200"
@@ -144,7 +190,10 @@ const SearchResultsPage = () => {
           return (
             <button
               key={type.value}
-              onClick={() => setSelectedType(type.value)}
+              onClick={() => {
+                  setSelectedType(type.value);
+                  setPage(1);
+                }}
               className={`
                       flex flex-col items-center justify-center p-3 rounded-lg
                       transition-all duration-200 gap-2
@@ -167,7 +216,7 @@ const SearchResultsPage = () => {
       {/* Results Section */}
       <div className="container mx-auto px-4 py-8">
         <AnimatePresence mode="wait">
-          {debouncedQuery.length === 0  ? (
+          {!debouncedQuery  ? (
             <motion.div
               key="empty-state"
               initial={{ opacity: 0 }}
@@ -246,23 +295,41 @@ const SearchResultsPage = () => {
           )}
         </AnimatePresence>
 
-        {/* Load More Button (Optional) */}
-        {data?.page < data?.total_pages && (
-          <div className="flex justify-center mt-8">
+        {data?.total_pages > 1 && (
+          <div className="flex justify-center items-center gap-2 mt-8">
             <button
-              onClick={() => {
-                      setPage((prev) => prev + 1);
-                    }}
-              className="px-6 py-2 bg-cyan-500/20 text-cyan-400 rounded-lg hover:bg-cyan-500/30 
-                transition-colors flex items-center gap-2"
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1 || isLoading}
+              className="p-2 rounded-lg bg-slate-800 text-slate-400 hover:text-cyan-400 
+                transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isLoading ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" /> loading
-                </>
-              ) : (
-                "Load More"
-              )}  
+              <ChevronLeft className="h-5 w-5" />
+            </button>
+            
+            {paginationRange.map((pageNum) => (
+              <button
+                key={pageNum}
+                onClick={() => handlePageChange(pageNum)}
+                disabled={isLoading}
+                className={`min-w-[2.5rem] h-10 rounded-lg transition-colors
+                  ${
+                    pageNum === currentPage
+                      ? "bg-cyan-500/20 text-cyan-400"
+                      : "bg-slate-800 text-slate-400 hover:text-cyan-400"
+                  }
+                  disabled:opacity-50 disabled:cursor-not-allowed`}
+              >
+                {pageNum}
+              </button>
+            ))}
+
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages || isLoading}
+              className="p-2 rounded-lg bg-slate-800 text-slate-400 hover:text-cyan-400 
+                transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <ChevronRight className="h-5 w-5" />
             </button>
           </div>
         )}
