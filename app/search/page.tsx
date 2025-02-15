@@ -47,7 +47,7 @@ const SearchResultsPage = () => {
     }))
   );
 
-  const { data, isLoading, isError, fetchNextPage, hasNextPage, isFetchingNextPage } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ["searchMovies", debouncedQuery, selectedType, page],
     queryFn: () => getSearchFilter(debouncedQuery, selectedType, page.toString()),
     enabled: debouncedQuery.length > 3,
