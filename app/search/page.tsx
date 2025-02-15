@@ -21,6 +21,8 @@ import { useStore } from "@/store/useStore";
 import { useShallow } from "zustand/react/shallow";
 import CastsCard from "@/components/CastsCard";
 import Link from "next/link";
+import { Movie } from "@/types/movie.";
+import {ScrollToTopButton} from "@/components/ScrollToTopButton"
 
 const contentTypes = [
   { value: "movie", label: "Movies", icon: Film },
@@ -32,8 +34,11 @@ const contentTypes = [
 const MemoizedSearchIcon = memo(Search);
 const MemoizedClearIcon = memo(X);
 
+
 const SearchResultsPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [allMovies, setAllMovies] = useState<Movie[]>([]);
+  const [page, setPage] = useState(1);
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const { selectedType, setSelectedType } = useStore(
     useShallow((state) => ({
@@ -41,6 +46,13 @@ const SearchResultsPage = () => {
       setSelectedType: state.setSelectedType,
     }))
   );
+
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["searchMovies", debouncedQuery, selectedType, page],
+    queryFn: () => getSearchFilter(debouncedQuery, selectedType, page),
+    enabled: debouncedQuery.length > 3,
+    staleTime: 5 * 60 * 1000,
+  });
 
   // Debounce search input
   useEffect(() => {
@@ -51,12 +63,25 @@ const SearchResultsPage = () => {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ["searchMovies", debouncedQuery, selectedType],
-    queryFn: () => getSearchFilter(debouncedQuery, selectedType),
-    enabled: debouncedQuery.length > 3,
-    staleTime: 5 * 60 * 1000,
-  });
+  useEffect(() => {
+    if (data) {
+      setAllMovies((prevMovies) => {
+        const movieSet = new Set(prevMovies.map((m) => m.id));
+        const uniqueMovies = data?.results?.filter((m) => !movieSet.has(m.id));
+        return [...prevMovies, ...uniqueMovies];
+      });
+    }
+  }, [data, page]);
+
+
+    useEffect(() => {
+      if (!data) return;
+
+      setPage(1);
+      setAllMovies(data.results ?? []);
+    }, [debouncedQuery, selectedType]);
+
+
 
   let typeSearch; // Declare typeSearch outside the conditional
 
@@ -143,7 +168,7 @@ const SearchResultsPage = () => {
       {/* Results Section */}
       <div className="container mx-auto px-4 py-8">
         <AnimatePresence mode="wait">
-          {debouncedQuery.length === 0 ? (
+          {debouncedQuery.length === 0  ? (
             <motion.div
               key="empty-state"
               initial={{ opacity: 0 }}
@@ -202,11 +227,7 @@ const SearchResultsPage = () => {
               exit={{ opacity: 0 }}
               className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"
             >
-              {data?.results?.map((movie: Movie, index: number) => (
-                <Link
-                  href={`/${selectedType === "multi" ? movie.media_type : selectedType}/${movie.id}`}
-                  key={movie.id}
-                >
+              {allMovies.map((movie: Movie, index: number) => (
                   <motion.div
                     key={movie.id}
                     initial={{ opacity: 0, y: 20 }}
@@ -221,7 +242,6 @@ const SearchResultsPage = () => {
                       <MovieCard movie={movie} />
                     )}
                   </motion.div>
-                </Link>
               ))}
             </motion.div>
           )}
@@ -231,15 +251,24 @@ const SearchResultsPage = () => {
         {data?.page < data?.total_pages && (
           <div className="flex justify-center mt-8">
             <button
+              onClick={() => {
+                      setPage((prev) => prev + 1);
+                    }}
               className="px-6 py-2 bg-cyan-500/20 text-cyan-400 rounded-lg hover:bg-cyan-500/30 
                 transition-colors flex items-center gap-2"
             >
-              <Loader2 className="h-4 w-4 animate-spin" />
-              Load More
+              {isLoading ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" /> loading
+                </>
+              ) : (
+                "Load More"
+              )}  
             </button>
           </div>
         )}
       </div>
+      <ScrollToTopButton/>
     </div>
   );
 };

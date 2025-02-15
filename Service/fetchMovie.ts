@@ -17,10 +17,10 @@ export const getSearch = async (q: string) => {
   }
 };
 
-export const getSearchFilter = async (q: string, type: string) => {
+export const getSearchFilter = async (q: string, type: string, page: string) => {
   try {
     const response = await axios.get(
-      `${url}/search/${type}?api_key=${api_key}&query=${q}&page=1&`
+      `${url}/search/${type}?api_key=${api_key}&query=${q}&page=${page}&`
     );
 
     const data = await response.data;
