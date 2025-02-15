@@ -65,8 +65,8 @@ const SearchResultsPage = () => {
   useEffect(() => {
     if (data) {
       setAllMovies((prevMovies) => {
-        const movieSet = new Set(prevMovies.map((m) => m.id));
-        const uniqueMovies = data?.results?.filter((m) => !movieSet.has(m.id));
+        const movieSet = new Set(prevMovies.map((m: any) => m.id));
+        const uniqueMovies = data?.results?.filter((m: any) => !movieSet.has(m.id));
         return [...prevMovies, ...uniqueMovies];
       });
     }
