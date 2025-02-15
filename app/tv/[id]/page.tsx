@@ -13,7 +13,7 @@ import Head from "next/head";
 import Image from "next/image";
 import { Rating } from "@/components/common/Rating";
 import TrailerModal from "@/components/TrailerModal";
-import { CalendarIcon, ForwardIcon, Heart } from "lucide-react";
+import { CalendarIcon, ForwardIcon, Heart, Play } from "lucide-react";
 import {
   BanknotesIcon,
   BuildingOfficeIcon,
@@ -256,7 +256,7 @@ function DetailShow({ params }: { params: Promise<{ id: string }> }) {
                       }}
                     />
                     <GoWatchButton params={id} typeData={"tv"}>
-                      Watch
+                      <Play /> Watch
                     </GoWatchButton>
                   </div>
                 </div>

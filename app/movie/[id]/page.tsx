@@ -21,6 +21,7 @@ import {
   Heart,
   ChevronLeftIcon,
   ChevronRightIcon,
+  Play
 } from "lucide-react";
 import {
   BanknotesIcon,
@@ -245,7 +246,7 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
                       }}
                     />
                     <GoWatchButton params={id} typeData={"movie"}>
-                      Watch
+                      <Play /> Watch
                     </GoWatchButton>
                   </div>
                 </div>

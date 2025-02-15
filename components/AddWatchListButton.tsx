@@ -19,23 +19,9 @@ export const AddToWatchListButton = ({ item }: { item: WatchlistItem }) => {
       onClick={() =>
         isInWatchlist ? removeFromWatchlist(item.id) : addToWatchlist(item)
       }
-      className={`flex items-center gap-2 px-4 py-2 rounded-full ${
-        isInWatchlist
-          ? "bg-purple-600 text-white"
-          : "bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white"
-      }`}
+      className="flex items-center"
     >
-      {isInWatchlist ? (
-        <>
-          <Check className="w-5 h-5" />
-          <span>In Watchlist</span>
-        </>
-      ) : (
-        <>
-          <Bookmark className="w-5 h-5" />
-          <span>{isMobile ? "watchlist" : "Add to Watchlist"}</span>
-        </>
-      )}
+      <Bookmark className={`w-10 h-10 ${isInWatchlist ? "text-yellow-500 fill-yellow-500" : "text-gray-200 dark:text-white fill-none"}`} />
     </motion.button>
   );
 };
