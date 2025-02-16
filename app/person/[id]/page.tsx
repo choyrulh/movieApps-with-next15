@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { getCreditPerson, getDetailPerson } from "@/Service/fetchMovie";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { AddFavoriteButton } from "@/components/AddFavoriteButton"
+import { AddFavoriteButton } from "@/components/AddFavoriteButton";
 const PersonDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = use(params);
   const [activeTab, setActiveTab] = useState<"movies" | "tv">("movies");
@@ -46,7 +46,7 @@ const PersonDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
+    <div className="min-h-screen">
       {/* Person Details Section */}
       <section className="max-w-7xl mx-auto pt-[7rem] pb-[2rem] py-8">
         <motion.div
@@ -68,19 +68,29 @@ const PersonDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
 
           {/* Personal Info */}
           <div className="flex-1 space-y-4">
-            <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
+            <h1 className="text-4xl font-bold text-gray-100 dark:text-white">
               {personData?.name}
             </h1>
 
-            <div className="flex gap-4 text-gray-600 dark:text-gray-300">
-              <p>🎂 {new Date(personData?.birthday).toLocaleDateString()}</p>
+            <div className="flex gap-4 text-gray-200 dark:text-gray-300">
+              <p>
+                🎂 {new Date(personData?.birthday).toLocaleDateString()} (
+                {new Date().getFullYear() -
+                  new Date(personData?.birthday).getFullYear()}{" "}
+                tahun)
+              </p>
               {personData?.deathday && (
-                <p>⚰️ {new Date(personData?.deathday).toLocaleDateString()}</p>
+                <p>
+                  ⚰️ {new Date(personData?.deathday).toLocaleDateString()} (
+                  {new Date(personData?.deathday).getFullYear() -
+                    new Date(personData?.birthday).getFullYear()}{" "}
+                  tahun)
+                </p>
               )}
               <p>📍 {personData?.place_of_birth}</p>
             </div>
 
-            <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
+            <p className="text-lg text-gray-300 dark:text-gray-300 leading-relaxed">
               {personData?.biography || "Biography not available"}
             </p>
 
@@ -92,10 +102,10 @@ const PersonDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
               </div>
               <AddFavoriteButton
                 item={{
-                        ...personData,
-                        name: personData.name ?? "",
-                        media_type: "person",
-                      }}
+                  ...personData,
+                  name: personData.name ?? "",
+                  media_type: "person",
+                }}
               />
             </div>
           </div>
@@ -109,7 +119,7 @@ const PersonDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
           animate={{ opacity: 1 }}
           className="space-y-6"
         >
-          <div className="flex gap-4 border-b border-gray-200 dark:border-gray-700">
+          <div className="flex gap-4 border-b pb-4 border-gray-200 dark:border-gray-700">
             {tabs.map((tab) => (
               <button
                 key={tab}
@@ -119,7 +129,7 @@ const PersonDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
                 className={`px-6 py-2 text-lg font-medium ${
                   activeTab === tab
                     ? "border-b-2 border-purple-600 text-purple-600 dark:text-purple-400"
-                    : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+                    : "text-gray-600 dark:text-gray-400 hover:text-white dark:hover:text-gray-200"
                 }`}
               >
                 {tab === "movies" ? "Movies" : "TV Shows"}
@@ -144,7 +154,7 @@ const PersonDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     whileHover={{ y: -5 }}
-                    className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden"
+                    className="bg-slate-900/10 border border-slate-900/20 dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden"
                   >
                     <div className="relative aspect-[2/3]">
                       <Image
@@ -161,10 +171,10 @@ const PersonDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
                     </div>
 
                     <div className="p-4">
-                      <h3 className="font-semibold text-gray-900 dark:text-white truncate">
+                      <h3 className="font-semibold text-gray-100 dark:text-white truncate">
                         {credit.title || credit.name}
                       </h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-300 truncate">
+                      <p className="text-sm text-gray-300/20 dark:text-gray-300 truncate">
                         as {credit.character || " - "}
                       </p>
                       <div className="mt-2 flex items-center justify-between">
@@ -173,7 +183,7 @@ const PersonDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
                             ? "🎬 Movie"
                             : "📺 TV Show"}
                         </span>
-                        <span className="text-sm text-gray-500">
+                        <span className="text-sm text-gray-400">
                           {new Date(
                             credit.release_date || credit.first_air_date
                           ).getFullYear()}
