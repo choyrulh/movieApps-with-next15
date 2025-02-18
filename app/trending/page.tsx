@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query'
 import { getTrending } from '@/Service/fetchMovie'
-import { Movie } from '@/types/movie'
+import { Movie } from '@/types/movie.'
 import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
 import { useState } from 'react'

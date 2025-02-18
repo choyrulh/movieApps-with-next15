@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query'
 import { getGenres, getSearchByGenre } from '@/Service/fetchMovie'
-import { Movie } from '@/types/movie'
+import { Movie } from '@/types/movie.'
 import { motion } from 'framer-motion'
 import { useState, useCallback, useMemo } from 'react'
 import MovieCard from '@/components/movieCard'
