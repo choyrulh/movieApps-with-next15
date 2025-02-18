@@ -9,6 +9,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Movie } from "@/types/movie.";
 import MovieCard from "@/components/movieCard";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { cn } from '@/lib/utils'
 
 const Upcoming = () => {
   const [type, setType] = useState<"movie" | "tv">("movie");
@@ -64,8 +65,31 @@ const Upcoming = () => {
           <h1 className="text-center font-bold text-4xl text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">
             Upcoming {type === "movie" ? "Movies" : "TV Shows"}
           </h1>
-
-          <div className="flex gap-4">
+          <div className="flex gap-2 p-1 rounded-full bg-slate-800">
+            <button
+              onClick={() => handleTypeChange("movie")}
+              className={cn(
+                'px-6 py-2 rounded-full transition-colors',
+                type === 'movie' 
+                  ? 'bg-cyan-500 text-white' 
+                  : 'hover:bg-slate-700 text-slate-300'
+              )}
+            >
+              Movie
+            </button>
+            <button
+              onClick={() => handleTypeChange("tv")}
+              className={cn(
+                'px-6 py-2 rounded-full transition-colors',
+                type === 'tv' 
+                  ? 'bg-cyan-500 text-white' 
+                  : 'hover:bg-slate-700 text-slate-300'
+              )}
+            >
+              TV/Show
+            </button>
+          </div>
+          {/*<div className="flex gap-4">
             <Button
               variant={type === "movie" ? "destructive" : "default"}
               onClick={() => handleTypeChange("movie")}
@@ -80,7 +104,7 @@ const Upcoming = () => {
             >
               TV Shows
             </Button>
-          </div>
+          </div>*/}
         </div>
 
         {isLoading ? (

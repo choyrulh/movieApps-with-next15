@@ -118,16 +118,10 @@ const getTopRated = async () => {
   }
 };
 
-export const getTrending = async (type: string, params = {}) => {
+export const getTrending = async (type: "movie" | "tv", timeWindow: "day" | "week") => {
   try {
     const response = await axios.get(
-      `${url}/trending/${type}/week?page=1&api_key=${api_key}`,
-      {
-        params: {
-          api_key: api_key,
-          ...params,
-        },
-      }
+      `${url}/trending/${type}/${timeWindow}?api_key=${api_key}`
     );
 
     const data = await response.data;
