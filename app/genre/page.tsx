@@ -21,7 +21,7 @@ const GenrePage = () => {
 
   const { data: movies, isLoading } = useQuery({
     queryKey: ['genre-movies', selectedGenre, page],
-    queryFn: () => getSearchByGenre(selectedGenre!, page),
+    queryFn: () => getSearchByGenre(selectedGenre!, page as string),
     enabled: !!selectedGenre,
     keepPreviousData: true,
   })
