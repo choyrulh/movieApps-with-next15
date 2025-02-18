@@ -32,7 +32,7 @@ function page() {
         setSelectedServer(savedServer);
       }
       
-      const handleMessage = (event) => {
+      const handleMessage = (event: any) => {
         if (event.origin !== "https://vidlink.pro") return;
         if (event.data?.type === "MEDIA_DATA") {
           const mediaData = event.data.data;
@@ -64,7 +64,7 @@ function page() {
     }
   };
   
-  const handleServerChange = (e) => {
+  const handleServerChange = (e: any) => {
     const server = e.target.value;
     setSelectedServer(server);
     localStorage.setItem("selectedVideoServer", server);
