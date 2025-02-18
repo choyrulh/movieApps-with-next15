@@ -174,7 +174,7 @@ const PersonDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
                       <h3 className="font-semibold text-gray-100 dark:text-white truncate">
                         {credit.title || credit.name}
                       </h3>
-                      <p className="text-sm text-gray-300/20 dark:text-gray-300 truncate">
+                      <p className="text-sm text-gray-300/50 dark:text-gray-300 truncate">
                         as {credit.character || " - "}
                       </p>
                       <div className="mt-2 flex items-center justify-between">

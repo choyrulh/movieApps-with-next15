@@ -15,6 +15,7 @@ function page() {
   const [season, setSeason] = useState("1");
   const [episode, setEpisode] = useState("1");
   const [mediaDataHistory, setMediaDataHistory] = useState<any>();
+  const [selectedServer, setSelectedServer] = useState("vidlink");
 
   const { data, isLoading, isError } = useQuery<any>({
     queryKey: ["showDetail", id],
@@ -25,15 +26,23 @@ function page() {
   });
 
   useEffect(() => {
-    window.addEventListener("message", (event) => {
-      if (event.origin !== "https://vidlink.pro") return;
-
-      if (event.data?.type === "MEDIA_DATA") {
-        const mediaData = event.data.data;
-        localStorage.setItem("vidLinkProgress", JSON.stringify(mediaData));
+      // Load the previously selected server from localStorage if available
+      const savedServer = localStorage.getItem("selectedVideoServer");
+      if (savedServer) {
+        setSelectedServer(savedServer);
       }
-    });
-  }, []);
+      
+      const handleMessage = (event) => {
+        if (event.origin !== "https://vidlink.pro") return;
+        if (event.data?.type === "MEDIA_DATA") {
+          const mediaData = event.data.data;
+          localStorage.setItem("vidLinkProgress", JSON.stringify(mediaData));
+        }
+      };
+      
+      window.addEventListener("message", handleMessage);
+      return () => window.removeEventListener("message", handleMessage);
+    }, []);
 
   const totalSeasons = data?.number_of_seasons || 0;
   const selectedSeasonData = data?.seasons?.find(
@@ -41,8 +50,25 @@ function page() {
   );
   const totalEpisodes = selectedSeasonData?.episode_count || 0;
 
-  // Construct the video URL directly
-  const videoUrl = `https://vidlink.pro/tv/${id}/${season}/${episode}`;
+  // Get video URL based on selected server
+  const getVideoUrl = () => {
+    switch (selectedServer) {
+      case "vidlink":
+        return `https://vidlink.pro/tv/${id}/${season}/${episode}`;
+      case "vidsrc-v2":
+        return `https://vidsrc.cc/v2/embed/tv/${id}/${season}/${episode}?autoPlay=false`;
+      case "vidsrc-v3":
+        return `https://vidsrc.cc/v3/embed/tv/${id}/${season}/${episode}?autoPlay=false`;
+      default:
+        return `https://vidlink.pro/tv/${id}/${season}/${episode}`;
+    }
+  };
+  
+  const handleServerChange = (e) => {
+    const server = e.target.value;
+    setSelectedServer(server);
+    localStorage.setItem("selectedVideoServer", server);
+  };
 
   return (
     <div className="min-h-screen bg-gray-900 text-white pb-20">
@@ -50,6 +76,24 @@ function page() {
         <Link href={`/tv/${data?.id}`}>
           <h2 className="text-white text-lg">{data?.name}</h2>
         </Link>
+         {/* Server Selection */}
+          <div className="flex items-center gap-2">
+            <label htmlFor="serverSelect" className="text-sm text-gray-300">
+              Select Server:
+            </label>
+            <select
+              id="serverSelect"
+              value={selectedServer}
+              onChange={handleServerChange}
+              className="bg-gray-800 text-white px-3 py-1 rounded border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="vidlink">VidLink</option>
+              <option value="vidsrc-v2">VidSrc (v2)</option>
+              <option value="vidsrc-v3">VidSrc (v3)</option>
+            </select>
+          </div>
+
+
         {/* Season and Episode Controls */}
         <div className="flex flex-col gap-4">
           {data && (
@@ -93,8 +137,8 @@ function page() {
         {/* Video Player */}
         <div className="aspect-video w-full bg-black rounded-lg overflow-hidden shadow-xl">
           <iframe
-            key={`${season}-${episode}`} // Add key prop to force re-render
-            src={videoUrl}
+            key={`${selectedServer}-${season}-${episode}`} // Add key prop to force re-render
+            src={getVideoUrl()}
             frameBorder="0"
             allowFullScreen
             width="100%"
