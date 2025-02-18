@@ -17,7 +17,11 @@ export const getSearch = async (q: string) => {
   }
 };
 
-export const getSearchFilter = async (q: string, type: string, page: string) => {
+export const getSearchFilter = async (
+  q: string,
+  type: string,
+  page: string
+) => {
   try {
     const response = await axios.get(
       `${url}/search/${type}?api_key=${api_key}&query=${q}&page=${page}&`
@@ -325,6 +329,18 @@ export const getRecommendedMovies = async (id: string, type: string) => {
   try {
     const response = await axios.get(
       `${url}/${type}/${id}/recommendations?api_key=${api_key}`
+    );
+    const data = await response.data;
+    return data;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const getUpcomingShow = async (type: "movie" | "tv", page: string) => {
+  try {
+    const response = await axios.get(
+      `${url}/discover/${type}?api_key=${api_key}&region=ID&sort_by=${type === "movie" ? "release_date" : "first_air_date"}.desc&with_original_language=id&page=${page}`
     );
     const data = await response.data;
     return data;

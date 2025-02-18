@@ -10,15 +10,13 @@ function Watch() {
   const [selectedServer, setSelectedServer] = useState("server 1");
 
   useEffect(() => {
-
     // Load the previously selected server from localStorage if available
     const savedServer = localStorage.getItem("selectedVideoServer");
     if (savedServer) {
       setSelectedServer(savedServer);
     }
 
-
-    const handleMessage = (event) => {
+    const handleMessage = (event: any) => {
       if (event.origin !== "https://vidlink.pro") return;
       if (event.data?.type === "MEDIA_DATA") {
         const mediaData = event.data.data;
@@ -30,8 +28,7 @@ function Watch() {
     return () => window.removeEventListener("message", handleMessage);
   }, [id]);
 
-
-   // Get video URL based on selected server
+  // Get video URL based on selected server
   const getVideoUrl = () => {
     switch (selectedServer) {
       case "server 1":
@@ -43,13 +40,13 @@ function Watch() {
       case "server 4":
         return `https://vidsrc.to/embed/movie/${id}`;
       case "server 5":
-        return `https://vidsrc.icu/embed/movie/${id}`
+        return `https://vidsrc.icu/embed/movie/${id}`;
       default:
         return `https://vidlink.pro/movie/${id}`;
     }
   };
 
-  const handleServerChange = (e) => {
+  const handleServerChange = (e: any) => {
     const server = e.target.value;
     setSelectedServer(server);
     localStorage.setItem("selectedVideoServer", server);
@@ -58,7 +55,6 @@ function Watch() {
   return (
     <div className="min-h-screen bg-gray-900 text-white pb-20">
       <main className="max-w-7xl mx-auto px-4 pt-28">
-
         <div className="mb-4">
           <label htmlFor="serverSelect" className="text-sm text-gray-300 mr-2">
             Select Server:

@@ -15,7 +15,7 @@ import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
-import {ScrollToTopButton} from "@/components/ScrollToTopButton"
+import { ScrollToTopButton } from "@/components/ScrollToTopButton";
 
 const Banner = dynamic(() => import("@/components/Banner"), {
   ssr: true,
@@ -125,7 +125,7 @@ export default function Home() {
           )}
         </div>
       </div>
-      <ScrollToTopButton/>
+      <ScrollToTopButton />
     </main>
   );
 }

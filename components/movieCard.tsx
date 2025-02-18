@@ -24,13 +24,19 @@ const MovieCard = ({ movie }: { movie: Movie }) => {
     >
       <Link href={`/${selectedType}/${movie.id}`}>
         <div className="relative aspect-[2/3]">
-          <Image
+         {movie.poster_path ? (
+           <Image
             src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
             alt={movie.title ?? movie.name ?? ""}
             fill
             className="object-cover group-hover:opacity-75 transition-opacity"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
+         ): (
+          <div className="w-auto h-full bg-slate-800 flex items-center justify-center">
+              <span className="text-sm text-white/60">No poster available</span>
+            </div>
+         )}
         </div>
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent" />
         <div className="absolute bottom-0 left-0 right-0 p-4">
