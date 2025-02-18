@@ -11,7 +11,7 @@ import Link from "next/link";
 import { memo } from "react";
 import useIsMobile from "@/hook/useIsMobile";
 
-function Banner({ type }: { type: string }) {
+function Banner({ type }: { type: "movie" | "tv" }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [pauseAutoSlide, setPauseAutoSlide] = useState(false);
   const [progress, setProgress] = useState(0);
