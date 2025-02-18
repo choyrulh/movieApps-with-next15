@@ -5,7 +5,7 @@ import { getGenres, getSearchByGenre } from '@/Service/fetchMovie'
 import { Movie, Genre } from '@/types/movie'
 import { motion } from 'framer-motion'
 import { useState, useCallback, useMemo } from 'react'
-import MovieCard from '@/components/MovieCard'
+import MovieCard from '@/components/movieCard'
 import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
 import { ChevronLeft, ChevronRight } from "lucide-react";
