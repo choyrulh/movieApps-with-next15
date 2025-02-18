@@ -20,7 +20,7 @@ function Banner({ type }: { type: string }) {
   const { data, isLoading, isError } = useQuery({
     queryKey: ["trendingMovies", type],
 
-    queryFn: () => getTrending(type, {}),
+    queryFn: () => getTrending(type, "week"),
     staleTime: 5 * 60 * 1000,
     retry: 2,
   });

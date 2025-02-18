@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query'
 import { getGenres, getSearchByGenre } from '@/Service/fetchMovie'
-import { Movie, Genre } from '@/types/movie'
+import { Movie } from '@/types/movie'
 import { motion } from 'framer-motion'
 import { useState, useCallback, useMemo } from 'react'
 import MovieCard from '@/components/movieCard'
@@ -57,7 +57,7 @@ const GenrePage = () => {
           
           <div className="flex flex-wrap gap-2">
             {genres ? (
-              genres?.genres?.map((genre: Genre) => (
+              genres?.genres?.map((genre: any) => (
                 <button
                   key={genre.id}
                   onClick={() => {
