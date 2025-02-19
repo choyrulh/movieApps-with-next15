@@ -5,7 +5,7 @@ import React, { useState, useRef, useEffect } from 'react';
 const BiographySection = ({ biography }: {biography: string}) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [height, setHeight] = useState("auto");
-  const contentRef = useRef(null);
+  const contentRef = useRef<HTMLParagraphElement | null>(null);
   const maxLength = 300;
 
   useEffect(() => {
