@@ -7,6 +7,8 @@ import { getCreditPerson, getDetailPerson } from "@/Service/fetchMovie";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { AddFavoriteButton } from "@/components/AddFavoriteButton";
+import BiographySection from "@/components/common/Biography"
+
 const PersonDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = use(params);
   const [activeTab, setActiveTab] = useState<"movies" | "tv">("movies");
@@ -48,26 +50,27 @@ const PersonDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
   return (
     <div className="min-h-screen">
       {/* Person Details Section */}
-      <section className="max-w-7xl mx-auto pt-[7rem] pb-[2rem] py-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col md:flex-row gap-8"
-        >
-          {/* Profile Image */}
-          <div className="relative w-full md:w-1/3 lg:w-1/4 aspect-square rounded-2xl overflow-hidden shadow-xl">
-            <Image
-              src={`https://image.tmdb.org/t/p/w500${personData?.profile_path}`}
-              alt={personData?.name}
-              fill
-              className="object-cover"
-              priority
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-          </div>
+      <section className="max-w-7xl mx-auto pt-[7rem] pb-[2rem] px-4">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex flex-col md:flex-row gap-8 md:gap-12"
+      >
+        {/* Profile Image - Improved */}
+        <div className="relative w-full md:w-64 lg:w-72 aspect-[2/3] rounded-2xl overflow-hidden shadow-xl ring-1 ring-white/10">
+          <Image
+            src={`https://image.tmdb.org/t/p/w780${personData?.profile_path}`} // Higher quality image
+            alt={personData?.name}
+            fill
+            priority // Prioritize loading for above-the-fold image
+            className="object-cover object-top" // Ensure face stays at top
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 30vw, 25vw"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/30" />
+        </div>
 
           {/* Personal Info */}
-          <div className="flex-1 space-y-4">
+          <div className="flex-1 space-y-4 px-4 md:px-0">
             <h1 className="text-4xl font-bold text-gray-100 dark:text-white">
               {personData?.name}
             </h1>
@@ -90,9 +93,7 @@ const PersonDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
               <p>📍 {personData?.place_of_birth}</p>
             </div>
 
-            <p className="text-lg text-gray-300 dark:text-gray-300 leading-relaxed">
-              {personData?.biography || "Biography not available"}
-            </p>
+            <BiographySection biography={personData?.biography} />
 
             <div className="flex gap-4">
               <div className="bg-purple-100 dark:bg-purple-900/30 px-4 py-2 rounded-full">
@@ -201,10 +202,10 @@ const PersonDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
 };
 
 const LoadingSkeleton = () => (
-  <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
+  <div className="min-h-screen">
     <div className="max-w-7xl mx-auto pt-[7rem] pb-[2rem] py-8 animate-pulse">
       <div className="flex flex-col md:flex-row gap-8">
-        <div className="w-full md:w-1/3 lg:w-1/4 aspect-square rounded-2xl bg-gray-200 dark:bg-gray-700" />
+        <div className="w-full md:w-1/3 lg:w-1/4 aspect-square rounded-2xl" />
         <div className="flex-1 space-y-4">
           <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded w-1/2" />
           <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/3" />
