@@ -57,7 +57,7 @@ const PersonDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
         className="flex flex-col md:flex-row gap-8 md:gap-12"
       >
         {/* Profile Image - Improved */}
-        <div className="relative w-full md:w-64 lg:w-72 aspect-[2/3] rounded-2xl overflow-hidden shadow-xl ring-1 ring-white/10">
+        <div className="relative h-[52vh] w-full md:w-64 lg:w-72 aspect-[2/3] rounded-2xl overflow-hidden shadow-xl ring-1 ring-white/10">
           <Image
             src={`https://image.tmdb.org/t/p/w780${personData?.profile_path}`} // Higher quality image
             alt={personData?.name}
