@@ -92,7 +92,7 @@ const Footer = () => {
               { name: "Movies", href: "/movies" },
               { name: "TV Shows", href: "/tv" },
               { name: "Trending", href: "/trending" },
-              { name: "Genres", href: "/genres" },
+              { name: "Genres", href: "/genre" },
               { name: "Upcoming", href: "/upcoming" },
             ].map((link) => (
               <motion.div
