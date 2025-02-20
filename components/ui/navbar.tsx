@@ -110,7 +110,7 @@ export const Navbar = () => {
       <nav
         className={`${
           pathname === "/search" ? "relative" : "fixed"
-        } left-0 right-0 z-50 ${
+        } left-0 right-0 z-[100] ${
           isScrolled
             ? "bg-slate-900/95 backdrop-blur-sm shadow-xl"
             : "bg-transparent bg-opacity-50"

@@ -49,7 +49,7 @@ const Footer = () => {
       <div>
         <Marquee speed={80} pauseOnHover className="py-3 backdrop-blur-md">
           <div className="flex items-center gap-8 px-4">
-            <span className="text-sm text-white/80">Now Trending:</span>
+            <span className="text-sm text-white/80">Now Trending :</span>
             {[
               "Stranger Things S5",
               "Oppenheimer",
@@ -57,6 +57,23 @@ const Footer = () => {
               "The Last of Us S2",
               "Avatar 3",
               "Dune: Part Two",
+              "The Gorge",
+              "The Brutalist",
+              "Companion",
+              "Mufasa: The Lion King",
+              "Captain America: Brave New World",
+              "Flight Risk",
+              "The White Lotus",
+              "Paddington in Peru",
+              "Nosferatu",
+              "My Fault: London",
+              "Severance",
+              "Dog Man",
+              "Solo Leveling",
+              "Bridget Jones: Mad About the Boy",
+              "Ne Zha 2",
+              "Wicked"
+
             ].map((title) => (
               <div key={title} className="flex items-center gap-4">
                 <span className="text-white font-medium">{title}</span>

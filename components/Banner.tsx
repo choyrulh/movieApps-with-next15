@@ -241,6 +241,9 @@ function Banner({ type }: { type: "movie" | "tv" }) {
           <motion.div className="flex items-center justify-center gap-4 h-32">
             {data.results.map((movie: Movie, index: number) => {
               const position = index - activeIndex;
+              const isActive = index === activeIndex;
+              const isAfter = index > activeIndex;
+              const isBefore = index < activeIndex;
 
               return (
                 <motion.div
@@ -249,9 +252,11 @@ function Banner({ type }: { type: "movie" | "tv" }) {
                     position: "absolute",
                     left: "50%",
                     x: `calc(-50% + ${position * 185}px)`, // Adjust spacing
+                    paddingLeft: isAfter ? (isMobile ? "14vw" : "4vw") : isActive ? "0" : undefined,
+                    paddingRight: isBefore ? (isMobile ? "14vw" : "4vw") : isActive ? "0" : undefined,
                   }}
                   animate={{
-                    scale: index === activeIndex ? 1.3 : 1,
+                    scale: index === activeIndex ? 1.5 : 1,
                     opacity: Math.abs(position) > 3 ? 0 : 1,
                     zIndex: index === activeIndex ? 20 : 10,
                   }}
@@ -261,7 +266,7 @@ function Banner({ type }: { type: "movie" | "tv" }) {
                     damping: 30,
                   }}
                   onClick={() => handleSlideClick(index)}
-                  className="cursor-pointer"
+                  className={`cursor-pointer`}
                 >
                   <div className={`relative w-40 h-24 overflow-hidden`}>
                     <Image

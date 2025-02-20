@@ -26,23 +26,48 @@ function page() {
   });
 
   useEffect(() => {
-      // Load the previously selected server from localStorage if available
-      const savedServer = localStorage.getItem("selectedVideoServer");
+    try {
+      // Load the previously selected server from localStorage
+      const savedServer = localStorage.getItem('selectedVideoServer');
       if (savedServer) {
         setSelectedServer(savedServer);
       }
-      
-      const handleMessage = (event: any) => {
-        if (event.origin !== "https://vidlink.pro") return;
-        if (event.data?.type === "MEDIA_DATA") {
-          const mediaData = event.data.data;
-          localStorage.setItem("vidLinkProgress", JSON.stringify(mediaData));
+
+      // Type-safe message handler
+      const handleMessage = (event: MessageEvent) => {
+        // Validate origin with proper error handling
+        const allowedOrigins = ['https://vidlink.pro'];
+        if (!allowedOrigins.includes(event.origin)) {
+          console.warn('Received message from unauthorized origin:', event.origin);
+          return;
+        }
+
+        try {
+          // Validate message structure
+          if (event.data?.type === 'MEDIA_DATA' && event.data?.data) {
+            const mediaData = event.data.data;
+            
+            // Validate mediaData before storing
+            if (typeof mediaData === 'object') {
+              localStorage.setItem('vidLinkProgress', JSON.stringify(mediaData));
+            }
+          }
+        } catch (error) {
+          console.error('Error processing message:', error);
         }
       };
-      
-      window.addEventListener("message", handleMessage);
-      return () => window.removeEventListener("message", handleMessage);
-    }, []);
+
+      // Add event listener with proper typing
+      window.addEventListener('message', handleMessage as EventListener);
+
+      // Cleanup function
+      return () => {
+        window.removeEventListener('message', handleMessage as EventListener);
+      };
+    } catch (error) {
+      console.error('Error in video server effect:', error);
+    }
+  }, []); // Empty dependency array since we don't have external dependencies
 
   const totalSeasons = data?.number_of_seasons || 0;
   const selectedSeasonData = data?.seasons?.find(
@@ -87,9 +112,9 @@ function page() {
               onChange={handleServerChange}
               className="bg-gray-800 text-white px-3 py-1 rounded border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option value="vidlink">VidLink</option>
-              <option value="vidsrc-v2">VidSrc (v2)</option>
-              <option value="vidsrc-v3">VidSrc (v3)</option>
+              <option value="vidlink">server 1</option>
+              <option value="vidsrc-v2">server 2</option>
+              <option value="vidsrc-v3">server 3</option>
             </select>
           </div>
 
