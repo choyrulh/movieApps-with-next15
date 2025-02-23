@@ -3,6 +3,8 @@
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { Movie } from "@/types/movie.";
+import { getDetailMovie } from "@/Service/fetchMovie";
 
 function Watch() {
   const pathname = usePathname();
@@ -10,9 +12,9 @@ function Watch() {
   const router = useRouter();
   const [selectedServer, setSelectedServer] = useState("server 1");
   const [videoProgress, setVideoProgress] = useState({
-    watched:0,
+    watched: 0,
     duration: 0,
-    percentage: 0
+    percentage: 0,
   });
   const videoProgressRef = useRef(videoProgress);
 
@@ -48,39 +50,46 @@ function Watch() {
     }
 
     const handleMessage = (event: MessageEvent) => {
-      if (event.origin !== 'https://vidlink.pro') return;
+      if (event.origin !== "https://vidlink.pro") return;
 
-      if (event.data?.type === 'MEDIA_DATA') {
+      if (event.data?.type === "MEDIA_DATA") {
         const mediaData = event.data.data;
 
         if (mediaData && mediaData[id]?.progress) {
           const progress = {
             watched: mediaData[id].progress.watched,
             duration: mediaData[id].progress.duration,
-            percentage: (mediaData[id].progress.watched / mediaData[id].progress.duration) * 100 // Diperbaiki
+            percentage:
+              (mediaData[id].progress.watched /
+                mediaData[id].progress.duration) *
+              100, // Diperbaiki
           };
-          
+
           setVideoProgress(progress);
-          
+
           // Update localStorage
-          const history = JSON.parse(localStorage.getItem("watchHistory") || "{}");
+          const history = JSON.parse(
+            localStorage.getItem("watchHistory") || "{}"
+          );
           history[`${id}`] = {
             ...history[`${id}`],
             progress,
-            updated_at: new Date().toISOString()
+            updated_at: new Date().toISOString(),
           };
           localStorage.setItem("watchHistory", JSON.stringify(history));
         }
       }
     };
-    window.addEventListener('message', handleMessage);
+    window.addEventListener("message", handleMessage);
 
     return () => {
-      window.removeEventListener('message', handleMessage);
-      
+      window.removeEventListener("message", handleMessage);
+
       // Final save on unmount
       if (movie) {
-        const history = JSON.parse(localStorage.getItem("watchHistory") || "{}");
+        const history = JSON.parse(
+          localStorage.getItem("watchHistory") || "{}"
+        );
         history[`${id}`] = {
           id: movie.id,
           title: movie.title,
@@ -91,7 +100,7 @@ function Watch() {
           updated_at: new Date().toISOString(),
           release_date: movie.release_date,
           runtime: movie.runtime,
-          video_key: movie.videos?.results[0]?.key
+          video_key: movie.videos?.results[0]?.key,
         };
         localStorage.setItem("watchHistory", JSON.stringify(history));
       }

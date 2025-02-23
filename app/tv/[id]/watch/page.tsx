@@ -18,7 +18,7 @@ function page() {
   const [videoProgress, setVideoProgress] = useState({
     watched: 0,
     duration: 0,
-    percentage: 0
+    percentage: 0,
   });
 
   // Ref untuk track progress terbaru
@@ -49,39 +49,44 @@ function page() {
     //   setEpisode(tvHistory.last_watched.episode.toString());
     // }
 
-
     if (tvHistory?.seasons?.[season]?.episodes?.[episode]) {
       setVideoProgress(tvHistory.seasons[season].episodes[episode].progress);
     }
 
     const handleMessage = (event: MessageEvent) => {
-      if (event.origin !== 'https://vidlink.pro') return;
-      
-      if (event.data?.type === 'MEDIA_DATA') {
+      if (event.origin !== "https://vidlink.pro") return;
+
+      if (event.data?.type === "MEDIA_DATA") {
         const mediaData = event.data.data;
-        console.log(mediaData[id])
-        
+        console.log(mediaData[id]);
+
         if (mediaData && mediaData[id]?.progress) {
           const lastSeason = mediaData[id].last_season_watched;
           const lastEpisode = mediaData[id].last_episode_watched;
 
           // Menggunakan bracket notation untuk dynamic key
           const key = `s${lastSeason}e${lastEpisode}`;
-          const watched = mediaData[id].show_progress[key]?.progress.watched ?? 0;
-          const duration = mediaData[id].show_progress[key]?.progress.duration ?? 1; // Hindari pembagian dengan 0
+          const watched =
+            mediaData[id].show_progress[key]?.progress.watched ?? 0;
+          const duration =
+            mediaData[id].show_progress[key]?.progress.duration ?? 1; // Hindari pembagian dengan 0
 
           const progress = {
             watched,
             duration,
-            percentage: (watched / duration) * 100
+            percentage: (watched / duration) * 100,
           };
-          
+
           setVideoProgress(progress);
-          
+
           // Update localStorage
-          const history = JSON.parse(localStorage.getItem("watchHistory") || "{}");
-          const seasonData = data?.seasons.find((s: any) => s.season_number === parseInt(season));
-          
+          const history = JSON.parse(
+            localStorage.getItem("watchHistory") || "{}"
+          );
+          const seasonData = data?.seasons.find(
+            (s: any) => s.season_number === parseInt(season)
+          );
+
           history[`${id}`] = {
             ...history[`${id}`],
             id: data.id,
@@ -91,7 +96,7 @@ function page() {
             poster_path: data.poster_path,
             last_watched: {
               ...history[`${id}`]?.last_watched, // Mengambil data sebelumnya agar tidak hilang
-              videoProgress // Memastikan `videoProgress` dimasukkan dengan benar
+              videoProgress, // Memastikan `videoProgress` dimasukkan dengan benar
             },
             seasons: {
               ...history[`${id}`]?.seasons,
@@ -101,22 +106,24 @@ function page() {
                   [episode]: {
                     progress,
                     last_updated: new Date().toISOString(),
-                    episode_title: seasonData?.episodes?.[parseInt(episode) - 1]?.name || `Episode ${episode}`
-                  }
-                }
-              }
+                    episode_title:
+                      seasonData?.episodes?.[parseInt(episode) - 1]?.name ||
+                      `Episode ${episode}`,
+                  },
+                },
+              },
             },
-            last_updated: new Date().toISOString()
+            last_updated: new Date().toISOString(),
           };
           localStorage.setItem("watchHistory", JSON.stringify(history));
         }
       }
     };
-    
-    window.addEventListener('message', handleMessage);
+
+    window.addEventListener("message", handleMessage);
 
     return () => {
-      window.removeEventListener('message', handleMessage);
+      window.removeEventListener("message", handleMessage);
       saveProgress();
     };
   }, [id, season, episode, data]);
@@ -126,7 +133,9 @@ function page() {
 
     const historyKey = `${id}`;
     const history = JSON.parse(localStorage.getItem("watchHistory") || "{}");
-    const seasonData = data.seasons.find((s: any) => s.season_number === parseInt(season));
+    const seasonData = data.seasons.find(
+      (s: any) => s.season_number === parseInt(season)
+    );
 
     const updatedHistory: TVHistory = {
       ...history[historyKey],
@@ -143,18 +152,20 @@ function page() {
             [episode]: {
               progress: videoProgressRef.current,
               last_updated: new Date().toISOString(),
-              episode_title: seasonData?.episodes?.[parseInt(episode) - 1]?.name || `Episode ${episode}`
-            }
-          }
-        }
+              episode_title:
+                seasonData?.episodes?.[parseInt(episode) - 1]?.name ||
+                `Episode ${episode}`,
+            },
+          },
+        },
       },
       last_watched: {
         season: parseInt(season),
         episode: parseInt(episode),
         progress: videoProgressRef.current.percentage,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       },
-      last_updated: new Date().toISOString()
+      last_updated: new Date().toISOString(),
     };
 
     localStorage.setItem(
@@ -170,7 +181,11 @@ function page() {
     saveProgress();
     setSeason(newSeason);
     setEpisode("1");
-    setVideoProgress(0);
+    setVideoProgress({
+      watched: 0,
+      duration: 0,
+      percentage: 0,
+    });
   };
 
   const handleEpisodeChange = (newEpisode: string) => {
@@ -215,9 +230,11 @@ function page() {
   // Update tampilan progress bar
   const episodeProgressBar = (epNumber: string) => {
     const history = JSON.parse(localStorage.getItem("watchHistory") || "{}");
-    return history[`${id}`]?.seasons?.[season]?.episodes?.[epNumber]?.progress?.percentage || 0;
+    return (
+      history[`${id}`]?.seasons?.[season]?.episodes?.[epNumber]?.progress
+        ?.percentage || 0
+    );
   };
-
 
   return (
     <div className="min-h-screen bg-gray-900 text-white pb-20">
