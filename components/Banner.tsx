@@ -15,6 +15,8 @@ function Banner({ type }: { type: "movie" | "tv" }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [pauseAutoSlide, setPauseAutoSlide] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [touchStartX, setTouchStartX] = useState(0);
+  const [touchEndX, setTouchEndX] = useState(0);
   const isMobile = useIsMobile();
 
   const { data, isLoading, isError } = useQuery({
@@ -100,6 +102,26 @@ function Banner({ type }: { type: "movie" | "tv" }) {
   const handleSlideClick = (index: number) => {
     setActiveIndex(index);
     setProgress(0);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStartX(e.touches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStartX) return;
+    
+    const diff = touchStartX - touchEndX;
+    const swipeThreshold = 50;
+
+    if (diff > swipeThreshold) {
+      handleNext();
+    } else if (diff < -swipeThreshold) {
+      handlePrev();
+    }
+    
+    setTouchStartX(0);
+    setTouchEndX(0);
   };
 
   return (
@@ -232,13 +254,19 @@ function Banner({ type }: { type: "movie" | "tv" }) {
         className={`absolute bottom-8 ${
           isMobile ? "right-[12rem]" : "right-[18rem]"
         } h-32 z-50`}
+        onTouchStart={handleTouchStart}
+        onTouchMove={(e) => setTouchEndX(e.touches[0].clientX)}
+        onTouchEnd={handleTouchEnd}
       >
         <div className="relative max-w-4xl mx-auto">
           {/* Center highlight zone */}
           <div className="absolute left-1/2 -translate-x-1/2 w-24 h-32 bg-black/20 backdrop-blur-sm rounded-lg z-10" />
 
           {/* Thumbnails container */}
-          <motion.div className="flex items-center justify-center gap-4 h-32">
+          <motion.div 
+            style={{ touchAction: 'pan-y' }} // Memastikan swipe vertikal tetap bekerja
+            className="flex items-center justify-center gap-4 h-32"
+          >
             {data.results.map((movie: Movie, index: number) => {
               const position = index - activeIndex;
               const isActive = index === activeIndex;

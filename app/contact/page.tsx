@@ -12,7 +12,6 @@ const ContactPage = () => {
   const handleSubmit = (e: any) => {
     e.preventDefault();
     // Handle form submission
-    console.log(formData);
   };
 
   return (

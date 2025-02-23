@@ -12,7 +12,8 @@ import {
   Users,
   Layout,
   X,
-  ChevronLeft, ChevronRight
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { getSearch, getSearchFilter } from "@/Service/fetchMovie";
 import MovieCardSkeleton from "@/components/MovieCardSkeleton";
@@ -22,7 +23,7 @@ import { useStore } from "@/store/useStore";
 import { useShallow } from "zustand/react/shallow";
 import CastsCard from "@/components/CastsCard";
 import Link from "next/link";
-import {ScrollToTopButton} from "@/components/ScrollToTopButton"
+import { ScrollToTopButton } from "@/components/ScrollToTopButton";
 
 const contentTypes = [
   { value: "movie", label: "Movies", icon: Film },
@@ -34,10 +35,8 @@ const contentTypes = [
 const MemoizedSearchIcon = memo(Search);
 const MemoizedClearIcon = memo(X);
 
-
 const SearchResultsPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  // const [allMovies, setAllMovies] = useState<Movie[]>([]);
   const [page, setPage] = useState(1);
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const { selectedType, setSelectedType } = useStore(
@@ -49,7 +48,8 @@ const SearchResultsPage = () => {
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["searchMovies", debouncedQuery, selectedType, page],
-    queryFn: () => getSearchFilter(debouncedQuery, selectedType, page.toString()),
+    queryFn: () =>
+      getSearchFilter(debouncedQuery, selectedType, page.toString()),
     enabled: debouncedQuery.length > 3,
     staleTime: 5 * 60 * 1000,
   });
@@ -69,35 +69,16 @@ const SearchResultsPage = () => {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  // useEffect(() => {
-  //   if (data) {
-  //     setAllMovies((prevMovies) => {
-  //       const movieSet = new Set(prevMovies.map((m: any) => m.id));
-  //       const uniqueMovies = data?.results?.filter((m: any) => !movieSet.has(m.id));
-  //       return [...prevMovies, ...uniqueMovies];
-  //     });
-  //   }
-  // }, [data, page]);
+  const allMovies = useMemo(() => {
+    if (!data?.results) return [];
 
-
-    // useEffect(() => {
-    //   if (!data) return;
-
-    //   setPage(1);
-    //   setAllMovies(data.results ?? []);
-    // }, [debouncedQuery, selectedType]);
-
-    const allMovies = useMemo(() => {
-      if (!data?.results) return [];
-      
-      const movieSet = new Set();
-      return data.results.filter((movie: Movie) => {
-        if (movieSet.has(movie.id)) return false;
-        movieSet.add(movie.id);
-        return true;
-      });
-    }, [data?.results]);
-
+    const movieSet = new Set();
+    return data.results.filter((movie: Movie) => {
+      if (movieSet.has(movie.id)) return false;
+      movieSet.add(movie.id);
+      return true;
+    });
+  }, [data?.results]);
 
   // let typeSearch; // Declare typeSearch outside the conditional
 
@@ -125,9 +106,9 @@ const SearchResultsPage = () => {
     setPage(1);
   }, []);
 
- const handlePageChange = useCallback((newPage: number) => {
+  const handlePageChange = useCallback((newPage: number) => {
     setPage(newPage);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
   const totalPages = data?.total_pages || 0;
@@ -145,7 +126,6 @@ const SearchResultsPage = () => {
 
     return range;
   }, [currentPage, totalPages]);
-
 
   return (
     <div className="min-h-screen bg-slate-900">
@@ -190,9 +170,9 @@ const SearchResultsPage = () => {
             <button
               key={type.value}
               onClick={() => {
-                  setSelectedType(type.value);
-                  setPage(1);
-                }}
+                setSelectedType(type.value);
+                setPage(1);
+              }}
               className={`
                       flex flex-col items-center justify-center p-3 rounded-lg
                       transition-all duration-200 gap-2
@@ -215,7 +195,7 @@ const SearchResultsPage = () => {
       {/* Results Section */}
       <div className="container mx-auto px-4 py-8">
         <AnimatePresence mode="wait">
-          {!debouncedQuery  ? (
+          {!debouncedQuery ? (
             <motion.div
               key="empty-state"
               initial={{ opacity: 0 }}
@@ -275,20 +255,20 @@ const SearchResultsPage = () => {
               className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"
             >
               {allMovies.map((movie: Movie, index: number) => (
-                  <motion.div
-                    key={movie.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.05 }}
-                  >
-                    {(selectedType === "multi" &&
-                      movie.media_type === "person") ||
-                    selectedType === "person" ? (
-                      <CastsCard numberOrder={false} member={movie} />
-                    ) : (
-                      <MovieCard movie={movie} />
-                    )}
-                  </motion.div>
+                <motion.div
+                  key={movie.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                >
+                  {(selectedType === "multi" &&
+                    movie.media_type === "person") ||
+                  selectedType === "person" ? (
+                    <CastsCard numberOrder={false} member={movie} />
+                  ) : (
+                    <MovieCard movie={movie} />
+                  )}
+                </motion.div>
               ))}
             </motion.div>
           )}
@@ -304,7 +284,7 @@ const SearchResultsPage = () => {
             >
               <ChevronLeft className="h-5 w-5" />
             </button>
-            
+
             {paginationRange.map((pageNum) => (
               <button
                 key={pageNum}
@@ -333,7 +313,7 @@ const SearchResultsPage = () => {
           </div>
         )}
       </div>
-      <ScrollToTopButton/>
+      <ScrollToTopButton />
     </div>
   );
 };

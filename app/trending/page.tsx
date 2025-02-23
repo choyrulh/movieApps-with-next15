@@ -78,14 +78,7 @@ const TrendingPage = () => {
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: index * 0.05 }}
               >
-                <MovieCard
-                  movie={movie}
-                  // badge={
-                  //   <div className="absolute top-2 left-2 flex items-center bg-slate-900/80 px-2 py-1 rounded-full text-cyan-400 text-sm">
-                  //     #{index + 1}
-                  //   </div>
-                  // }
-                />
+                <MovieCard movie={movie} />
               </motion.div>
             ))}
           </motion.div>
