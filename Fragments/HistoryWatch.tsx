@@ -17,10 +17,24 @@ const HistoryTontonan = () => {
 
   useEffect(() => {
     // Ambil data dari localStorage dan konversi ke array
-    const localData = localStorage.getItem("vidLinkProgress");
+    const localData = localStorage.getItem("watchHistory");
     if (localData) {
       const parsedData = JSON.parse(localData);
-      setMediaDataHistory(Object.values(parsedData));
+      const historyArray = Object.values(parsedData).flatMap((item: any) => {
+        if (item.type === "tv") {
+         const transformedData = Object.values(parsedData)
+      .filter((item: any) => item.type === 'tv' && item.last_watched)
+      .map((tvShow: any) => ({
+        ...tvShow,
+        season: tvShow.last_watched.season,
+        episode: tvShow.last_watched.episode,
+        progress: tvShow.last_watched.progress,
+        last_updated: tvShow.last_watched.timestamp
+      }));
+        }
+        return item;
+      });
+      setMediaDataHistory(historyArray);
     }
   }, []);
 
@@ -28,26 +42,33 @@ const HistoryTontonan = () => {
     e.preventDefault();
     e.stopPropagation();
 
-    const localData = localStorage.getItem("vidLinkProgress");
+    const localData = localStorage.getItem("watchHistory");
     if (localData) {
       const parsedData = JSON.parse(localData);
       delete parsedData[mediaId];
 
-      localStorage.setItem("vidLinkProgress", JSON.stringify(parsedData));
+      localStorage.setItem("watchHistory", JSON.stringify(parsedData));
       setMediaDataHistory(Object.values(parsedData));
     }
   };
 
   // Calculate progress percentage
   const calculateProgress = (media: any) => {
-    if (!media.progress) return 0;
-    if (typeof media.progress === "number") return media.progress;
-
-    const { watched, duration } = media.progress;
-    if (!watched || !duration) return 0;
-
-    return Math.round((watched / duration) * 100);
+    if (media.progress?.percentage) {
+      return Math.round(media?.progress?.percentage);
+    } else {
+      return Math.round(media?.last_watched?.progress);
+    }
+    return 0;
   };
+
+  const formatTime = (seconds: number) => {
+    if (!seconds) return "0:00";
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = Math.floor(seconds % 60);
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+  };
+
 
   const handleScroll = (direction: "left" | "right") => {
     const container = scrollContainerRef.current;
@@ -117,17 +138,24 @@ const HistoryTontonan = () => {
         className="flex space-x-4 overflow-x-auto pb-4 scrollbar-hide"
       >
         {mediaDataHistory?.map((media, index) => {
+          const isTVShow = media.type === "tv";
           const progressPercentage = calculateProgress(media);
+          const lastWatchedSeason = media.last_watched?.season
+          const lastWatchedEpisode = media.last_watched?.episode
+          const watched = (isTVShow ? media.seasons[lastWatchedSeason].episodes[lastWatchedEpisode].progress?.watched : media.progress?.watched) 
+          const duration = (isTVShow ?  media.seasons[lastWatchedSeason].episodes[lastWatchedEpisode].progress?.duration : media.progress?.duration)
+          // console.log("watched: ", media.seasons[lastWatchedSeason]?.episodes[lastWatchedEpisode].progress?.watched)
+          // console.log("duration: ", media.seasons[lastWatchedSeason]?.episodes[lastWatchedEpisode].progress?.duration)
           return (
             <Link
               href={`/${media.type}/${media.id}/watch`}
-              key={index}
+              key={media.id}
               className="flex-shrink-0 w-48 bg-gray-700 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 relative group"
             >
               {/* Delete Button */}
               <button
                 onClick={(e) => handleDelete(media.id, e)}
-                className={`absolute top-1 left-1 z-10 p-1 bg-black/50 rounded-full hover:bg-black/80 transition-colors ${
+                className={`absolute top-1 right-0 z-10 p-1 bg-black/50 rounded-full hover:bg-black/80 transition-colors ${
                   isMobile ? "opacity-100" : "opacity-0"
                 } group-hover:opacity-100`}
               >
@@ -146,6 +174,12 @@ const HistoryTontonan = () => {
                   />
                 </svg>
               </button>
+              {/* Badge untuk TV Show */}
+              {isTVShow && (
+                <div className="absolute top-1 left-1 z-10 px-2 py-1 bg-black/50 rounded text-xs">
+                  S{media.last_watched?.season}E{media.last_watched?.episode}
+                </div>
+              )}
 
               <div className="relative h-32 rounded-t-lg overflow-hidden">
                 <Image
@@ -155,15 +189,25 @@ const HistoryTontonan = () => {
                   objectFit="cover"
                   className="hover:scale-105 transition-transform duration-300"
                 />
+                {/* Tambahkan informasi tambahan */}
                 <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-2">
-                  <span className="text-white text-sm font-medium block truncate">
-                    {media.title}
-                  </span>
-                  <span className="text-gray-200 text-xs">
-                    {media.last_episode_watched
-                      ? `Eps: ${media.last_episode_watched}`
-                      : null}
-                  </span>
+                  <div className="flex justify-between items-end">
+                    <div>
+                      <span className="text-white text-sm font-medium block truncate">
+                        {media.title}
+                      </span>
+                      {media.release_date && (
+                        <span className="text-gray-300 text-xs">
+                          {new Date(media.release_date).getFullYear()}
+                        </span>
+                      )}
+                    </div>
+                    {media.runtime && (
+                      <span className="text-xs bg-black/50 px-2 py-1 rounded">
+                        {Math.floor(media.runtime / 60)}h {media.runtime % 60}m
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
               <div className="p-2">
@@ -181,9 +225,18 @@ const HistoryTontonan = () => {
                 </div>
 
                 <p className="text-xs text-gray-500 mt-1">
+                  {formatTime(watched)} / {formatTime(duration)}
+                </p>
+
+                <p className="text-xs text-gray-500 mt-1">
                   Tonton {progressPercentage}%
                 </p>
               </div>
+              {isTVShow && media.episode_title && (
+                <span className="block text-xs text-gray-400">
+                  {media.episode_title}
+                </span>
+              )}
             </Link>
           );
         })}

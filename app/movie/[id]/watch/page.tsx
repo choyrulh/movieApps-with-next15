@@ -1,32 +1,102 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 function Watch() {
   const pathname = usePathname();
   const id = pathname.split("/")[2];
   const router = useRouter();
   const [selectedServer, setSelectedServer] = useState("server 1");
+  const [videoProgress, setVideoProgress] = useState({
+    watched:0,
+    duration: 0,
+    percentage: 0
+  });
+  const videoProgressRef = useRef(videoProgress);
+
+  const {
+    data: movie,
+    isLoading,
+    isError,
+  } = useQuery<Movie>({
+    queryKey: ["movie", id],
+    queryFn: () =>
+      getDetailMovie(id as unknown as number, {
+        append_to_response: "videos",
+      }),
+
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+    retry: 2,
+    enabled: !!id,
+  });
 
   useEffect(() => {
-    // Load the previously selected server from localStorage if available
+    videoProgressRef.current = videoProgress;
+  }, [videoProgress]);
+
+  useEffect(() => {
     const savedServer = localStorage.getItem("selectedVideoServer");
-    if (savedServer) {
-      setSelectedServer(savedServer);
+    if (savedServer) setSelectedServer(savedServer);
+
+    // Load existing progress
+    const history = JSON.parse(localStorage.getItem("watchHistory") || "{}");
+    const movieProgress = history[`${id}`]?.progress;
+    if (movieProgress) {
+      setVideoProgress(movieProgress);
     }
 
-    const handleMessage = (event: any) => {
-      if (event.origin !== "https://vidlink.pro") return;
-      if (event.data?.type === "MEDIA_DATA") {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.origin !== 'https://vidlink.pro') return;
+
+      if (event.data?.type === 'MEDIA_DATA') {
         const mediaData = event.data.data;
-        localStorage.setItem("vidLinkProgress", JSON.stringify(mediaData));
+
+        if (mediaData && mediaData[id]?.progress) {
+          const progress = {
+            watched: mediaData[id].progress.watched,
+            duration: mediaData[id].progress.duration,
+            percentage: (mediaData[id].progress.watched / mediaData[id].progress.duration) * 100 // Diperbaiki
+          };
+          
+          setVideoProgress(progress);
+          
+          // Update localStorage
+          const history = JSON.parse(localStorage.getItem("watchHistory") || "{}");
+          history[`${id}`] = {
+            ...history[`${id}`],
+            progress,
+            updated_at: new Date().toISOString()
+          };
+          localStorage.setItem("watchHistory", JSON.stringify(history));
+        }
       }
     };
+    window.addEventListener('message', handleMessage);
 
-    window.addEventListener("message", handleMessage);
-    return () => window.removeEventListener("message", handleMessage);
-  }, [id]);
+    return () => {
+      window.removeEventListener('message', handleMessage);
+      
+      // Final save on unmount
+      if (movie) {
+        const history = JSON.parse(localStorage.getItem("watchHistory") || "{}");
+        history[`${id}`] = {
+          id: movie.id,
+          title: movie.title,
+          backdrop_path: movie.backdrop_path,
+          poster_path: movie.poster_path,
+          type: "movie",
+          progress: videoProgressRef.current,
+          updated_at: new Date().toISOString(),
+          release_date: movie.release_date,
+          runtime: movie.runtime,
+          video_key: movie.videos?.results[0]?.key
+        };
+        localStorage.setItem("watchHistory", JSON.stringify(history));
+      }
+    };
+  }, [id, movie]);
 
   // Get video URL based on selected server
   const getVideoUrl = () => {
