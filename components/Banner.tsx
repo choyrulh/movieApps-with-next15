@@ -56,18 +56,30 @@ function Banner({ type }: { type: "movie" | "tv" }) {
     return () => clearInterval(timer);
   }, [pauseAutoSlide]);
 
+  // if (isLoading) {
+  //   return (
+  //     <div className="relative h-[60vh] md:h-[100vh]">
+  //       <div className="h-full w-full rounded-none" />
+  //       <div className="absolute bottom-[15rem] left-0 right-0 p-4 md:p-8 space-y-4">
+  //         <div className="h-8 w-3/4 bg-gray-500" />
+  //         <div className="h-4 w-1/2 bg-gray-500" />
+  //         <div className="flex gap-4">
+  //           <div className="h-10 w-32 rounded-lg bg-gray-500" />
+  //           <div className="h-10 w-32 rounded-lg bg-gray-500" />
+  //         </div>
+  //       </div>
+  //     </div>
+  //   );
+  // }
+  // Ganti loading state dengan animasi skeleton yang lebih menarik
   if (isLoading) {
     return (
-      <div className="relative h-[60vh] md:h-[100vh]">
-        <div className="h-full w-full rounded-none" />
-        <div className="absolute bottom-[15rem] left-0 right-0 p-4 md:p-8 space-y-4">
-          <div className="h-8 w-3/4 bg-gray-500" />
-          <div className="h-4 w-1/2 bg-gray-500" />
-          <div className="flex gap-4">
-            <div className="h-10 w-32 rounded-lg bg-gray-500" />
-            <div className="h-10 w-32 rounded-lg bg-gray-500" />
-          </div>
-        </div>
+      <div className="relative h-[60vh] md:h-[100vh] overflow-hidden">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="h-full bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 animate-shimmer"
+        />
       </div>
     );
   }
@@ -164,7 +176,7 @@ function Banner({ type }: { type: "movie" | "tv" }) {
               blurDataURL={`https://image.tmdb.org/t/p/w120${currentMovie.backdrop_path}`}
               placeholder="blur"
               fill
-              priority
+              loading="lazy"
               className="object-cover"
             />
           )}
@@ -302,6 +314,8 @@ function Banner({ type }: { type: "movie" | "tv" }) {
                       alt={movie.title ?? movie.name ?? ""}
                       fill
                       className="object-cover"
+                      loading="lazy"
+
                       // sizes="80px"
                     />
                     {index === activeIndex && (

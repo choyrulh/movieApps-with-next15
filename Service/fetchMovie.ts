@@ -118,7 +118,10 @@ const getTopRated = async () => {
   }
 };
 
-export const getTrending = async (type: "movie" | "tv", timeWindow: "day" | "week") => {
+export const getTrending = async (
+  type: "movie" | "tv",
+  timeWindow: "day" | "week"
+) => {
   try {
     const response = await axios.get(
       `${url}/trending/${type}/${timeWindow}?api_key=${api_key}`
@@ -334,8 +337,34 @@ export const getRecommendedMovies = async (id: string, type: string) => {
 export const getUpcomingShow = async (type: "movie" | "tv", page: string) => {
   try {
     const response = await axios.get(
-      `${url}/discover/${type}?api_key=${api_key}&region=ID&sort_by=${type === "movie" ? "release_date" : "first_air_date"}.desc&with_original_language=id&page=${page}`
+      `${url}/discover/${type}?api_key=${api_key}&region=ID&sort_by=${
+        type === "movie" ? "release_date" : "first_air_date"
+      }.desc&with_original_language=id&page=${page}`
     );
+    const data = await response.data;
+    return data;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const getFiltered = async (params: Record<string, any>) => {
+  const { genre, type, sort, country, rating, year, page, lang } = params;
+  const baseUrl =
+    type === "movie" ? `${url}/discover/movie` : `${url}/discover/tv`;
+
+  const queryParams = new URLSearchParams({
+    api_key: `${api_key}`,
+    with_original_language: `${lang}`,
+    sort_by: `${sort}`,
+    with_genres: `${genre}`,
+    "vote_average.gte": `${rating}`,
+    primary_release_year: `${year}`,
+    page: `${page}`,
+  });
+
+  try {
+    const response = await axios.get(`${baseUrl}?${queryParams}`);
     const data = await response.data;
     return data;
   } catch (error) {

@@ -13,7 +13,6 @@ function page() {
 
   const [season, setSeason] = useState("1");
   const [episode, setEpisode] = useState("1");
-  // const [mediaDataHistory, setMediaDataHistory] = useState<any>();
   const [selectedServer, setSelectedServer] = useState("vidlink");
   const [videoProgress, setVideoProgress] = useState({
     watched: 0,
@@ -58,7 +57,6 @@ function page() {
 
       if (event.data?.type === "MEDIA_DATA") {
         const mediaData = event.data.data;
-        console.log(mediaData[id]);
 
         if (mediaData && mediaData[id]?.progress) {
           const lastSeason = mediaData[id].last_season_watched;

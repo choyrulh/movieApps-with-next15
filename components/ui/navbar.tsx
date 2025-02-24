@@ -2,10 +2,10 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import Link from "next/link";
-import { useState, useRef, useEffect, Suspense, memo } from "react";
+import { useState, useRef, useEffect, Suspense, memo, useCallback } from "react";
 import { Skeleton } from "./skeleton";
 import { usePathname } from "next/navigation";
-import { BookmarkPlus, Clapperboard } from "lucide-react";
+import { BookmarkPlus, Clapperboard, ChevronDown } from "lucide-react";
 import useIsMobile from "@/hook/useIsMobile";
 import { TitleText } from "./../TitleText";
 
@@ -21,23 +21,24 @@ const MemoizedBookmarkIcon = memo(BookmarkPlus);
 const ProfileDropDown = ({ props }: any) => {
   const [state, setState] = useState(false);
   const isMobile = useIsMobile();
+  const timeoutRef = useRef<NodeJS.Timeout>();
 
   const profileRef: any = useRef();
   useEffect(() => {
     const handleDropDown = (e: any) => {
       if (profileRef.current && !profileRef.current.contains(e.target)) setState(false);
     };
-     document.addEventListener("click", handleDropDown);
+    document.addEventListener("click", handleDropDown);
 
-  return () => {
-    document.removeEventListener("click", handleDropDown);
-  };
+    return () => {
+      document.removeEventListener("click", handleDropDown);
+    };
   }, []);
 
   return (
     <div className={`relative ${props}`}>
       <Avatar
-        className={`flex items-center space-x-4  ${
+        className={`flex items-center space-x-4 ${
           isMobile ? "flex-row-reverse gap-4" : "flex-row"
         }`}
       >
@@ -62,22 +63,81 @@ const ProfileDropDown = ({ props }: any) => {
           <span className="block text-sm text-gray-500">john@gmail.com</span>
         </div>
       </Avatar>
-      <ul
-        className={` top-12 right-0 mt-5 space-y-5 lg:absolute lg:border lg:rounded-md lg:text-sm lg:w-52 lg:shadow-md lg:space-y-0 lg:mt-0 ${
-          state ? "" : "lg:hidden"
-        }`}
-      >
-        {navigation.map((item, idx) => (
-          <li key={idx}>
-            <Link
-              className="block text-gray-200 lg:hover:bg-gray-50 lg:p-2.5"
-              href={item.path}
-            >
-              {item.title}
-            </Link>
-          </li>
-        ))}
-      </ul>
+      {/* Profile Dropdown Content */}
+      {isMobile ? (
+        <div
+          className={`
+            overflow-hidden transition-all duration-300 ease-in-out
+            ${state 
+              ? 'max-h-[500px] opacity-100' 
+              : 'max-h-0 opacity-0'
+            }
+          `}
+        >
+          <ul className="static w-full space-y-2 mt-3">
+            {navigation.map((item, idx) => (
+              <li 
+                key={idx}
+                className={`
+                  transform transition-all duration-300 ease-in-out
+                  ${state 
+                    ? 'translate-x-0 opacity-100' 
+                    : 'translate-x-4 opacity-0'
+                  }
+                `}
+                style={{
+                  transitionDelay: `${idx * 100}ms`
+                }}
+              >
+                <Link
+                  className="block p-2 text-gray-200 rounded-md transition-colors duration-200 hover:bg-slate-800/80 text-sm"
+                  href={item.path}
+                  onClick={() => setState(false)}
+                >
+                  {item.title}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : (
+        <div
+          className={`
+            absolute top-full right-0 mt-2 min-w-[200px]
+            transition-all duration-300 ease-in-out
+            ${state 
+              ? 'opacity-100 translate-y-0' 
+              : 'opacity-0 -translate-y-2 pointer-events-none'
+            }
+          `}
+        >
+          <ul className="bg-slate-900/95 backdrop-blur-sm border border-slate-700/50 rounded-lg shadow-xl overflow-hidden">
+            {navigation.map((item, idx) => (
+              <li 
+                key={idx}
+                className={`
+                  transform transition-all duration-300 ease-in-out
+                  ${state 
+                    ? 'translate-y-0 opacity-100' 
+                    : '-translate-y-2 opacity-0'
+                  }
+                `}
+                style={{
+                  transitionDelay: `${idx * 75}ms`
+                }}
+              >
+                <Link
+                  className="block px-4 py-2 text-gray-200 transition-colors duration-200 hover:bg-slate-800/80"
+                  href={item.path}
+                  onClick={() => setState(false)}
+                >
+                  {item.title}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 };
@@ -85,7 +145,9 @@ const ProfileDropDown = ({ props }: any) => {
 export const Navbar = () => {
   const [menuState, setMenuState] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const isMobile = useIsMobile();
+  const timeoutRef = useRef<NodeJS.Timeout>();
 
   const pathname = usePathname();
 
@@ -98,13 +160,36 @@ export const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const handleMouseLeave = useCallback(() => {
+    timeoutRef.current = setTimeout(() => {
+      setActiveDropdown(null);
+    }, 150);
+  },[]);
+
+  const handleMouseEnter = (title: string) => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    setActiveDropdown(title);
+  };
+
   const navigation = [
     { title: "Home", path: "/" },
     { title: "TV/Show", path: "/tv" },
+    { 
+      title: "Movies",
+      children: [
+        { title: "Trending", path: "/trending" },
+        { title: "Genres", path: "/genre" },
+        { title: "Upcoming", path: "/upcoming" },
+        { title: "Filter", path: "/filter" }
+      ]
+    },
     { title: "Cast", path: "/person" },
     { title: "Search", path: "/search" },
     { title: "Contact", path: "/contact" },
   ];
+
   return (
     <>
       <nav
@@ -125,24 +210,117 @@ export const Navbar = () => {
             <div
               className={`bg-slate-900/95 lg:bg-inherit absolute z-20 w-full top-16 left-0 p-4 border-b lg:static lg:block lg:border-none transition-all duration-300 ease-in-out ${
                 isMobile ? "text-end" : "unset"
-              } ${menuState ? "" : "hidden"}`}
+              } ${menuState ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4 pointer-events-none lg:opacity-100 lg:translate-y-0 lg:pointer-events-auto"}`}
             >
-              <ul className=" space-y-5 lg:flex lg:space-x-6 lg:space-y-0 lg:mt-0">
+              <ul className="space-y-5 lg:flex lg:space-x-6 lg:space-y-0 lg:mt-0">
                 {navigation.map((item, idx) => (
                   <li key={idx} className="text-gray-400 hover:text-gray-100">
+                    {item.children ? (
+                      <div
+                        className="inline-block relative flex flex-col items-end"
+                        onMouseEnter={!isMobile ? () => handleMouseEnter(item.title) : undefined}
+                        onMouseLeave={!isMobile ? handleMouseLeave : undefined}
+                      >
+                        <button
+                          onClick={() => {
+                            if (isMobile) {
+                              setActiveDropdown(activeDropdown === item.title ? null : item.title);
+                            }
+                          }}
+                          className="flex items-center gap-1 group"
+                        >
+                          {item.title}
+                          <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${
+                            activeDropdown === item.title ? 'rotate-180' : ''
+                          }`}/>
+                        </button>
+                        
+                        {/* Dropdown Content */}
+                        {isMobile ? (
+                        <div
+                          className={`
+                            overflow-hidden transition-all duration-300 ease-in-out
+                            ${activeDropdown === item.title 
+                              ? 'max-h-[500px] opacity-100' 
+                              : 'max-h-0 opacity-0'
+                            }
+                          `}
+                        >
+                          <ul className="pl-4 mt-2 space-y-3">
+                            {item.children.map((child, childIdx) => (
+                              <li 
+                                key={childIdx}
+                                className={`transform transition-all duration-300 ease-in-out
+                                  ${activeDropdown === item.title 
+                                    ? 'translate-x-0 opacity-100' 
+                                    : 'translate-x-4 opacity-0'
+                                  }
+                                `}
+                                style={{
+                                  transitionDelay: `${childIdx * 100}ms`
+                                }}
+                              >
+                                <Link
+                                  href={child.path}
+                                  onClick={() => {
+                                    setMenuState(false);
+                                    setActiveDropdown(null);
+                                  }}
+                                  className="block text-gray-400 hover:text-gray-100 py-1"
+                                >
+                                  {child.title}
+                                </Link>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      ) : (
+                        // Desktop Dropdown Content
+                        <div
+                          className={`
+                            transition-all duration-300 ease-in-out
+                            absolute top-full left-1/2 -translate-x-1/2 pt-4
+                            ${activeDropdown === item.title 
+                              ? 'opacity-100 translate-y-0' 
+                              : 'opacity-0 -translate-y-2 pointer-events-none'
+                            }
+                          `}
+                        >
+                          <ul className="bg-slate-900/95 backdrop-blur-sm border border-slate-700/50 rounded-lg p-2 shadow-xl min-w-[160px] space-y-1">
+                            {item.children.map((child, childIdx) => (
+                              <li key={childIdx}>
+                                <Link
+                                  href={child.path}
+                                  onClick={() => {
+                                    setMenuState(false);
+                                    setActiveDropdown(null);
+                                  }}
+                                  className="block px-3 py-2 text-gray-400 hover:text-gray-100 rounded-md transition-colors duration-200 hover:bg-slate-800/80 whitespace-nowrap"
+                                >
+                                  {child.title}
+                                </Link>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
                     <Link
-                      onClick={() => setMenuState(!menuState)}
                       href={item.path}
+                      onClick={() => setMenuState(false)}
+                      className="block"
                     >
                       {item.title}
                     </Link>
-                  </li>
-                ))}
+                  )}
+                </li>
+              ))}
               </ul>
               <ProfileDropDown
                 props={`mt-5 pt-5 border-t lg:hidden ${
                   isMobile ? "justify-self-end" : "unset"
-                } `}
+                }`}
               />
             </div>
             <div className="flex-1 flex items-center justify-end space-x-2 sm:space-x-6">

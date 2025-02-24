@@ -22,15 +22,15 @@ const HistoryTontonan = () => {
       const parsedData = JSON.parse(localData);
       const historyArray = Object.values(parsedData).flatMap((item: any) => {
         if (item.type === "tv") {
-         const transformedData = Object.values(parsedData)
-      .filter((item: any) => item.type === 'tv' && item.last_watched)
-      .map((tvShow: any) => ({
-        ...tvShow,
-        season: tvShow.last_watched.season,
-        episode: tvShow.last_watched.episode,
-        progress: tvShow.last_watched.progress,
-        last_updated: tvShow.last_watched.timestamp
-      }));
+          const transformedData = Object.values(parsedData)
+            .filter((item: any) => item.type === "tv" && item.last_watched)
+            .map((tvShow: any) => ({
+              ...tvShow,
+              season: tvShow.last_watched.season,
+              episode: tvShow.last_watched.episode,
+              progress: tvShow.last_watched.progress,
+              last_updated: tvShow.last_watched.timestamp,
+            }));
         }
         return item;
       });
@@ -66,9 +66,8 @@ const HistoryTontonan = () => {
     if (!seconds) return "0:00";
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = Math.floor(seconds % 60);
-    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+    return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
   };
-
 
   const handleScroll = (direction: "left" | "right") => {
     const container = scrollContainerRef.current;
@@ -140,12 +139,16 @@ const HistoryTontonan = () => {
         {mediaDataHistory?.map((media, index) => {
           const isTVShow = media.type === "tv";
           const progressPercentage = calculateProgress(media);
-          const lastWatchedSeason = media.last_watched?.season
-          const lastWatchedEpisode = media.last_watched?.episode
-          const watched = (isTVShow ? media.seasons[lastWatchedSeason].episodes[lastWatchedEpisode].progress?.watched : media.progress?.watched) 
-          const duration = (isTVShow ?  media.seasons[lastWatchedSeason].episodes[lastWatchedEpisode].progress?.duration : media.progress?.duration)
-          // console.log("watched: ", media.seasons[lastWatchedSeason]?.episodes[lastWatchedEpisode].progress?.watched)
-          // console.log("duration: ", media.seasons[lastWatchedSeason]?.episodes[lastWatchedEpisode].progress?.duration)
+          const lastWatchedSeason = media.last_watched?.season;
+          const lastWatchedEpisode = media.last_watched?.episode;
+          const watched = isTVShow
+            ? media.seasons[lastWatchedSeason].episodes[lastWatchedEpisode]
+                .progress?.watched
+            : media.progress?.watched;
+          const duration = isTVShow
+            ? media.seasons[lastWatchedSeason].episodes[lastWatchedEpisode]
+                .progress?.duration
+            : media.progress?.duration;
           return (
             <Link
               href={`/${media.type}/${media.id}/watch`}
