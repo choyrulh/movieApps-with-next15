@@ -8,6 +8,7 @@ import { Rating } from "./common/Rating";
 import { memo } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { State, useStore } from "@/store/useStore";
+import useIsMobile from "@/hook/useIsMobile";
 
 const parseReleaseDate = (dateStr: string): Date | null => {
   const [year, month, day] = dateStr.split('-').map(Number);
@@ -17,25 +18,50 @@ const parseReleaseDate = (dateStr: string): Date | null => {
   return null;
 };
 
-const getBadgeClass = (label: string | null) => {
+const getBadgeStyle = (label: string | null) => {
   switch(label) {
     case 'Baru':
-      return 'bg-green-500';
+      return {
+        background: 'bg-green-500',
+        shadow: 'shadow-green-500/20',
+        after: 'after:border-green-700'
+      };
     case 'Upcoming':
-      return 'bg-purple-500';
+      return {
+        background: 'bg-purple-500',
+        shadow: 'shadow-purple-500/20',
+        after: 'after:border-purple-700'
+      };
     case 'Rilis Bulan Ini':
-      return 'bg-blue-500';
+      return {
+        background: 'bg-blue-500',
+        shadow: 'shadow-blue-500/20',
+        after: 'after:border-blue-700'
+      };
     case 'Belum Rilis':
-      return 'bg-gray-500';
+      return {
+        background: 'bg-gray-500',
+        shadow: 'shadow-gray-500/20',
+        after: 'after:border-gray-700'
+      };
     case 'TBA':
-      return 'bg-red-500';
+      return {
+        background: 'bg-red-500',
+        shadow: 'shadow-red-500/20',
+        after: 'after:border-red-700'
+      };
     default:
-      return '';
+      return {
+        background: '',
+        shadow: '',
+        after: ''
+      };
   }
 };
 
 
 const MovieCard = ({ movie }: { movie: Movie }) => {
+  const isMobile = useIsMobile();
   const { selectedType } = useStore(
     useShallow((state) => ({
       selectedType: state.selectedType,
@@ -88,7 +114,7 @@ const MovieCard = ({ movie }: { movie: Movie }) => {
     label = 'TBA';
   }
 
-
+    const badgeStyle = getBadgeStyle(label);
   return (
     <motion.div
       className="group relative bg-slate-800 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow"
@@ -100,7 +126,7 @@ const MovieCard = ({ movie }: { movie: Movie }) => {
         <div className="relative aspect-[2/3]">
           {movie.poster_path ? (
             <Image
-              src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+              src={`https://image.tmdb.org/t/p/${isMobile ? "w300" : "w500"}${movie.poster_path}`}
               alt={movie.title ?? movie.name ?? ""}
               fill
               className="object-cover group-hover:opacity-75 transition-opacity"
@@ -112,10 +138,39 @@ const MovieCard = ({ movie }: { movie: Movie }) => {
             </div>
           )}
           {label && (
-            <div className="absolute top-2 right-2">
-              <span className={`px-2 py-1 rounded-full text-xs font-semibold text-white shadow-md ${getBadgeClass(label)}`}>
-                {label}
-              </span>
+            <div className="absolute -right-2 top-4">
+              <div className={`
+                relative
+                flex
+                items-center
+                py-1
+                pl-3
+                pr-4
+                text-xs
+                font-bold
+                text-white
+                ${badgeStyle.background}
+                ${badgeStyle.shadow}
+                shadow-lg
+                before:absolute
+                before:right-0
+                before:top-full
+                before:w-2
+                before:h-2
+                before:bg-inherit
+                before:brightness-75
+                before:clip-path-triangle
+                after:absolute
+                after:left-0
+                after:top-0
+                after:bottom-0
+                after:w-3
+                after:-translate-x-1/2
+                after:bg-inherit
+                after:rounded-l-full
+              `}>
+                <span className="relative z-10">{label}</span>
+              </div>
             </div>
           )}
         </div>
@@ -137,3 +192,11 @@ const MovieCard = ({ movie }: { movie: Movie }) => {
 };
 
 export default memo(MovieCard);
+
+const styles = `
+  @layer utilities {
+    .clip-path-triangle {
+      clip-path: polygon(100% 0, 0 0, 100% 100%);
+    }
+  }
+`;

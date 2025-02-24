@@ -165,7 +165,7 @@ function Banner({ type }: { type: "movie" | "tv" }) {
           {/* Background Image with Gradient Overlay */}
           {currentMovie.backdrop_path && (
             <Image
-              src={`https://image.tmdb.org/t/p/original${
+              src={`https://image.tmdb.org/t/p/${isMobile ? "w780" : "original"}${
                 isMobile ? currentMovie.poster_path : currentMovie.backdrop_path
               }`}
               alt={
