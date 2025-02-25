@@ -4,6 +4,8 @@ import "./globals.css";
 import { Navbar } from "@/components/ui/navbar";
 import ReactQueryProvider from "@/lib/ReactQueryProvider";
 import Footer from "@/components/Footer";
+import PageTransition from "@/components/PageTransition";
+
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -32,7 +34,11 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-slate-900 text-gray-100 tracking-tight`}
       >
         <Navbar />
-        <ReactQueryProvider>{children}</ReactQueryProvider>
+        <ReactQueryProvider>
+          {/*<PageTransition>*/}
+            {children}
+          {/*</PageTransition>*/}
+        </ReactQueryProvider>
         <Footer />
       </body>
     </html>
