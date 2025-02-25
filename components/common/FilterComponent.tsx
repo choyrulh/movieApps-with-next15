@@ -8,13 +8,11 @@ import {
 import { ChevronLeft, ChevronRight, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-
-
 interface FilterSectionProps {
   title: string;
   options: Array<{ value: string; label: string }>;
   selected: string[];
-  onChange: (value: string[]) => void;
+  onChange: (value: string) => void;
   multi?: boolean;
 }
 export const FilterSection = ({
@@ -24,14 +22,13 @@ export const FilterSection = ({
   onChange,
   multi = false,
 }: FilterSectionProps) => {
-  const displayValue = options.find((opt) => opt.value === selected)?.label || title;
+  const displayValue =
+    options.find((opt) => opt.value === selected[0])?.label || title;
+  // const displayValue = options.find((opt) => opt.value === selected)?.label || title;
 
   return (
-    <Select
-      value={multi ? undefined : selected[0]}
-      onValueChange={onChange}
-    >
-     <SelectTrigger className="w-[160px] text-left">
+    <Select value={multi ? undefined : selected[0]} onValueChange={onChange}>
+      <SelectTrigger className="w-[160px] text-left">
         <span className={cn("truncate", !selected && "text-muted-foreground")}>
           {displayValue}
         </span>
