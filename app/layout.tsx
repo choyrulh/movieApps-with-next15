@@ -4,7 +4,7 @@ import "./globals.css";
 import { Navbar } from "@/components/ui/navbar";
 import ReactQueryProvider from "@/lib/ReactQueryProvider";
 import Footer from "@/components/Footer";
-import PageTransition from "@/components/PageTransition";
+// import PageTransition from "@/components/PageTransition";
 
 
 const geistSans = localFont({
