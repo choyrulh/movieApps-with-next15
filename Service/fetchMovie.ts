@@ -356,7 +356,7 @@ export const getFiltered = async (params: Record<string, any>) => {
   const queryParams = new URLSearchParams({
     api_key: `${api_key}`,
     with_original_language: `${lang}`,
-    sort_by: `release_date.${sort}`,
+    sort_by: `${sort}`,
     with_genres: `${genre}`,
     "vote_average.gte": `${rating}`,
     primary_release_year: `${year}`,

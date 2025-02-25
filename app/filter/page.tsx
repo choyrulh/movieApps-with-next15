@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useMemo   } from "react";
+import { useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { FilterSection, genres, years, lang, ratings, types } from "@/components/common/FilterComponent";
 import { useQuery } from "@tanstack/react-query";
 import { getFiltered } from "@/Service/fetchMovie";
 import MovieCard from "@/components/movieCard";
 import { Movie } from "@/types/movie.";
-import { ChevronLeft, ChevronRight, RefreshCw } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -21,7 +21,7 @@ function page() {
   const [page, setPage] = useState(1);
   const [filters, setFilters] = useState({
     genre: [],
-    sort: "",
+    sort: "newest",
     type: "movie",
     country: [],
     rating: 0,
@@ -42,31 +42,6 @@ function page() {
 
   const handleFilterChange = (name: string, value: any) => {
     setFilters((prev) => ({ ...prev, [name]: value }));
-    setPage(1);
-  };
-
-  // Cek apakah ada filter yang aktif
-  const hasFilters = useMemo(() => {
-    return (
-      filters.genre.length > 0 ||
-      filters.year.length > 0 ||
-      filters.lang.length > 0 ||
-      filters.rating > 0 ||
-      filters.type !== "movie" ||
-      filters.sort !== ""
-    );
-  }, [filters]);
-
-  const handleReset = () => {
-    setFilters({
-      genre: [],
-      sort: "",
-      type: "movie",
-      country: [],
-      rating: 0,
-      lang: [],
-      year: [],
-    });
     setPage(1);
   };
 
@@ -120,24 +95,15 @@ function page() {
             value={filters.sort}
             onValueChange={(value) => handleFilterChange("sort", value)}
           >
-            <SelectTrigger className="w-[160px]">
+            <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Urutan" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="desc">Terbaru</SelectItem>
-              <SelectItem value="asc">Terlama</SelectItem>
+              <SelectItem value="newest">Terbaru</SelectItem>
+              <SelectItem value="oldest">Terlama</SelectItem>
+              <SelectItem value="rating">Rating Tertinggi</SelectItem>
             </SelectContent>
           </Select>
-
-          {hasFilters && (
-            <button
-              onClick={handleReset}
-              className="h-10 px-4 py-2 bg-background border hover:bg-accent text-foreground rounded-md text-sm font-medium transition-all flex items-center gap-2 shadow-sm hover:shadow-md duration-200"
-            >
-              <RefreshCw className="w-4 h-4" />
-              <span>Reset Filter</span>
-            </button>
-          )}
         </div>
       </div>
 
