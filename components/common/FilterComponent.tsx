@@ -6,6 +6,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ChevronLeft, ChevronRight, Search } from "lucide-react";
+import { cn } from "@/lib/utils";
+
 
 
 interface FilterSectionProps {
@@ -22,22 +24,17 @@ export const FilterSection = ({
   onChange,
   multi = false,
 }: FilterSectionProps) => {
+  const displayValue = options.find((opt) => opt.value === selected)?.label || title;
+
   return (
     <Select
       value={multi ? undefined : selected[0]}
-      onValueChange={(value) => {
-        if (multi) {
-          const newValues = selected.includes(value)
-            ? selected.filter((v) => v !== value)
-            : [...selected, value];
-          onChange(newValues);
-        } else {
-          onChange([value]);
-        }
-      }}
+      onValueChange={onChange}
     >
-      <SelectTrigger className="w-[180px]">
-        <SelectValue placeholder={title} />
+     <SelectTrigger className="w-[160px] text-left">
+        <span className={cn("truncate", !selected && "text-muted-foreground")}>
+          {displayValue}
+        </span>
       </SelectTrigger>
       <SelectContent>
         {options.map((option) => (
