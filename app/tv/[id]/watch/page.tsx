@@ -10,7 +10,7 @@ import Link from "next/link";
 function page() {
   const pathname = usePathname();
   const id = pathname.split("/")[2];
-
+  const [minScreenMode, setMinScreenMode] = useState(false);
   const [season, setSeason] = useState("1");
   const [episode, setEpisode] = useState("1");
   const [selectedServer, setSelectedServer] = useState("vidlink");
@@ -19,6 +19,7 @@ function page() {
     duration: 0,
     percentage: 0,
   });
+
 
   // Ref untuk track progress terbaru
   const videoProgressRef = useRef(videoProgress);
@@ -257,6 +258,14 @@ function page() {
             <option value="vidsrc-v2">Server 2</option>
             <option value="vidsrc-v3">Server 3</option>
           </select>
+
+          {/* Tombol Min Screen */}
+          <button
+            onClick={() => setMinScreenMode(!minScreenMode)}
+            className="bg-gray-800 text-white px-3 py-1 rounded border border-gray-700 hover:bg-gray-700"
+          >
+            {minScreenMode ? "Exit Min Screen" : "Enter Min Screen"}
+          </button>
         </div>
 
         {/* Season and Episode Controls */}
@@ -308,17 +317,29 @@ function page() {
         </div>
 
         {/* Video Player */}
-        <div className="aspect-video w-full bg-black rounded-lg overflow-hidden shadow-xl">
-          <iframe
-            key={`${selectedServer}-${season}-${episode}`} // Force re-render
-            src={getVideoUrl()}
-            frameBorder="0"
-            allowFullScreen
-            width="100%"
-            height="100%"
-            className="animate-fade-in"
-          />
-        </div>
+        <div className={`${
+            minScreenMode 
+              ? "fixed inset-0 w-screen h-screen z-50 rounded-none" 
+              : "aspect-video w-full rounded-lg shadow-xl"
+          } bg-black overflow-hidden transition-all duration-300`}>
+            {minScreenMode && (
+              <button
+                onClick={() => setMinScreenMode(false)}
+                className="absolute top-4 right-4 bg-gray-800/80 text-white px-3 py-1 rounded hover:bg-gray-700/80 backdrop-blur-sm z-50"
+              >
+                ✕ Close
+              </button>
+            )}
+            <iframe
+              key={`${selectedServer}-${season}-${episode}`}
+              src={getVideoUrl()}
+              frameBorder="0"
+              allowFullScreen
+              width="100%"
+              height="100%"
+              className="animate-fade-in"
+            />
+          </div>
       </main>
     </div>
   );
