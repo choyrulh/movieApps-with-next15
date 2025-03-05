@@ -4,8 +4,11 @@ import "./globals.css";
 import { Navbar } from "@/components/ui/navbar";
 import ReactQueryProvider from "@/lib/ReactQueryProvider";
 import Footer from "@/components/Footer";
-// import PageTransition from "@/components/PageTransition";
+import { AuthProvider } from "@/context/AuthContext";
+import { Toaster } from "@/components/ui/sonner"
 
+
+// import PageTransition from "@/components/PageTransition";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -33,13 +36,17 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-slate-900 text-gray-100 tracking-tight`}
       >
-        <Navbar />
-        <ReactQueryProvider>
-          {/*<PageTransition>*/}
+        <AuthProvider>
+          <ReactQueryProvider>
+          <Navbar />
+            {/*<PageTransition>*/}
             {children}
-          {/*</PageTransition>*/}
-        </ReactQueryProvider>
-        <Footer />
+            <Toaster />
+
+            {/*</PageTransition>*/}
+          </ReactQueryProvider>
+          <Footer />
+        </AuthProvider>
       </body>
     </html>
   );

@@ -35,6 +35,8 @@ import Link from "next/link";
 import { MovieCardSecond } from "@/components/MovieCardSecond";
 import Recommendation from "@/Fragments/Recommendation";
 import dynamic from 'next/dynamic';
+import { useAuth } from "@/context/AuthContext";
+import { AddFavoriteButton } from "@/components/AddFavoriteButton"
 
 const DynamicRecommendation = dynamic(() => import('@/Fragments/Recommendation'), {
   ssr: false,
@@ -45,6 +47,7 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
   const [activeTab, setActiveTab] = useState("financials");
   const [visibleCasts, setVisibleCasts] = useState(12);
   const isMobile = useIsMobile();
+  const {isAuthenticated} = useAuth();
 
 
   const {
@@ -201,7 +204,20 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
 
               {/* Details */}
               <div className="w-full md:w-2/3 text-white">
-                <h1 className="text-4xl font-bold mb-4">{movie.title}</h1>
+                <h1 className="text-4xl font-bold mb-4 inline-flex items-center gap-2">
+                  {movie.title} 
+                  {isAuthenticated && 
+                    <AddFavoriteButton
+                      item={{
+                          ...movie,
+                          title: movie.title ?? "",
+                          media_type: "movie",
+                          itemId: movie.id,
+                          type: "movie",
+                        }}
+                    />
+                  }
+                </h1>
 
                 <div className="flex items-center gap-4 mb-6">
                   <Rating value={movie.vote_average} />

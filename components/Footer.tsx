@@ -14,12 +14,14 @@ import {
   Instagram,
   Facebook,
 } from "lucide-react";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { useState } from "react";
 import Marquee from "./common/Marquee";
 import { TitleText } from "./TitleText";
 
 const Footer = () => {
+  const pathname = usePathname();
   const [email, setEmail] = useState("");
   const platforms = [
     { name: "Netflix", icon: Popcorn, color: "text-red-500" },
@@ -38,7 +40,11 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="relative overflow-hidden">
+    <footer
+      className={`relative overflow-hidden ${
+          ["/login", "/register"].includes(pathname) || pathname.startsWith("/dashboard/") ? "hidden" : "block"
+        }`}
+    >
       {/* Animated background elements */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute w-[500px] h-[500px] bg-purple-500/30 rounded-full -top-60 -left-60 blur-3xl animate-pulse" />
@@ -72,8 +78,7 @@ const Footer = () => {
               "Solo Leveling",
               "Bridget Jones: Mad About the Boy",
               "Ne Zha 2",
-              "Wicked"
-
+              "Wicked",
             ].map((title) => (
               <div key={title} className="flex items-center gap-4">
                 <span className="text-white font-medium">{title}</span>

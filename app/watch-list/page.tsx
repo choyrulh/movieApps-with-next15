@@ -1,17 +1,35 @@
 "use client";
+
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { useWatchlistStore } from "@/store/useWatchListStore";
-import { Trash2, Star, Film, Heart, Award  } from "lucide-react";
+import { Trash2, Star, Film, Heart, Award } from "lucide-react";
 import Link from "next/link";
+import { useAuth } from "@/context/AuthContext";
 
 const WatchlistPage = () => {
-  const { watchlist, removeFromWatchlist } = useWatchlistStore();
-  
+  const [data, setData] = useState();
+  const { isAuthenticated } = useAuth();
+  const { watchlist, removeFromWatchlist, syncWithServer } =
+    useWatchlistStore();
+
+  useEffect(() => {
+    syncWithServer(); // Sinkronisasi saat komponen dimuat
+  }, []);
+
   // Categorize items
-  const movies = watchlist.filter(item => item.media_type === 'movie');
-  const tvShows = watchlist.filter(item => item.media_type === 'tv');
-  const people = watchlist.filter(item => item.media_type === 'person');
+  const movies = isAuthenticated
+    ? watchlist?.filter((item) => item.type === "movie")
+    : watchlist?.filter((item) => item.media_type === "movie");
+
+  const tvShows = isAuthenticated
+    ? watchlist?.filter((item) => item.type === "tv")
+    : watchlist?.filter((item) => item.media_type === "tv");
+
+  const people = isAuthenticated
+    ? watchlist?.filter((item) => item.type === "person")
+    : watchlist?.filter((item) => item.media_type === "person");
 
   return (
     <div className="min-h-screen dark:bg-gray-900 p-8 pt-28">
@@ -47,20 +65,21 @@ const WatchlistPage = () => {
           ) : (
             <div className="space-y-16">
               {/* Movies Section */}
-              {movies.length > 0 && (
+              {movies?.length > 0 && (
                 <section className="space-y-6">
-                  <motion.h2 
+                  <motion.h2
                     initial={{ x: -20 }}
                     animate={{ x: 0 }}
-                    className="text-2xl font-bold text-slate-300 dark:text-white flex items-center gap-2">
+                    className="text-2xl font-bold text-slate-300 dark:text-white flex items-center gap-2"
+                  >
                     <span className="bg-purple-600 w-2 h-8 rounded"></span>
                     Movies ({movies.length})
                   </motion.h2>
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                     <AnimatePresence>
                       {movies.map((item) => (
-                        <MediaCard 
-                          key={item.id}
+                        <MediaCard
+                          key={item.movieId}
                           item={item}
                           remove={removeFromWatchlist}
                           type="movie"
@@ -72,20 +91,21 @@ const WatchlistPage = () => {
               )}
 
               {/* TV Shows Section */}
-              {tvShows.length > 0 && (
+              {tvShows?.length > 0 && (
                 <section className="space-y-6">
-                  <motion.h2 
+                  <motion.h2
                     initial={{ x: -20 }}
                     animate={{ x: 0 }}
-                    className="text-2xl font-bold text-slate-300 dark:text-white flex items-center gap-2">
+                    className="text-2xl font-bold text-slate-300 dark:text-white flex items-center gap-2"
+                  >
                     <span className="bg-teal-600 w-2 h-8 rounded"></span>
                     TV Shows ({tvShows.length})
                   </motion.h2>
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                     <AnimatePresence>
-                      {tvShows.map((item) => (
-                        <MediaCard 
-                          key={item.id}
+                      {tvShows.map((item, index) => (
+                        <MediaCard
+                          key={index}
                           item={item}
                           remove={removeFromWatchlist}
                           type="tv"
@@ -97,9 +117,9 @@ const WatchlistPage = () => {
               )}
 
               {/* People Section */}
-              {people.length > 0 && (
+              {people?.length > 0 && (
                 <section className="space-y-6">
-                  <motion.h2 
+                  <motion.h2
                     initial={{ x: -20 }}
                     animate={{ x: 0 }}
                     className="text-2xl font-bold text-slate-300 dark:text-white flex items-center gap-2"
@@ -110,7 +130,7 @@ const WatchlistPage = () => {
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 gap-4">
                     <AnimatePresence>
                       {people.map((person) => (
-                        <PersonCard 
+                        <PersonCard
                           key={person.id}
                           person={person}
                           remove={removeFromWatchlist}
@@ -159,9 +179,11 @@ const PersonCard = ({ person, remove }: any) => (
             className="h-full w-full"
           >
             <Image
-              src={person.profile_path 
-                ? `https://image.tmdb.org/t/p/w500${person.profile_path}`
-                : 'https://images.unsplash.com/photo-1533738363-b7f9aef128ce?auto=format&fit=crop&w=500'}
+              src={
+                person.profile_path
+                  ? `https://image.tmdb.org/t/p/w500${person.profile_path}`
+                  : "https://images.unsplash.com/photo-1533738363-b7f9aef128ce?auto=format&fit=crop&w=500"
+              }
               alt={person.name}
               fill
               className="object-cover transition-all duration-700 group-hover:scale-105"
@@ -200,15 +222,11 @@ const PersonCard = ({ person, remove }: any) => (
               {person.known_for_department}
             </span>
           </div>
-
         </div>
-
       </div>
     </Link>
   </motion.div>
 );
-
-
 
 const MediaCard = ({ item, remove, type }: any) => (
   <motion.div
@@ -219,17 +237,19 @@ const MediaCard = ({ item, remove, type }: any) => (
     className="relative group bg-gradient-to-b from-white/5 to-transparent rounded-xl overflow-hidden hover:shadow-xl transition-shadow"
   >
     <button
-      onClick={() => remove(item.id)}
+      onClick={() => remove(item.id || item.movieId)}
       className="absolute top-3 right-3 z-10 p-1.5 bg-gray-800/80 rounded-lg backdrop-blur-sm hover:bg-red-500/80 transition-colors"
     >
       <Trash2 className="w-4 h-4 text-gray-300 hover:text-white" />
     </button>
-    <Link href={`/${type}/${item.id}`}>
+    <Link href={`/${type}/${item.id || item.movieId}`}>
       <div className="relative aspect-[2/3]">
         <Image
-          src={item.poster_path 
-            ? `https://image.tmdb.org/t/p/w500${item.poster_path}`
-            : '/placeholder.png'}
+          src={
+            item.poster
+              ? `https://image.tmdb.org/t/p/w500${item.poster}`
+              : `https://image.tmdb.org/t/p/w500${item.poster_path}`
+          }
           alt={item.title || item.name}
           fill
           className="object-cover transition-transform group-hover:scale-105"
@@ -242,7 +262,7 @@ const MediaCard = ({ item, remove, type }: any) => (
         </h3>
         <div className="flex justify-between items-center mt-2 text-sm">
           <span className="bg-purple-600/80 px-2 py-1 rounded-md">
-            {type === 'movie' ? '🎬 Movie' : '📺 TV Show'}
+            {type === "movie" ? "🎬 Movie" : "📺 TV Show"}
           </span>
           <span className="text-gray-300">
             {new Date(item.release_date || item.first_air_date).getFullYear()}

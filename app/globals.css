@@ -106,6 +106,12 @@ body {
   display: none; /* Chrome/Safari/Webkit */
 }
 
+.shimmer {
+  background: linear-gradient(90deg, #1a1a1a 25%, #2a2a2a 50%, #1a1a1a 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
 @keyframes shimmer {
   0% {
     background-position: -200% 0;
@@ -231,3 +237,17 @@ body {
   color: transparent;
   will-change: background;
 }
+
+.progress-bar {
+  transition: width 0.5s ease-in-out;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
