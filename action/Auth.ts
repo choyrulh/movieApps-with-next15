@@ -52,7 +52,5 @@ export const logoutUser = async (): Promise<void> => {
     throw new Error("Logout failed");
   }
 
-  console.log(data);
-
   return;
 };

@@ -44,9 +44,7 @@ export default function RegisterPage() {
       toast("Registration Successful");
       router.push("/");
     } else if (state.error) {
-      toast("Registration Failed", {
-        description: state.error,
-      });
+      toast("Registration Failed");
     }
   }, [state.success, state.error, router]);
 

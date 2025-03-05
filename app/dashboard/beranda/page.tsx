@@ -148,14 +148,14 @@ export default function page() {
                   <div className="text-center">
                     <div className="text-gray-400 mb-1">Total Jam Menonton</div>
                     <div className="text-3xl font-bold text-white">
-                      {statsData?.data.watchHistoryByPeriod[0].totalDuration /
+                      {statsData?.data?.watchHistoryByPeriod[0]?.totalDuration /
                         60}
                     </div>
                   </div>
                   <div className="text-center">
                     <div className="text-gray-400 mb-1">Genre Favorit</div>
                     <div className="text-3xl font-bold text-white">
-                      {statsData?.data.recentActivity[0].genre}
+                      {statsData?.data?.recentActivity[0]?.genre}
                     </div>
                   </div>
                   <div className="text-center">
@@ -163,7 +163,7 @@ export default function page() {
                       Total Film Ditonton
                     </div>
                     <div className="text-3xl font-bold text-white">
-                      {statsData?.data.totalMoviesWatched}
+                      {statsData?.data?.totalMoviesWatched}
                     </div>
                   </div>
                 </div>

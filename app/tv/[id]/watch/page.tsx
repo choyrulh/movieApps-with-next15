@@ -260,12 +260,12 @@ function page() {
           </select>
 
           {/* Tombol Min Screen */}
-          {/*<button
+          <button
             onClick={() => setMinScreenMode(!minScreenMode)}
             className="bg-gray-800 text-white px-3 py-1 rounded border border-gray-700 hover:bg-gray-700"
           >
             {minScreenMode ? "Exit Min Screen" : "Enter Min Screen"}
-          </button>*/}
+          </button>
         </div>
 
         {/* Season and Episode Controls */}
