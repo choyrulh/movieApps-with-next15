@@ -27,7 +27,6 @@ export default function RegisterPage() {
 
       try {
         await registerUser(rawFormData);
-        document.cookie = `user=${response.token}; path=/; max-age=604800; SameSite=Lax`; // Set cookie dengan durasi 1 minggu jam
         setIsAuthenticated(true);
         return { error: null, success: true };
       } catch (error) {
@@ -59,7 +58,9 @@ export default function RegisterPage() {
             <div className="inline-block p-4 bg-purple-600 rounded-full mb-4">
               <UserPlus className="w-8 h-8 text-white" />
             </div>
-            <h2 className="text-3xl font-bold text-white mb-2">Create Account</h2>
+            <h2 className="text-3xl font-bold text-white mb-2">
+              Create Account
+            </h2>
             <p className="text-gray-400">Join us and start watching</p>
           </div>
 
@@ -71,7 +72,10 @@ export default function RegisterPage() {
 
           <form action={dispatch} className="space-y-6">
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-300" htmlFor="name">
+              <label
+                className="text-sm font-medium text-gray-300"
+                htmlFor="name"
+              >
                 Full Name
               </label>
               <div className="relative">
@@ -88,7 +92,10 @@ export default function RegisterPage() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-300" htmlFor="email">
+              <label
+                className="text-sm font-medium text-gray-300"
+                htmlFor="email"
+              >
                 Email
               </label>
               <div className="relative">
@@ -105,7 +112,10 @@ export default function RegisterPage() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-300" htmlFor="password">
+              <label
+                className="text-sm font-medium text-gray-300"
+                htmlFor="password"
+              >
                 Password
               </label>
               <div className="relative">
@@ -133,7 +143,10 @@ export default function RegisterPage() {
           <div className="mt-6 text-center">
             <p className="text-gray-400">
               Already have an account?{" "}
-              <Link href="/login" className="text-purple-400 hover:text-purple-300 font-medium">
+              <Link
+                href="/login"
+                className="text-purple-400 hover:text-purple-300 font-medium"
+              >
                 Sign in
               </Link>
             </p>
