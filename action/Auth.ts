@@ -37,7 +37,7 @@ export const registerUser = async (
   const data = await res.json();
 
   if (!res.ok) {
-    throw new Error(data.error || "Register failed");
+    throw new Error(data.message || "Register failed");
   }
 
   return data;

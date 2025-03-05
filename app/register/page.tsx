@@ -6,7 +6,8 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Lock, Mail, User, UserPlus } from "lucide-react";
 import { registerUser } from "@/action/Auth";
-import { toast } from "sonner"
+import { toast } from "sonner";
+import { useAuth } from "@/context/AuthContext";
 
 type State = {
   error: string | null;
@@ -14,6 +15,7 @@ type State = {
 };
 
 export default function RegisterPage() {
+  const { setIsAuthenticated } = useAuth();
   const router = useRouter();
   const [state, dispatch, isPending] = useActionState<State, FormData>(
     async (prevState, formData) => {
@@ -25,6 +27,8 @@ export default function RegisterPage() {
 
       try {
         await registerUser(rawFormData);
+        document.cookie = `user=${response.token}; path=/; max-age=604800; SameSite=Lax`; // Set cookie dengan durasi 1 minggu jam
+        setIsAuthenticated(true);
         return { error: null, success: true };
       } catch (error) {
         return {
