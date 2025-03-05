@@ -12,32 +12,23 @@ import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 
 export const AddFavoriteButton = ({ item }: { item: FavoriteItem }) => {
-  console.log("item: ", item)
   const token = getCookie("user");
   const { favorites, addToFavorites, removeFromFavorites, syncWithServer } =
     useFavoriteStore();
-  // const [isFavorite, setIsFavorite] = useState(favorites?.some((i) => i.itemId === item.id && i.type === item.type));
   const pathname = usePathname();
   const isMobile = useIsMobile();
   const { isAuthenticated } = useAuth();
-  const isFavorite = favorites?.some((i: FavoriteItem) => i.itemId === item.id || item.itemId) ?? false;
-
-  // Determine item type from URL path
-  // const itemType = pathname.split("/")[1] === 'movies' ? 'movie' :
-  //                 pathname.split("/")[1] === 'tv' ? 'tv' :
-  //                 'movie'; // default to movie
+  // Improved isFavorite logic
+  const isFavorite = favorites?.some((i: FavoriteItem) => 
+    i.itemId === (item.itemId ?? item.id) && 
+    i.type === (item.type ?? item.media_type)
+  ) ?? false;
+  
 
   useEffect(() => {
     syncWithServer();
   }, [syncWithServer]);
 
-  // useEffect(() => {
-  //   setIsFavorite(
-  //     token
-  //       ? favorites?.some((i) => i.itemId === item.id && i.type === itemType)
-  //       : favorites?.some((i) => i.id === item.id)
-  //   );
-  // }, [favorites, token, item.id]);
 
   const handleToggleFavorite = async () => {
     if (token && isAuthenticated) {
