@@ -56,3 +56,44 @@ export const removeFromWatchlistAPI = async (movieId: number) => {
 
   return response.json();
 };
+
+export const addRecentlyWatched = async (item: WatchHistory) => {
+  const token = getCookie("user");
+  const response = await fetch(
+    "https://backend-movie-apps-api-one.vercel.app/api/recently-watched",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        movieId: item.movieId,
+        title: item.title,
+        poster: item.poster,
+        backdrop_path: item.backdrop_path,
+        duration: item.duration,
+        durationWatched: item.durationWatched,
+        totalDuration: item.totalDuration,
+        genres: item.genres,
+        progressPercentage: item.progressPercentage,
+      }),
+    }
+  );
+
+  if (!response.ok) throw new Error(response.statusText);
+
+  return response.json();
+};
+
+export interface WatchHistory {
+  movieId: number;
+  title: string | null;
+  poster: string;
+  backdrop_path: string | undefined;
+  duration: number;
+  durationWatched: number;
+  totalDuration: number;
+  genres: any[] | undefined;
+  progressPercentage?: number; // Opsional karena dihitung di backend
+}

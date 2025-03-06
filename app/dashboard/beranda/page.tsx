@@ -236,7 +236,7 @@ const RecentMovieCard = ({ movie }: { movie: any }) => {
           <Image
             src={
               `https://image.tmdb.org/t/p/${isMobile ? "w300" : "w500"}${
-                movie.posterPath
+                movie.backdrop_path
               }` || "/default-poster.jpg"
             }
             alt={movie.title ?? ""}

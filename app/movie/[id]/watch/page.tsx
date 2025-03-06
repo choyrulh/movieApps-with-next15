@@ -1,21 +1,12 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Movie } from "@/types/movie.";
 import { getDetailMovie } from "@/Service/fetchMovie";
-import {
-  Monitor,
-  ChevronDown,
-  Tv,
-  Expand,
-  Shrink,
-  Loader2,
-  AlertCircle,
-  Calendar,
-  Clock,
-} from "lucide-react";
+import { Monitor, ChevronDown, Tv, Expand, Shrink, Clock } from "lucide-react";
+import { addRecentlyWatched, WatchHistory } from "@/Service/actionUser";
 
 function Watch() {
   const pathname = usePathname();
@@ -28,6 +19,9 @@ function Watch() {
     percentage: 0,
   });
   const videoProgressRef = useRef(videoProgress);
+  const [lastSavedProgress, setLastSavedProgress] = useState(videoProgress);
+  const saveIntervalRef = useRef<NodeJS.Timeout>();
+  const isSavingRef = useRef(false);
   const [showServerDropdown, setShowServerDropdown] = useState(false);
   const {
     data: movie,
@@ -70,7 +64,6 @@ function Watch() {
 
       if (event.data?.type === "MEDIA_DATA") {
         const mediaData = event.data.data;
-        console.log(mediaData);
 
         if (mediaData && mediaData[id]?.progress) {
           const progress = {
@@ -107,22 +100,103 @@ function Watch() {
         const history = JSON.parse(
           localStorage.getItem("watchHistory") || "{}"
         );
+        const progress = videoProgressRef.current;
+
         history[`${id}`] = {
           id: movie.id,
           title: movie.title,
           backdrop_path: movie.backdrop_path,
           poster_path: movie.poster_path,
           type: "movie",
-          progress: videoProgressRef.current,
+          progress,
           updated_at: new Date().toISOString(),
           release_date: movie.release_date,
           runtime: movie.runtime,
           video_key: movie.videos?.results[0]?.key,
         };
         localStorage.setItem("watchHistory", JSON.stringify(history));
+
+        // Kirim ke backend API
+        const watchHistoryItem: WatchHistory = {
+          movieId: movie.id,
+          title: movie.title,
+          poster: movie.poster_path,
+          backdrop_path: movie.backdrop_path,
+          duration: movie?.runtime ? movie.runtime * 60 : 0, // Convert menit ke detik
+          durationWatched: progress.watched,
+          totalDuration: progress.duration,
+          genres: movie?.genres?.map((g: any) => g.name),
+          progressPercentage: progress.percentage,
+        };
+
+        addRecentlyWatched(watchHistoryItem).catch((error) => {
+          console.error("Gagal menyimpan riwayat:", error);
+        });
       }
     };
   }, [id, movie]);
+
+  const saveProgressToAPI = useCallback(
+    async (progress: typeof videoProgress) => {
+      if (!movie || isSavingRef.current) return;
+
+      try {
+        isSavingRef.current = true;
+
+        const watchHistoryItem: WatchHistory = {
+          movieId: movie.id,
+          title: movie.title,
+          poster: movie.poster_path,
+          backdrop_path: movie.backdrop_path,
+          duration: movie?.runtime ? movie.runtime * 60 : 0, // Convert menit ke detik
+          durationWatched: progress.watched,
+          totalDuration: progress.duration,
+          genres: movie?.genres?.map((g: any) => g.name),
+          progressPercentage: progress.percentage,
+        };
+
+        await addRecentlyWatched(watchHistoryItem);
+        setLastSavedProgress(progress);
+        console.log("Progress tersimpan ke API");
+      } catch (error) {
+        console.error("Gagal menyimpan progress:", error);
+      } finally {
+        isSavingRef.current = false;
+      }
+    },
+    [movie]
+  );
+
+  // Efek untuk interval penyimpanan
+  useEffect(() => {
+    if (!movie) return;
+
+    const interval = setInterval(() => {
+      // Hanya simpan jika ada perubahan progress
+      if (
+        videoProgress.watched !== lastSavedProgress.watched ||
+        videoProgress.duration !== lastSavedProgress.duration
+      ) {
+        saveProgressToAPI(videoProgress);
+      }
+    }, 30000); // 30 detik - bisa disesuaikan
+
+    saveIntervalRef.current = interval;
+
+    return () => {
+      if (saveIntervalRef.current) clearInterval(saveIntervalRef.current);
+    };
+  }, [movie, lastSavedProgress, saveProgressToAPI, videoProgress]);
+
+  // Efek untuk penyimpanan terakhir saat unmount
+  useEffect(() => {
+    return () => {
+      // Simpan progress terakhir saat komponen unmount
+      if (movie && videoProgressRef.current) {
+        saveProgressToAPI(videoProgressRef.current).catch(console.error);
+      }
+    };
+  }, [movie, saveProgressToAPI]);
 
   // Get video URL based on selected server
   const getVideoUrl = () => {

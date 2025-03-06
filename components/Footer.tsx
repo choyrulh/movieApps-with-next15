@@ -42,8 +42,11 @@ const Footer = () => {
   return (
     <footer
       className={`relative overflow-hidden ${
-          ["/login", "/register"].includes(pathname) || pathname.startsWith("/dashboard/") ? "hidden" : "block"
-        }`}
+        ["/login", "/register", "/dashboard"].includes(pathname) ||
+        pathname.startsWith("/dashboard/")
+          ? "hidden"
+          : "block"
+      }`}
     >
       {/* Animated background elements */}
       <div className="absolute inset-0 opacity-10">

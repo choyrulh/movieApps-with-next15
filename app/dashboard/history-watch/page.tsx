@@ -1,18 +1,18 @@
-'use client'
+"use client";
 
 import { useUserProfile } from "@/hook/useUserProfile";
 import { Clock, Play, Tv, Film, History } from "lucide-react";
 import { motion } from "framer-motion";
 import { Skeleton } from "@/components/ui/skeleton";
-import {formatIndonesianDate, getTimeAgo} from "@/lib/function/dateFormatter"
-
+import { formatIndonesianDate, getTimeAgo } from "@/lib/function/dateFormatter";
 
 const MovieHistoryCard = ({ item }: { item: any }) => {
-  const progressColor = item.progressPercentage >= 90 
-    ? "bg-green-500" 
-    : item.progressPercentage >= 50
-    ? "bg-yellow-500"
-    : "bg-red-500";
+  const progressColor =
+    item.progressPercentage >= 90
+      ? "bg-green-500"
+      : item.progressPercentage >= 50
+      ? "bg-yellow-500"
+      : "bg-red-500";
 
   return (
     <motion.div
@@ -23,12 +23,13 @@ const MovieHistoryCard = ({ item }: { item: any }) => {
       {/* Poster */}
       <div className="relative flex-shrink-0">
         <img
-          src={`https://image.tmdb.org/t/p/w200${item.posterPath}`}
+          src={`https://image.tmdb.org/t/p/w200${item.poster}`}
           alt={item.title}
           className="w-24 h-36 rounded-lg object-cover"
         />
         <div className="absolute bottom-1 left-1 bg-black/80 px-2 py-1 rounded text-xs">
-          {Math.floor(item.durationWatched / 60)}h {item.durationWatched % 60}m
+          {Math.floor(item.durationWatched / 3600).toFixed(0)}h{" "}
+          {Math.floor((item.durationWatched % 3600) / 60)}m
         </div>
       </div>
 
@@ -44,7 +45,7 @@ const MovieHistoryCard = ({ item }: { item: any }) => {
         {/* Progress Bar */}
         <div className="space-y-1">
           <div className="h-2 bg-gray-700 rounded-full">
-            <div 
+            <div
               className={`h-full rounded-full ${progressColor} transition-all duration-300`}
               style={{ width: `${item.progressPercentage}%` }}
             />
@@ -52,7 +53,8 @@ const MovieHistoryCard = ({ item }: { item: any }) => {
           <div className="flex justify-between text-xs">
             <span>{item.progressPercentage}% Complete</span>
             <span>
-              {Math.floor(item.totalDuration / 60)}h {item.totalDuration % 60}m total
+              {Math.floor(item.totalDuration / 3600).toFixed(0)}h{" "}
+              {(item.totalDuration % 60).toFixed(0)}m total
             </span>
           </div>
         </div>
@@ -72,17 +74,19 @@ const MovieHistoryCard = ({ item }: { item: any }) => {
         {/* Watched Time Ago */}
         <div className="flex items-center gap-1 text-sm text-gray-400">
           <History className="w-4 h-4" />
-          <span>
-            Ditonton {getTimeAgo(new Date(item.watchedDate))}
-          </span>
+          <span>Ditonton {getTimeAgo(new Date(item.watchedDate))}</span>
         </div>
       </div>
     </motion.div>
   );
 };
 
-export default function Page () {
-  const { data: history, isLoading, error } = useUserProfile({
+export default function Page() {
+  const {
+    data: history,
+    isLoading,
+    error,
+  } = useUserProfile({
     queryType: "history",
   });
 
@@ -94,7 +98,9 @@ export default function Page () {
         </div>
         <div>
           <h1 className="text-3xl font-bold">Riwayat Nonton</h1>
-          <p className="text-gray-400">Film dan series yang pernah kamu tonton</p>
+          <p className="text-gray-400">
+            Film dan series yang pernah kamu tonton
+          </p>
         </div>
       </div>
 
@@ -127,4 +133,4 @@ export default function Page () {
       )}
     </div>
   );
-};
+}
