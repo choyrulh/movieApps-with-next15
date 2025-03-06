@@ -196,17 +196,17 @@ const HistoryTontonan = () => {
                 <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-2">
                   <div className="flex justify-between items-end">
                     <div>
-                      <span className="text-white text-sm font-medium block truncate">
+                      <span className="text-white text-sm font-medium block truncate w-28">
                         {media.title}
                       </span>
                       {media.release_date && (
                         <span className="text-gray-300 text-xs">
-                          {new Date(media.release_date).getFullYear()}
+                          {new Date(media.release_date || media.first_air_date).getFullYear()}
                         </span>
                       )}
                     </div>
                     {media.runtime && (
-                      <span className="text-xs bg-black/50 px-2 py-1 rounded">
+                      <span className="text-xs bg-black/50 px-2 py-1 rounded min-w-fit">
                         {Math.floor(media.runtime / 60)}h {media.runtime % 60}m
                       </span>
                     )}
@@ -232,7 +232,7 @@ const HistoryTontonan = () => {
                 </p>
 
                 <p className="text-xs text-gray-500 mt-1">
-                  Tonton {progressPercentage}%
+                  Tonton {progressPercentage || 0}%
                 </p>
               </div>
               {isTVShow && media.episode_title && (

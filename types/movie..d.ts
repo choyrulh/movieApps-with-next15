@@ -38,6 +38,7 @@ export interface Movie {
   vote_count?: number;
   budget?: number;
   revenue?: number;
+  runtime?: number;
   spoken_languages?: { iso_639_1: string; name: string }[];
   status?: string;
   production_companies?: { name: string }[];

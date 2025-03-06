@@ -6,48 +6,44 @@ import { useQuery } from "@tanstack/react-query";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
+import { Clock, Monitor, ChevronDown, Tv, Expand, Shrink,Calendar } from 'lucide-react';
 
 function page() {
   const pathname = usePathname();
   const id = pathname.split("/")[2];
-  const [minScreenMode, setMinScreenMode] = useState(false);
+  const [isFullScreen, setIsFullScreen] = useState(false);
+  const [showServerDropdown, setShowServerDropdown] = useState(false);
   const [season, setSeason] = useState("1");
   const [episode, setEpisode] = useState("1");
-  const [selectedServer, setSelectedServer] = useState("vidlink");
+  const [selectedServer, setSelectedServer] = useState("server 1");
   const [videoProgress, setVideoProgress] = useState({
     watched: 0,
     duration: 0,
     percentage: 0,
   });
+    const [showSeasonDropdown, setShowSeasonDropdown] = useState(false);
 
 
-  // Ref untuk track progress terbaru
+
   const videoProgressRef = useRef(videoProgress);
-  useEffect(() => {
-    videoProgressRef.current = videoProgress;
-  }, [videoProgress]);
 
-  const { data, isLoading, isError } = useQuery<any>({
+  const { data: show, isLoading, isError } = useQuery<any>({
     queryKey: ["showDetail", id],
     queryFn: () => getDetailShow(id as unknown as number, {}),
-
-    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+    staleTime: 5 * 60 * 1000,
     retry: 2,
   });
 
   useEffect(() => {
-    // Load server preference
+    videoProgressRef.current = videoProgress;
+  }, [videoProgress]);
+
+  useEffect(() => {
     const savedServer = localStorage.getItem("selectedVideoServer");
     if (savedServer) setSelectedServer(savedServer);
 
-    // Load existing progress
     const history = JSON.parse(localStorage.getItem("watchHistory") || "{}");
     const tvHistory = history[`${id}`] as TVHistory;
-
-    //  if (tvHistory?.last_watched) {
-    //   setSeason(tvHistory.last_watched.season.toString());
-    //   setEpisode(tvHistory.last_watched.episode.toString());
-    // }
 
     if (tvHistory?.seasons?.[season]?.episodes?.[episode]) {
       setVideoProgress(tvHistory.seasons[season].episodes[episode].progress);
@@ -62,13 +58,10 @@ function page() {
         if (mediaData && mediaData[id]?.progress) {
           const lastSeason = mediaData[id].last_season_watched;
           const lastEpisode = mediaData[id].last_episode_watched;
-
-          // Menggunakan bracket notation untuk dynamic key
           const key = `s${lastSeason}e${lastEpisode}`;
-          const watched =
-            mediaData[id].show_progress[key]?.progress.watched ?? 0;
-          const duration =
-            mediaData[id].show_progress[key]?.progress.duration ?? 1; // Hindari pembagian dengan 0
+          
+          const watched = mediaData[id].show_progress[key]?.progress.watched ?? 0;
+          const duration = mediaData[id].show_progress[key]?.progress.duration ?? 1;
 
           const progress = {
             watched,
@@ -77,83 +70,42 @@ function page() {
           };
 
           setVideoProgress(progress);
-
-          // Update localStorage
-          const history = JSON.parse(
-            localStorage.getItem("watchHistory") || "{}"
-          );
-          const seasonData = data?.seasons.find(
-            (s: any) => s.season_number === parseInt(season)
-          );
-
-          history[`${id}`] = {
-            ...history[`${id}`],
-            id: data.id,
-            title: data.name,
-            type: "tv",
-            backdrop_path: data.backdrop_path,
-            poster_path: data.poster_path,
-            last_watched: {
-              ...history[`${id}`]?.last_watched, // Mengambil data sebelumnya agar tidak hilang
-              videoProgress, // Memastikan `videoProgress` dimasukkan dengan benar
-            },
-            seasons: {
-              ...history[`${id}`]?.seasons,
-              [season]: {
-                episodes: {
-                  ...history[`${id}`]?.seasons?.[season]?.episodes,
-                  [episode]: {
-                    progress,
-                    last_updated: new Date().toISOString(),
-                    episode_title:
-                      seasonData?.episodes?.[parseInt(episode) - 1]?.name ||
-                      `Episode ${episode}`,
-                  },
-                },
-              },
-            },
-            last_updated: new Date().toISOString(),
-          };
-          localStorage.setItem("watchHistory", JSON.stringify(history));
+          saveProgress(progress);
         }
       }
     };
 
     window.addEventListener("message", handleMessage);
-
     return () => {
       window.removeEventListener("message", handleMessage);
-      saveProgress();
+      saveProgress(videoProgressRef.current);
     };
-  }, [id, season, episode, data]);
+  }, [id, season, episode, show]);
 
-  const saveProgress = () => {
-    if (!data) return;
+  const saveProgress = (progress: typeof videoProgress) => {
+    if (!show) return;
 
-    const historyKey = `${id}`;
     const history = JSON.parse(localStorage.getItem("watchHistory") || "{}");
-    const seasonData = data.seasons.find(
+    const seasonData = show.seasons.find(
       (s: any) => s.season_number === parseInt(season)
     );
 
     const updatedHistory: TVHistory = {
-      ...history[historyKey],
-      id: data.id,
-      title: data.name,
+      ...history[id],
+      id: show.id,
+      title: show.name,
       type: "tv",
-      backdrop_path: data.backdrop_path,
-      poster_path: data.poster_path,
+      backdrop_path: show.backdrop_path,
+      poster_path: show.poster_path,
       seasons: {
-        ...history[historyKey]?.seasons,
+        ...history[id]?.seasons,
         [season]: {
           episodes: {
-            ...history[historyKey]?.seasons?.[season]?.episodes,
+            ...history[id]?.seasons?.[season]?.episodes,
             [episode]: {
-              progress: videoProgressRef.current,
+              progress,
               last_updated: new Date().toISOString(),
-              episode_title:
-                seasonData?.episodes?.[parseInt(episode) - 1]?.name ||
-                `Episode ${episode}`,
+              episode_title: seasonData?.episodes?.[parseInt(episode) - 1]?.name || `Episode ${episode}`,
             },
           },
         },
@@ -161,7 +113,7 @@ function page() {
       last_watched: {
         season: parseInt(season),
         episode: parseInt(episode),
-        progress: videoProgressRef.current.percentage,
+        progress: progress.percentage,
         timestamp: new Date().toISOString(),
       },
       last_updated: new Date().toISOString(),
@@ -171,175 +123,206 @@ function page() {
       "watchHistory",
       JSON.stringify({
         ...history,
-        [historyKey]: updatedHistory,
+        [id]: updatedHistory,
       })
     );
   };
 
-  const handleSeasonChange = (newSeason: string) => {
-    saveProgress();
-    setSeason(newSeason);
-    setEpisode("1");
-    setVideoProgress({
-      watched: 0,
-      duration: 0,
-      percentage: 0,
-    });
-  };
-
-  const handleEpisodeChange = (newEpisode: string) => {
-    saveProgress();
-    setEpisode(newEpisode);
-    // setVideoProgress(0);
-  };
-
-  // Get video URL based on selected server
   const getVideoUrl = () => {
-    switch (selectedServer) {
-      case "vidlink":
-        return `https://vidlink.pro/tv/${id}/${season}/${episode}`;
-      case "vidsrc-v2":
-        return `https://vidsrc.cc/v2/embed/tv/${id}/${season}/${episode}?autoPlay=false`;
-      case "vidsrc-v3":
-        return `https://vidsrc.cc/v3/embed/tv/${id}/${season}/${episode}?autoPlay=false`;
-      default:
-        return `https://vidlink.pro/tv/${id}/${season}/${episode}`;
-    }
+    const serverUrls: { [key: string]: string } = {
+      'server 1': `https://vidlink.pro/tv/${id}/${season}/${episode}`,
+      'server 2': `https://vidsrc.cc/v2/embed/tv/${id}/${season}/${episode}?autoPlay=false`,
+      'server 3': `https://vidsrc.cc/v3/embed/tv/${id}/${season}/${episode}?autoPlay=false`,
+    };
+    return serverUrls[selectedServer] || serverUrls['server 1'];
   };
 
-  const handleServerChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const server = e.target.value;
-    setSelectedServer(server);
-    localStorage.setItem("selectedVideoServer", server);
-  };
-
-  if (isError)
+  if (isError) {
     return (
       <div className="min-h-screen bg-gray-900 text-white p-4">
         Error loading data
       </div>
     );
+  }
 
-  const totalSeasons = data?.number_of_seasons || 0;
-  const selectedSeasonData = data?.seasons?.find(
+  const selectedSeasonData = show?.seasons?.find(
     (s: any) => s.season_number === parseInt(season)
   );
   const totalEpisodes = selectedSeasonData?.episode_count || 0;
-
-  // Update tampilan progress bar
-  const episodeProgressBar = (epNumber: string) => {
-    const history = JSON.parse(localStorage.getItem("watchHistory") || "{}");
-    return (
-      history[`${id}`]?.seasons?.[season]?.episodes?.[epNumber]?.progress
-        ?.percentage || 0
-    );
-  };
+  const currentEpisodeData = selectedSeasonData?.episodes?.[parseInt(episode) - 1];
 
   return (
     <div className="min-h-screen bg-gray-900 text-white pb-20">
-      <main className="max-w-7xl mx-auto px-4 pt-28 space-y-4">
-        {/* Title */}
-        <Link href={`/tv/${data?.id}`}>
-          <h2 className="text-white text-lg">{data?.name}</h2>
-        </Link>
+      <main className={`mx-auto pt-8 transition-all duration-500 ${
+        isFullScreen ? "max-w-full" : "max-w-7xl px-4"
+      }`}>
+        {show && !isFullScreen && (
+          <div className="max-w-7xl mx-auto px-4 pt-4">
+            <div className="flex items-start gap-6">
+              <div className="flex-1">
+                <h1 className="text-3xl font-bold mb-2">{show.name}</h1>
+                <div className="flex items-center gap-4 text-gray-300 mb-4">
+                  <span className="flex items-center gap-1.5">
+                    <Clock className="h-4 w-4" />
+                    S{season} E{episode}: {currentEpisodeData?.name}
+                  </span>
+                  {videoProgress.percentage > 0 && (
+                    <span className="bg-blue-500/20 text-blue-400 px-2.5 py-1 rounded-full text-sm">
+                      {Math.round(videoProgress.percentage)}% watched
+                    </span>
+                  )}
+                </div>
+                
+                {/* Season & Episode Selection */}
+                <div className="flex flex-wrap gap-3 mb-4">
+                  {/* Season Dropdown */}
+                  <div className="relative">
+                    <button
+                      onClick={() => setShowSeasonDropdown(!showSeasonDropdown)}
+                      className="flex items-center gap-2 bg-black/60 backdrop-blur-sm px-4 py-2 rounded-full transition-colors hover:bg-black/80"
+                    >
+                      <Calendar className="h-5 w-5 text-blue-400" />
+                      <span className="text-sm">Season {season}</span>
+                      <ChevronDown className="h-4 w-4" />
+                    </button>
 
-        {/* Server Selection */}
-        <div className="flex items-center gap-2">
-          <label htmlFor="serverSelect" className="text-sm text-gray-300">
-            Select Server:
-          </label>
-          <select
-            id="serverSelect"
-            value={selectedServer}
-            onChange={handleServerChange}
-            className="bg-gray-800 text-white px-3 py-1 rounded border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="vidlink">Server 1</option>
-            <option value="vidsrc-v2">Server 2</option>
-            <option value="vidsrc-v3">Server 3</option>
-          </select>
-
-          {/* Tombol Min Screen */}
-          <button
-            onClick={() => setMinScreenMode(!minScreenMode)}
-            className="bg-gray-800 text-white px-3 py-1 rounded border border-gray-700 hover:bg-gray-700"
-          >
-            {minScreenMode ? "Exit Min Screen" : "Enter Min Screen"}
-          </button>
-        </div>
-
-        {/* Season and Episode Controls */}
-        <div className="space-y-4">
-          <select
-            value={season}
-            onChange={(e) => handleSeasonChange(e.target.value)}
-            className="bg-gray-800 text-white px-4 py-2 rounded-lg w-fit"
-          >
-            {Array.from({ length: totalSeasons }, (_, i) => (
-              <option key={i + 1} value={(i + 1).toString()}>
-                Season {i + 1}
-              </option>
-            ))}
-          </select>
-
-          <div className="flex flex-wrap gap-2">
-            {Array.from({ length: totalEpisodes }, (_, i) => {
-              const epNumber = (i + 1).toString();
-              const history = JSON.parse(
-                localStorage.getItem("watchHistory") || "{}"
-              );
-              const episodeProgress =
-                history[`${id}`]?.seasons?.[season]?.episodes?.[epNumber]
-                  ?.progress || 0;
-
-              return (
-                <button
-                  key={i + 1}
-                  onClick={() => handleEpisodeChange(epNumber)}
-                  className={`px-3 py-1 rounded-lg relative 
-                    ${
-                      episode === epNumber
-                        ? "bg-blue-600 hover:bg-blue-700"
-                        : "bg-gray-800 hover:bg-gray-700"
-                    }`}
-                >
-                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-700">
-                    <div
-                      className="h-full bg-blue-500 transition-all duration-300"
-                      style={{ width: `${episodeProgressBar(epNumber)}%` }}
-                    />
+                    {showSeasonDropdown && (
+                      <div className="absolute mt-2 w-48 bg-gray-800/95 backdrop-blur-xl rounded-xl shadow-lg border border-gray-700 overflow-hidden z-20">
+                        {show.seasons.map((s: any) => (
+                          <button
+                            key={s.season_number}
+                            onClick={() => {
+                              setSeason(s.season_number.toString());
+                              setShowSeasonDropdown(false);
+                              setEpisode("1");
+                            }}
+                            className={`w-full px-4 py-3 text-sm flex items-center gap-3 ${
+                              season === s.season_number.toString()
+                                ? "bg-blue-600/20 text-blue-400"
+                                : "hover:bg-gray-700/30"
+                            } transition-colors`}
+                          >
+                            <Calendar className="h-4 w-4 flex-shrink-0" />
+                            <span>Season {s.season_number}</span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                  {i + 1}
-                </button>
-              );
-            })}
+
+                  <div className="flex flex-wrap gap-2">
+                    {Array.from({ length: totalEpisodes }, (_, i) => {
+                      const epNum = (i + 1).toString();
+                      const history = JSON.parse(localStorage.getItem("watchHistory") || "{}");
+                      const epProgress = history[id]?.seasons?.[season]?.episodes?.[epNum]?.progress?.percentage || 0;
+
+                      return (
+                        <button
+                          key={epNum}
+                          onClick={() => setEpisode(epNum)}
+                          className={`px-3 py-1.5 rounded-lg relative ${
+                            episode === epNum
+                              ? "bg-blue-600 hover:bg-blue-700"
+                              : "bg-gray-800/50 hover:bg-gray-700/50"
+                          }`}
+                        >
+                          <span>{epNum}</span>
+                          {epProgress > 0 && (
+                            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-700">
+                              <div
+                                className="h-full bg-blue-500 transition-all duration-300"
+                                style={{ width: `${epProgress}%` }}
+                              />
+                            </div>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+              
+              <div className="hidden lg:block w-72">
+                <div className="bg-gray-800/50 rounded-xl p-4">
+                  <h3 className="text-sm font-semibold mb-3">Streaming Info</h3>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Quality:</span>
+                      <span className="text-blue-400">HD 1080p</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Server:</span>
+                      <span className="text-blue-400">{selectedServer}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Controls */}
+        <div className="flex items-center gap-4 mb-4 ml-4">
+          <button
+            onClick={() => setIsFullScreen(!isFullScreen)}
+            className="flex items-center gap-2 bg-black/60 backdrop-blur-sm px-4 py-2 rounded-full transition-all hover:bg-black/80"
+          >
+            {isFullScreen ? (
+              <>
+                <Shrink className="h-5 w-5 text-blue-400" />
+                <span className="text-sm">Exit Screen</span>
+              </>
+            ) : (
+              <>
+                <Expand className="h-5 w-5 text-blue-400" />
+                <span className="text-sm">Enter Screen</span>
+              </>
+            )}
+          </button>
+
+          <div className="relative">
+            <button
+              onClick={() => setShowServerDropdown(!showServerDropdown)}
+              className="flex items-center gap-2 bg-black/60 backdrop-blur-sm px-4 py-2 rounded-full transition-colors hover:bg-black/80"
+            >
+              <Monitor className="h-5 w-5 text-blue-400" />
+              <span className="text-sm">{selectedServer}</span>
+              <ChevronDown className="h-4 w-4" />
+            </button>
+
+            {showServerDropdown && (
+              <div className="absolute mt-2 w-48 bg-gray-800/95 backdrop-blur-xl rounded-xl shadow-lg border border-gray-700 overflow-hidden">
+                {[1, 2, 3].map((serverNum) => (
+                  <button
+                    key={serverNum}
+                    onClick={() => {
+                      setSelectedServer(`server ${serverNum}`);
+                      setShowServerDropdown(false);
+                    }}
+                    className={`w-full px-4 py-3 text-sm flex items-center gap-3 ${
+                      selectedServer === `server ${serverNum}`
+                        ? "bg-blue-600/20 text-blue-400"
+                        : "hover:bg-gray-700/30"
+                    } transition-colors`}
+                  >
+                    <Tv className="h-4 w-4 flex-shrink-0" />
+                    <span>Server {serverNum}</span>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
         {/* Video Player */}
-        <div className={`${
-            minScreenMode 
-              ? "fixed inset-0 w-screen h-screen z-50 rounded-none" 
-              : "aspect-video w-full rounded-lg shadow-xl"
-          } bg-black overflow-hidden transition-all duration-300`}>
-            {minScreenMode && (
-              <button
-                onClick={() => setMinScreenMode(false)}
-                className="absolute top-4 right-4 bg-gray-800/80 text-white px-3 py-1 rounded hover:bg-gray-700/80 backdrop-blur-sm z-50"
-              >
-                ✕ Close
-              </button>
-            )}
-            <iframe
-              key={`${selectedServer}-${season}-${episode}`}
-              src={getVideoUrl()}
-              frameBorder="0"
-              allowFullScreen
-              width="100%"
-              height="100%"
-              className="animate-fade-in"
-            />
-          </div>
+        <div className={`${isFullScreen ? "h-screen" : "aspect-video"} w-full bg-black rounded-lg overflow-hidden mt-4`}>
+          <iframe
+            src={getVideoUrl()}
+            frameBorder="0"
+            allowFullScreen
+            className="w-full h-full"
+          ></iframe>
+        </div>
       </main>
     </div>
   );
