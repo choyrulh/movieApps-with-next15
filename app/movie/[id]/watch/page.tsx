@@ -52,6 +52,11 @@ function Watch() {
   useEffect(() => {
     const savedServer = localStorage.getItem("selectedVideoServer");
     if (savedServer) setSelectedServer(savedServer);
+    const validServers = Array.from({ length: 6 }, (_, i) => `server ${i + 1}`);
+
+    if (savedServer && validServers.includes(savedServer)) {
+      setSelectedServer(savedServer);
+    }
 
     // Load existing progress
     const history = JSON.parse(localStorage.getItem("watchHistory") || "{}");
@@ -65,6 +70,7 @@ function Watch() {
 
       if (event.data?.type === "MEDIA_DATA") {
         const mediaData = event.data.data;
+        console.log(mediaData);
 
         if (mediaData && mediaData[id]?.progress) {
           const progress = {
@@ -131,6 +137,8 @@ function Watch() {
         return `https://vidsrc.to/embed/movie/${id}`;
       case "server 5":
         return `https://vidsrc.icu/embed/movie/${id}`;
+      case "server 6":
+        return `https://player.videasy.net/movie/${id}`;
       default:
         return `https://vidlink.pro/movie/${id}`;
     }
@@ -221,11 +229,15 @@ function Watch() {
             {/* Dropdown List */}
             {showServerDropdown && (
               <div className="absolute mt-2 w-48 bg-gray-800/95 backdrop-blur-xl rounded-xl shadow-lg border border-gray-700 overflow-hidden">
-                {[1, 2, 3, 4, 5].map((serverNum) => (
+                {[1, 2, 3, 4, 5, 6].map((serverNum) => (
                   <button
                     key={serverNum}
                     onClick={() => {
                       setSelectedServer(`server ${serverNum}`);
+                      localStorage.setItem(
+                        "selectedVideoServer",
+                        `server ${serverNum}`
+                      );
                       setShowServerDropdown(false);
                     }}
                     className={`w-full px-4 py-3 text-sm flex items-center gap-3 ${

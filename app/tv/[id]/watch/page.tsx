@@ -6,7 +6,15 @@ import { useQuery } from "@tanstack/react-query";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
-import { Clock, Monitor, ChevronDown, Tv, Expand, Shrink,Calendar } from 'lucide-react';
+import {
+  Clock,
+  Monitor,
+  ChevronDown,
+  Tv,
+  Expand,
+  Shrink,
+  Calendar,
+} from "lucide-react";
 
 function page() {
   const pathname = usePathname();
@@ -21,13 +29,15 @@ function page() {
     duration: 0,
     percentage: 0,
   });
-    const [showSeasonDropdown, setShowSeasonDropdown] = useState(false);
-
-
+  const [showSeasonDropdown, setShowSeasonDropdown] = useState(false);
 
   const videoProgressRef = useRef(videoProgress);
 
-  const { data: show, isLoading, isError } = useQuery<any>({
+  const {
+    data: show,
+    isLoading,
+    isError,
+  } = useQuery<any>({
     queryKey: ["showDetail", id],
     queryFn: () => getDetailShow(id as unknown as number, {}),
     staleTime: 5 * 60 * 1000,
@@ -59,9 +69,11 @@ function page() {
           const lastSeason = mediaData[id].last_season_watched;
           const lastEpisode = mediaData[id].last_episode_watched;
           const key = `s${lastSeason}e${lastEpisode}`;
-          
-          const watched = mediaData[id].show_progress[key]?.progress.watched ?? 0;
-          const duration = mediaData[id].show_progress[key]?.progress.duration ?? 1;
+
+          const watched =
+            mediaData[id].show_progress[key]?.progress.watched ?? 0;
+          const duration =
+            mediaData[id].show_progress[key]?.progress.duration ?? 1;
 
           const progress = {
             watched,
@@ -105,7 +117,9 @@ function page() {
             [episode]: {
               progress,
               last_updated: new Date().toISOString(),
-              episode_title: seasonData?.episodes?.[parseInt(episode) - 1]?.name || `Episode ${episode}`,
+              episode_title:
+                seasonData?.episodes?.[parseInt(episode) - 1]?.name ||
+                `Episode ${episode}`,
             },
           },
         },
@@ -129,12 +143,18 @@ function page() {
   };
 
   const getVideoUrl = () => {
-    const serverUrls: { [key: string]: string } = {
-      'server 1': `https://vidlink.pro/tv/${id}/${season}/${episode}`,
-      'server 2': `https://vidsrc.cc/v2/embed/tv/${id}/${season}/${episode}?autoPlay=false`,
-      'server 3': `https://vidsrc.cc/v3/embed/tv/${id}/${season}/${episode}?autoPlay=false`,
-    };
-    return serverUrls[selectedServer] || serverUrls['server 1'];
+    switch (selectedServer) {
+      case "server 1":
+        return `https://vidlink.pro/tv/${id}/${season}/${episode}`;
+      case "server 2":
+        return `https://vidsrc.cc/v2/embed/tv/${id}/${season}/${episode}?autoPlay=false`;
+      case "server 3":
+        return `https://vidsrc.cc/v3/embed/tv/${id}/${season}/${episode}?autoPlay=false`;
+      case "server 4":
+        return `https://player.videasy.net/tv/${id}/${season}/${episode}`;
+      default:
+        return `https://vidlink.pro/tv/${id}/${season}/${episode}`; // Default to server 1
+    }
   };
 
   if (isError) {
@@ -149,13 +169,16 @@ function page() {
     (s: any) => s.season_number === parseInt(season)
   );
   const totalEpisodes = selectedSeasonData?.episode_count || 0;
-  const currentEpisodeData = selectedSeasonData?.episodes?.[parseInt(episode) - 1];
+  const currentEpisodeData =
+    selectedSeasonData?.episodes?.[parseInt(episode) - 1];
 
   return (
     <div className="min-h-screen bg-gray-900 text-white pb-20">
-      <main className={`mx-auto pt-8 transition-all duration-500 ${
-        isFullScreen ? "max-w-full" : "max-w-7xl px-4"
-      }`}>
+      <main
+        className={`mx-auto pt-8 transition-all duration-500 ${
+          isFullScreen ? "max-w-full" : "max-w-7xl px-4"
+        }`}
+      >
         {show && !isFullScreen && (
           <div className="max-w-7xl mx-auto px-4 pt-4">
             <div className="flex items-start gap-6">
@@ -163,8 +186,8 @@ function page() {
                 <h1 className="text-3xl font-bold mb-2">{show.name}</h1>
                 <div className="flex items-center gap-4 text-gray-300 mb-4">
                   <span className="flex items-center gap-1.5">
-                    <Clock className="h-4 w-4" />
-                    S{season} E{episode}: {currentEpisodeData?.name}
+                    <Clock className="h-4 w-4" />S{season} E{episode}:{" "}
+                    {currentEpisodeData?.name}
                   </span>
                   {videoProgress.percentage > 0 && (
                     <span className="bg-blue-500/20 text-blue-400 px-2.5 py-1 rounded-full text-sm">
@@ -172,7 +195,7 @@ function page() {
                     </span>
                   )}
                 </div>
-                
+
                 {/* Season & Episode Selection */}
                 <div className="flex flex-wrap gap-3 mb-4">
                   {/* Season Dropdown */}
@@ -213,8 +236,12 @@ function page() {
                   <div className="flex flex-wrap gap-2">
                     {Array.from({ length: totalEpisodes }, (_, i) => {
                       const epNum = (i + 1).toString();
-                      const history = JSON.parse(localStorage.getItem("watchHistory") || "{}");
-                      const epProgress = history[id]?.seasons?.[season]?.episodes?.[epNum]?.progress?.percentage || 0;
+                      const history = JSON.parse(
+                        localStorage.getItem("watchHistory") || "{}"
+                      );
+                      const epProgress =
+                        history[id]?.seasons?.[season]?.episodes?.[epNum]
+                          ?.progress?.percentage || 0;
 
                       return (
                         <button
@@ -241,7 +268,7 @@ function page() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="hidden lg:block w-72">
                 <div className="bg-gray-800/50 rounded-xl p-4">
                   <h3 className="text-sm font-semibold mb-3">Streaming Info</h3>
@@ -292,7 +319,7 @@ function page() {
 
             {showServerDropdown && (
               <div className="absolute mt-2 w-48 bg-gray-800/95 backdrop-blur-xl rounded-xl shadow-lg border border-gray-700 overflow-hidden">
-                {[1, 2, 3].map((serverNum) => (
+                {[1, 2, 3, 4].map((serverNum) => (
                   <button
                     key={serverNum}
                     onClick={() => {
@@ -315,7 +342,11 @@ function page() {
         </div>
 
         {/* Video Player */}
-        <div className={`${isFullScreen ? "h-screen" : "aspect-video"} w-full bg-black rounded-lg overflow-hidden mt-4`}>
+        <div
+          className={`${
+            isFullScreen ? "h-screen" : "aspect-video"
+          } w-full bg-black rounded-lg overflow-hidden mt-4`}
+        >
           <iframe
             src={getVideoUrl()}
             frameBorder="0"

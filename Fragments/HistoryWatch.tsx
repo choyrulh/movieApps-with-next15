@@ -188,9 +188,9 @@ const HistoryTontonan = () => {
                 <Image
                   src={`https://image.tmdb.org/t/p/w780${media.backdrop_path}`}
                   alt={media.title}
-                  layout="fill"
-                  objectFit="cover"
-                  className="hover:scale-105 transition-transform duration-300"
+                  fill
+                  // objectFit="cover"
+                  className="hover:scale-105 object-cover transition-transform duration-300"
                 />
                 {/* Tambahkan informasi tambahan */}
                 <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-2">
@@ -201,7 +201,9 @@ const HistoryTontonan = () => {
                       </span>
                       {media.release_date && (
                         <span className="text-gray-300 text-xs">
-                          {new Date(media.release_date || media.first_air_date).getFullYear()}
+                          {new Date(
+                            media.release_date || media.first_air_date
+                          ).getFullYear()}
                         </span>
                       )}
                     </div>

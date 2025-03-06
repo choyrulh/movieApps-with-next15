@@ -187,8 +187,9 @@ export default function Page() {
                     <Image
                       src={userData.avatar}
                       alt="Profile"
-                      layout="fill"
-                      objectFit="cover"
+                      fill
+                      // objectFit="cover"
+                      className="object-cover"
                     />
                   </div>
                   <button

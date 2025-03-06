@@ -240,8 +240,9 @@ const RecentMovieCard = ({ movie }: { movie: any }) => {
               }` || "/default-poster.jpg"
             }
             alt={movie.title ?? ""}
-            layout="fill"
-            objectFit="cover"
+            fill
+            // objectFit="cover"
+            className="object-cover"
             placeholder="blur"
             blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+P+/HgAFdQIQX8Ku3QAAAABJRU5ErkJggg=="
           />
@@ -282,8 +283,9 @@ const RecommendedMovieCard = ({ movie }: { movie: any }) => {
               }` || "/default-poster.jpg"
             }
             alt={movie.title ?? ""}
-            layout="fill"
-            objectFit="cover"
+            fill
+            // objectFit="cover"
+            className="object-cover"
             placeholder="blur"
             blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+P+/HgAFdQIQX8Ku3QAAAABJRU5ErkJggg=="
           />
