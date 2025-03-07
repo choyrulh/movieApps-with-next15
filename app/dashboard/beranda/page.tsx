@@ -149,7 +149,7 @@ export default function page() {
                     <div className="text-gray-400 mb-1">Total Jam Menonton</div>
                     <div className="text-3xl font-bold text-white">
                       {statsData?.data?.watchHistoryByPeriod[0]?.totalDuration /
-                        60 || 0}
+                        3600 || 0}
                     </div>
                   </div>
                   <div className="text-center">
