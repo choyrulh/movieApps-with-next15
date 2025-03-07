@@ -86,6 +86,30 @@ export const addRecentlyWatched = async (item: WatchHistory) => {
   return response.json();
 };
 
+export const removeRecentlyWatched = async (id: string) => {
+  const token = getCookie("user");
+  const response = await fetch(`https://backend-movie-apps-api-one.vercel.app/api/recently-watched/${id}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  if (!response.ok) throw new Error("Failed to remove from watchlist");
+
+  return response.json();
+}
+
+export const clearAllRecentlyWatched = async () => {
+  const token = getCookie("user");
+  const response = await fetch(`https://backend-movie-apps-api-one.vercel.app/api/recently-watched`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  if (!response.ok) throw new Error("Gagal menghapus semua riwayat");
+
+  return response.json();
+}
+
 export interface WatchHistory {
   movieId: number;
   title: string | null;

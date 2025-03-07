@@ -122,9 +122,9 @@ const MovieCard = ({
             >
               View Details
             </Link>
-            <button className="p-2 bg-blue-500/85 hover:bg-blue-600 rounded-lg transition-colors">
+            <Link href={`/movie/${movie.movieId}/watch`} className="p-2 bg-blue-500/85 hover:bg-blue-600 rounded-lg transition-colors">
               <Play className="h-5 w-5 text-white" />
-            </button>
+            </Link>
           </div>
         </div>
       </div>

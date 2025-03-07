@@ -90,9 +90,9 @@ const FavoriteCard = ({
           >
             <span className="text-sm font-semibold text-white">Details</span>
           </Link>
-          <button className="p-2.5 bg-blue-500/85 hover:bg-blue-600 rounded-lg transition-colors">
+          <Link href={`/movie/${movie.itemId}/watch`} className="p-2.5 bg-blue-500/85 hover:bg-blue-600 rounded-lg transition-colors">
             <Play className="h-5 w-5 text-white" />
-          </button>
+          </Link>
         </div>
       </div>
     </motion.div>
