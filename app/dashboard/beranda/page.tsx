@@ -241,7 +241,7 @@ export default function page() {
                           {statsType === "month"
                             ? `Minggu ${entry.week}`
                             : new Date(entry.date).toLocaleDateString("id-ID", {
-                                weekday: "narrow",
+                                weekday: "long",
                               })}
                         </span>
                       )
