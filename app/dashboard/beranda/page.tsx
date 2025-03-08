@@ -27,12 +27,13 @@ export default function page() {
   const { data, isLoading, error } = useUserProfile({
     queryType: "userProfile",
   });
+  const [statsType, setStatsType] = useState<"month" | "week">("month");
   const { data: watchlistData } = useUserProfile({ queryType: "watchlist" });
   const { data: favoritesData } = useUserProfile({ queryType: "favorites" });
   const { data: historyData } = useUserProfile({ queryType: "history" });
   const { data: statsData } = useUserProfile({
     queryType: "stats",
-    type: "month",
+    type: statsType,
   });
   const isMobile = useIsMobile();
 
@@ -41,6 +42,12 @@ export default function page() {
   }, []);
 
   if (!mounted) return null;
+
+   const formatDuration = (seconds: number) => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    return `${hours}j ${minutes}m`;
+  };
 
   return (
     <>
@@ -68,7 +75,7 @@ export default function page() {
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
               <StatCard
                 icon={<User className="w-6 h-6" />}
                 title="Paket"
@@ -142,19 +149,45 @@ export default function page() {
 
             {/* Watch Statistics */}
             <div>
-              <h2 className="text-xl font-semibold mb-4">Statistik Tontonan</h2>
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-semibold">Statistik Tontonan</h2>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setStatsType("month")}
+                    className={`px-4 py-2 rounded-lg ${
+                      statsType === "month"
+                        ? "bg-blue-500/85 text-white"
+                        : "bg-gray-700 text-gray-300"
+                    }`}
+                  >
+                    Bulanan
+                  </button>
+                  <button
+                    onClick={() => setStatsType("week")}
+                    className={`px-4 py-2 rounded-lg ${
+                      statsType === "week"
+                        ? "bg-blue-500/85 text-white"
+                        : "bg-gray-700 text-gray-300"
+                    }`}
+                  >
+                    Mingguan
+                  </button>
+                </div>
+              </div>
               <div className="bg-gray-800 rounded-lg p-6">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                   <div className="text-center">
-                    <div className="text-gray-400 mb-1">Total Jam Menonton</div>
+                    <div className="text-gray-400 mb-1">
+                      Total Jam Menonton
+                    </div>
                     <div className="text-3xl font-bold text-white">
-                      {(statsData?.data?.watchHistoryByPeriod[0]?.totalDuration / 3600 || 0).toFixed(1)}
+                      {formatDuration(statsData?.data?.totalWatchTime || 0)}
                     </div>
                   </div>
                   <div className="text-center">
                     <div className="text-gray-400 mb-1">Genre Favorit</div>
                     <div className="text-3xl font-bold text-white">
-                      {statsData?.data?.recentActivity[0]?.genre}
+                      {statsData?.data?.mostWatchedGenres[0]?.genre || "-"}
                     </div>
                   </div>
                   <div className="text-center">
@@ -162,34 +195,57 @@ export default function page() {
                       Total Film Ditonton
                     </div>
                     <div className="text-3xl font-bold text-white">
-                      {statsData?.data?.totalMoviesWatched}
+                      {statsData?.data?.totalMoviesWatched || 0}
                     </div>
                   </div>
                 </div>
+
+                {/* Grafik Statistik */}
                 <div className="mt-6">
                   <div className="flex justify-between text-sm text-gray-400 mb-2">
                     <span>Aktivitas Menonton</span>
-                    <span>Minggu Ini</span>
+                    <span>
+                      {statsType === "month" ? "Bulan Ini" : "Minggu Ini"}
+                    </span>
                   </div>
                   <div className="h-16 flex items-end space-x-2">
-                    {[40, 65, 25, 80, 45, 75, 35].map((height, index) => (
-                      <motion.div
-                        key={index}
-                        className="bg-blue-600 rounded-t w-full"
-                        initial={{ height: 0 }}
-                        animate={{ height: `${height}%` }}
-                        transition={{ duration: 0.5, delay: index * 0.1 }}
-                      ></motion.div>
-                    ))}
+                    {statsData?.data?.watchHistoryByPeriod?.map(
+                      (entry: any, index: number) => {
+                        const maxDuration = Math.max(
+                          ...statsData.data.watchHistoryByPeriod.map(
+                            (e: any) => e.totalDuration
+                          )
+                        );
+                        const height =
+                          (entry.totalDuration / (maxDuration || 1)) * 100;
+
+                        return (
+                          <motion.div
+                            key={index}
+                            className="bg-blue-600 rounded-t w-full"
+                            initial={{ height: 0 }}
+                            animate={{ height: `${height}%` }}
+                            transition={{
+                              duration: 0.5,
+                              delay: index * 0.1,
+                            }}
+                          />
+                        );
+                      }
+                    )}
                   </div>
                   <div className="flex justify-between text-xs text-gray-500 mt-2">
-                    <span>Sen</span>
-                    <span>Sel</span>
-                    <span>Rab</span>
-                    <span>Kam</span>
-                    <span>Jum</span>
-                    <span>Sab</span>
-                    <span>Min</span>
+                    {statsData?.data?.watchHistoryByPeriod?.map(
+                      (entry: any, index: number) => (
+                        <span key={index}>
+                          {statsType === "month"
+                            ? `Minggu ${entry.week}`
+                            : new Date(entry.date).toLocaleDateString("id-ID", {
+                                weekday: "narrow",
+                              })}
+                        </span>
+                      )
+                    )}
                   </div>
                 </div>
               </div>

@@ -94,9 +94,12 @@ const MovieHistoryCard = ({
         {/* Progress Bar */}
         <div className="space-y-1">
           <div className="h-2 bg-gray-700 rounded-full">
-            <div
+            <motion.div
               className={`h-full rounded-full ${progressColor} transition-all duration-300`}
-              style={{ width: `${item.progressPercentage}%` }}
+              // style={{ width: `${item.progressPercentage}%` }}
+              initial={{ width: 0 }}
+              animate={{ width: `${item.progressPercentage}%` }}
+              transition={{ duration: 0.5}}
             />
           </div>
           <div className="flex justify-between text-xs">
