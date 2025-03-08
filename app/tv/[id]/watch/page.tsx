@@ -1,5 +1,6 @@
 "use client";
 
+import { useCallback } from "react";
 import { getDetailShow } from "@/Service/fetchMovie";
 import { useStore } from "@/store/useStore";
 import { useQuery } from "@tanstack/react-query";
@@ -15,6 +16,11 @@ import {
   Shrink,
   Calendar,
 } from "lucide-react";
+import {
+  addRecentlyWatched,
+  WatchHistory,
+  fetchVideoProgress,
+} from "@/Service/actionUser";
 
 function page() {
   const pathname = usePathname();
@@ -33,6 +39,12 @@ function page() {
 
   const videoProgressRef = useRef(videoProgress);
 
+  const [lastSavedProgress, setLastSavedProgress] = useState({
+    watched: 0,
+    duration: 0,
+  });
+  const saveIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
   const {
     data: show,
     isLoading,
@@ -47,6 +59,46 @@ function page() {
   useEffect(() => {
     videoProgressRef.current = videoProgress;
   }, [videoProgress]);
+  // Update useEffect untuk mengambil data progress dari API
+
+  // Efek untuk interval penyimpanan
+  useEffect(() => {
+    if (!show) return;
+
+    const interval = setInterval(async () => {
+      // Bandingkan dengan progress terakhir yang disimpan
+      if (
+        videoProgress.watched !== lastSavedProgress.watched ||
+        videoProgress.duration !== lastSavedProgress.duration
+      ) {
+        try {
+          await saveProgress(videoProgress);
+          setLastSavedProgress(videoProgress);
+        } catch (error) {
+          console.error("Gagal menyimpan progress secara periodik:", error);
+        }
+      }
+    }, 30000); // Simpan setiap 30 detik
+
+    saveIntervalRef.current = interval;
+
+    return () => {
+      if (saveIntervalRef.current) {
+        clearInterval(saveIntervalRef.current);
+      }
+    };
+  }, [show, videoProgress, lastSavedProgress]);
+
+  useEffect(() => {
+    const getProgress = async () => {
+      const progress = await fetchVideoProgress({ id, season, episode });
+      if (progress) {
+        setVideoProgress(progress);
+      }
+    };
+
+    getProgress();
+  }, [id, season, episode]);
 
   useEffect(() => {
     const savedServer = localStorage.getItem("selectedVideoServer");
@@ -94,53 +146,78 @@ function page() {
     };
   }, [id, season, episode, show]);
 
-  const saveProgress = (progress: typeof videoProgress) => {
-    if (!show) return;
+  const saveProgress = useCallback(
+    async (progress: typeof videoProgress) => {
+      if (!show) return;
 
-    const history = JSON.parse(localStorage.getItem("watchHistory") || "{}");
-    const seasonData = show.seasons.find(
-      (s: any) => s.season_number === parseInt(season)
-    );
+      try {
+        // Simpan ke API
+        const historyItem = {
+          type: "tv" as const,
+          contentId: show.id,
+          season: parseInt(season),
+          episode: parseInt(episode),
+          title: show.name,
+          poster: show.poster_path,
+          backdrop_path: show.backdrop_path,
+          duration: progress.duration,
+          durationWatched: progress.watched,
+          totalDuration: progress.duration,
+          genres: show.genres?.map((g: any) => g.name) || [],
+          progressPercentage: progress.percentage,
+        };
 
-    const updatedHistory: TVHistory = {
-      ...history[id],
-      id: show.id,
-      title: show.name,
-      type: "tv",
-      backdrop_path: show.backdrop_path,
-      poster_path: show.poster_path,
-      seasons: {
-        ...history[id]?.seasons,
-        [season]: {
-          episodes: {
-            ...history[id]?.seasons?.[season]?.episodes,
-            [episode]: {
-              progress,
-              last_updated: new Date().toISOString(),
-              episode_title:
-                seasonData?.episodes?.[parseInt(episode) - 1]?.name ||
-                `Episode ${episode}`,
+        await addRecentlyWatched(historyItem);
+
+        // Update local storage
+        const seasonData = show.seasons.find(
+          (s: any) => s.season_number === parseInt(season)
+        );
+
+        const updatedHistory: TVHistory = {
+          contentId: show.id,
+          title: show.name,
+          type: "tv",
+          backdrop_path: show.backdrop_path,
+          poster_path: show.poster_path,
+          seasons: {
+            [season]: {
+              episodes: {
+                [episode]: {
+                  progress,
+                  last_updated: new Date().toISOString(),
+                  episode_title:
+                    seasonData?.episodes?.[parseInt(episode) - 1]?.name ||
+                    `Episode ${episode}`,
+                },
+              },
             },
           },
-        },
-      },
-      last_watched: {
-        season: parseInt(season),
-        episode: parseInt(episode),
-        progress: progress.percentage,
-        timestamp: new Date().toISOString(),
-      },
-      last_updated: new Date().toISOString(),
-    };
+          last_watched: {
+            season: parseInt(season),
+            episode: parseInt(episode),
+            progress: progress.percentage,
+            timestamp: new Date().toISOString(),
+          },
+          last_updated: new Date().toISOString(),
+        };
 
-    localStorage.setItem(
-      "watchHistory",
-      JSON.stringify({
-        ...history,
-        [id]: updatedHistory,
-      })
-    );
-  };
+        const history = JSON.parse(
+          localStorage.getItem("watchHistory") || "{}"
+        );
+        localStorage.setItem(
+          "watchHistory",
+          JSON.stringify({
+            ...history,
+            [show.id]: updatedHistory,
+          })
+        );
+      } catch (error) {
+        console.error("Gagal menyimpan progress:", error);
+      }
+    },
+    [show, season, episode]
+  );
 
   const getVideoUrl = () => {
     switch (selectedServer) {
@@ -246,7 +323,10 @@ function page() {
                       return (
                         <button
                           key={epNum}
-                          onClick={() => setEpisode(epNum)}
+                          onClick={() => {
+                            setEpisode(epNum);
+                            saveProgress(videoProgress);
+                          }}
                           className={`px-3 py-1.5 rounded-lg relative ${
                             episode === epNum
                               ? "bg-blue-600 hover:bg-blue-700"
@@ -362,7 +442,7 @@ function page() {
 export default page;
 
 interface TVHistory {
-  id: number;
+  contentId: number; // Ganti id menjadi contentId
   title: string;
   type: "tv";
   backdrop_path: string;

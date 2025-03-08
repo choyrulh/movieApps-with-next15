@@ -37,7 +37,7 @@ const MovieHistoryCard = ({
       : "bg-red-500";
 
   const handleDelete = async () => {
-    if (!confirm(`Hapus ${item.title} dari riwayat?`)) return;
+    // if (!confirm(`Hapus ${item.title} dari riwayat?`)) return;
     try {
       await removeRecentlyWatched(item._id);
       toast("Berhasil dihapus dari riwayat");
@@ -80,6 +80,11 @@ const MovieHistoryCard = ({
           {Math.floor(item.durationWatched / 3600).toFixed(0)}h{" "}
           {Math.floor((item.durationWatched % 3600) / 60)}m
         </div>
+        {item.type === 'tv' && (
+          <div className="absolute top-1 right-1 bg-black/80 px-2 py-1 rounded text-xs">
+            S{item.season} E{item.episode}
+          </div>
+        )}
       </div>
 
       {/* Content */}

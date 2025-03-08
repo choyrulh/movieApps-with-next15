@@ -151,7 +151,7 @@ const HistoryTontonan = () => {
             : media.progress?.duration;
           return (
             <Link
-              href={`/${media.type}/${media.id}/watch`}
+              href={`/${media.type}/${media.id || media.contentId}/watch`}
               key={media.id}
               className="flex-shrink-0 w-48 bg-gray-700 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 relative group"
             >

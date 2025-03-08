@@ -68,11 +68,13 @@ export const addRecentlyWatched = async (item: WatchHistory) => {
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
-        movieId: item.movieId,
+        type: item.type,
+        contentId: item.contentId,
+        season: item.season,
+        episode: item.episode,
         title: item.title,
         poster: item.poster,
         backdrop_path: item.backdrop_path,
-        duration: item.duration,
         durationWatched: item.durationWatched,
         totalDuration: item.totalDuration,
         genres: item.genres,
@@ -88,30 +90,68 @@ export const addRecentlyWatched = async (item: WatchHistory) => {
 
 export const removeRecentlyWatched = async (id: string) => {
   const token = getCookie("user");
-  const response = await fetch(`https://backend-movie-apps-api-one.vercel.app/api/recently-watched/${id}`, {
-    method: "DELETE",
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  const response = await fetch(
+    `https://backend-movie-apps-api-one.vercel.app/api/recently-watched/${id}`,
+    {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
 
   if (!response.ok) throw new Error("Failed to remove from watchlist");
 
   return response.json();
-}
+};
 
 export const clearAllRecentlyWatched = async () => {
   const token = getCookie("user");
-  const response = await fetch(`https://backend-movie-apps-api-one.vercel.app/api/recently-watched`, {
-    method: "DELETE",
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  const response = await fetch(
+    `https://backend-movie-apps-api-one.vercel.app/api/recently-watched`,
+    {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
 
   if (!response.ok) throw new Error("Gagal menghapus semua riwayat");
 
   return response.json();
-}
+};
+
+export const fetchVideoProgress = async ({ id, season, episode }: any) => {
+  try {
+    const response = await fetch(
+      `https://backend-movie-apps-api-one.vercel.app/api/recently-watched/tv/${id}/season/${season}/episode/${episode}`,
+      {
+        headers: {
+          Authorization: `Bearer ${getCookie("user")}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Gagal mengambil progress");
+    }
+
+    const data = await response.json();
+    return data.progressPercentage > 0
+      ? {
+          watched: data.durationWatched,
+          duration: data.totalDuration,
+          percentage: data.progressPercentage,
+        }
+      : null;
+  } catch (error) {
+    console.error("Gagal mengambil progress:", error);
+    return null;
+  }
+};
 
 export interface WatchHistory {
-  movieId: number;
+  contentId: number;
+  type: "movie" | "tv";
+  season?: number;
+  episode?: number;
   title: string | null;
   poster: string;
   backdrop_path: string | undefined;

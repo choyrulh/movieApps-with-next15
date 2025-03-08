@@ -118,7 +118,8 @@ function Watch() {
 
         // Kirim ke backend API
         const watchHistoryItem: WatchHistory = {
-          movieId: movie.id,
+          contentId: movie.id,
+          type: "movie",
           title: movie.title,
           poster: movie.poster_path,
           backdrop_path: movie.backdrop_path,
@@ -144,7 +145,8 @@ function Watch() {
         isSavingRef.current = true;
 
         const watchHistoryItem: WatchHistory = {
-          movieId: movie.id,
+          contentId: movie.id,
+          type: "movie",
           title: movie.title,
           poster: movie.poster_path,
           backdrop_path: movie.backdrop_path,
