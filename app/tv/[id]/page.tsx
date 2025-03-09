@@ -214,11 +214,11 @@ function DetailShow({ params }: { params: Promise<{ id: string }> }) {
                   {isAuthenticated && 
                       <AddFavoriteButton
                         item={{
-                            ...movie,
-                            title: movie.title ?? "",
-                            media_type: "movie",
-                            itemId: movie.id,
-                            type: "movie",
+                            ...show,
+                            title: show.name ?? "",
+                            media_type: "tv",
+                            itemId: show.id,
+                            type: "tv",
                           }}
                       />
                     }
