@@ -209,7 +209,7 @@ function DetailShow({ params }: { params: Promise<{ id: string }> }) {
 
               {/* Details */}
               <div className="w-full md:w-2/3 text-white">
-                <h1 className="text-4xl font-bold mb-4">
+                <h1 className="text-4xl font-bold mb-4 inline-flex items-center gap-2">
                   {show.name}
                   {isAuthenticated && 
                       <AddFavoriteButton
