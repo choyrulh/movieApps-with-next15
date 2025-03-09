@@ -96,7 +96,7 @@ export const Navbar = () => {
                   : "opacity-0 -translate-y-4 pointer-events-none lg:opacity-100 lg:translate-y-0 lg:pointer-events-auto"
               }`}
             >
-              <ul className="space-y-5 lg:flex lg:space-x-6 lg:space-y-0 lg:mt-0">
+              <ul className="space-y-5 lg:flex lg:space-x-6 lg:space-y-0 lg:mt-0 items-center">
                 {navigation.map((item, idx) => (
                   <li key={idx} className="text-gray-400 hover:text-gray-100">
                     {item.children ? (

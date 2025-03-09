@@ -16,7 +16,7 @@ const ContactPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">
-      <div className="max-w-4xl mx-auto px-4 py-16 pt=[5vw]">
+      <div className="max-w-4xl mx-auto px-4 py-16 pt-[8vw]">
         <h1 className="text-4xl font-bold text-center mb-12">Contact Us</h1>
         
         <div className="bg-gray-800 rounded-2xl p-8 shadow-xl">

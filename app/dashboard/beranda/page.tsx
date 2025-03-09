@@ -28,7 +28,7 @@ export default function page() {
   const { data, isLoading, error } = useUserProfile({
     queryType: "userProfile",
   });
-  const [statsType, setStatsType] = useState<"month" | "week">("month");
+  const [statsType, setStatsType] = useState<"month" | "week">("week");
   const { data: watchlistData } = useUserProfile({ queryType: "watchlist" });
   const { data: favoritesData } = useUserProfile({ queryType: "favorites" });
   const { data: historyData } = useUserProfile({ queryType: "history" });
