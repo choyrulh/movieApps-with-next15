@@ -1,51 +1,35 @@
+// app/dashboard/page.tsx
 "use client";
 
-import { useState, useEffect } from "react";
-import { useAuth } from "@/context/AuthContext";
-import { useUserProfile } from "@/hook/useUserProfile";
-import { redirect } from 'next/navigation'
+import { motion } from "framer-motion";
+import { Clock, Heart, Film, Star, Popcorn, Clapperboard, Play, List, Trophy, History } from "lucide-react";
+import Link from "next/link";
+import Image from "next/image";
 
-export default function Dashboard() {
-  const [activeTab, setActiveTab] = useState("home");
-  const [mounted, setMounted] = useState(false);
-  const { data, isLoading, error } = useUserProfile();
-  const { isAuthenticated, token } = useAuth();
-
-  // useEffect(() => {
-  //   setMounted(true);
-  //   console.log("isAuthenticated" , isAuthenticated)
-    
-  //   // Redirect ke login jika tidak terautentikasi
-  //   if (isAuthenticated === false) {
-  //     redirect("/login");
-  //   }
-
-  // }, [isAuthenticated, token, redirect]);
-
-  // if (!mounted || isLoading) {
-  //   return (
-  //     <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-  //       <div className="text-white text-lg">Loading...</div>
-  //     </div>
-  //   );
-  // }
-
-  // if (isAuthenticated === false) {
-  //   return (
-  //     <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-  //       <div className="text-white text-lg">Redirecting to login...</div>
-  //     </div>
-  //   );
-  // }
-
+export default function DashboardIntro() {
   return (
-    <>
-      <div className="flex items-center justify-between mt-20 p-4 bg-gray-800">
-        <div className="flex items-center space-x-4">
-          welcome Home
-          </div>
-      </div>
-    </>
+    <div className="h-[75vh] flex justify-center items-center space-y-8 px-4 py-8">
+      {/* Hero Section */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="text-center space-y-6"
+      >
+        <div className="inline-block bg-gradient-to-r from-blue-500 to-purple-500 p-2 rounded-full">
+          <Clapperboard className="w-12 h-12 text-white" />
+        </div>
+        
+        <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+          Selamat Datang di SlashVerse!
+        </h1>
+        
+        <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+          Temukan dunia film dan serial terbaik yang siap menemani hari-harimu.
+          Mulai petualangan menontonmu sekarang!
+        </p>
+      </motion.div>
+
+    </div>
   );
 }
-

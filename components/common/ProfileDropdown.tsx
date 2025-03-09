@@ -13,7 +13,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 
 
 
-export const ProfileDropDown = ({ props }: any) => {
+export const ProfileDropDown = ({ props, onCloseMenu }: any) => {
   const [state, setState] = useState(false);
   const isMobile = useIsMobile();
   const router = useRouter();
@@ -98,7 +98,10 @@ export const ProfileDropDown = ({ props }: any) => {
                 {item.title === "Log out" ? (
                   <button
                     className="block px-4 py-2 text-gray-200 transition-colors duration-200 hover:bg-slate-800/80 w-full text-end"
-                    onClick={handleLogout}
+                    onClick={() => {
+                      handleLogout()
+                      onCloseMenu() // Tambahkan ini
+                    }}
                   >
                     {item.title}
                   </button>
@@ -106,7 +109,10 @@ export const ProfileDropDown = ({ props }: any) => {
                   <Link
                     className="block px-4 py-2 text-gray-200 transition-colors duration-200 hover:bg-slate-800/80"
                     href={item.path}
-                    onClick={() => setState(false)}
+                    onClick={() => {
+                      setState(false)
+                      onCloseMenu() // Tambahkan ini
+                    }}
                   >
                     {item.title}
                   </Link>

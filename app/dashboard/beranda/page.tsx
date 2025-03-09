@@ -16,6 +16,7 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import useIsMobile from "@/hook/useIsMobile";
+import WatchStatistics from "@/Fragments/WatchStatistics"
 
 // Data dummy untuk contoh
 const userData = {
@@ -48,6 +49,7 @@ export default function page() {
     const minutes = Math.floor((seconds % 3600) / 60);
     return `${hours}j ${minutes}m`;
   };
+  console.log("statsData: ", statsData)
 
   return (
     <>
@@ -84,17 +86,17 @@ export default function page() {
               <StatCard
                 icon={<Clock className="w-6 h-6" />}
                 title="Watchlist"
-                value={statsData?.data?.totalWatchlist}
+                value={statsData?.data?.overall?.totalWatchlist}
               />
               <StatCard
                 icon={<Heart className="w-6 h-6" />}
                 title="Favorit"
-                value={statsData?.data?.totalFavorites}
+                value={statsData?.data?.overall?.totalFavorites}
               />
               <StatCard
                 icon={<Film className="w-6 h-6" />}
                 title="Film Selesai"
-                value={statsData?.data.totalCompletedMovies}
+                value={statsData?.data?.overall?.totalCompletedContent}
               />
             </div>
 
@@ -148,109 +150,12 @@ export default function page() {
             </div>
 
             {/* Watch Statistics */}
-            <div>
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold">Statistik Tontonan</h2>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => setStatsType("month")}
-                    className={`px-4 py-2 rounded-lg ${
-                      statsType === "month"
-                        ? "bg-blue-500/85 text-white"
-                        : "bg-gray-700 text-gray-300"
-                    }`}
-                  >
-                    Bulanan
-                  </button>
-                  <button
-                    onClick={() => setStatsType("week")}
-                    className={`px-4 py-2 rounded-lg ${
-                      statsType === "week"
-                        ? "bg-blue-500/85 text-white"
-                        : "bg-gray-700 text-gray-300"
-                    }`}
-                  >
-                    Mingguan
-                  </button>
-                </div>
-              </div>
-              <div className="bg-gray-800 rounded-lg p-6">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                  <div className="text-center">
-                    <div className="text-gray-400 mb-1">
-                      Total Jam Menonton
-                    </div>
-                    <div className="text-3xl font-bold text-white">
-                      {formatDuration(statsData?.data?.totalWatchTime || 0)}
-                    </div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-gray-400 mb-1">Genre Favorit</div>
-                    <div className="text-3xl font-bold text-white">
-                      {statsData?.data?.mostWatchedGenres[0]?.genre || "-"}
-                    </div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-gray-400 mb-1">
-                      Total Film Ditonton
-                    </div>
-                    <div className="text-3xl font-bold text-white">
-                      {statsData?.data?.totalMoviesWatched || 0}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Grafik Statistik */}
-                <div className="mt-6">
-                  <div className="flex justify-between text-sm text-gray-400 mb-2">
-                    <span>Aktivitas Menonton</span>
-                    <span>
-                      {statsType === "month" ? "Bulan Ini" : "Minggu Ini"}
-                    </span>
-                  </div>
-                  <div className="h-16 flex items-end space-x-2">
-                    {statsData?.data?.watchHistoryByPeriod?.map(
-                      (entry: any, index: number) => {
-                        const maxDuration = Math.max(
-                          ...statsData.data.watchHistoryByPeriod.map(
-                            (e: any) => e.totalDuration
-                          )
-                        );
-                        const height =
-                          (entry.totalDuration / (maxDuration || 1)) * 100;
-
-                        return (
-                          <motion.div
-                            key={index}
-                            className="bg-blue-600 rounded-t w-full"
-                            initial={{ height: 0 }}
-                            animate={{ height: `${height}%` }}
-                            transition={{
-                              duration: 0.5,
-                              delay: index * 0.1,
-                            }}
-                          />
-                        );
-                      }
-                    )}
-                  </div>
-                  <div className="flex justify-between text-xs text-gray-500 mt-2">
-                    {statsData?.data?.watchHistoryByPeriod?.map(
-                      (entry: any, index: number) => (
-                        <span key={index}>
-                          {statsType === "month"
-                            ? `Minggu ${entry.week}`
-                            : new Date(entry.date).toLocaleDateString("id-ID", {
-                                weekday: "long",
-                              })}
-                        </span>
-                      )
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </motion.div>
+              <WatchStatistics 
+                statsType={statsType}
+                setStatsType={setStatsType}
+                statsData={statsData}
+              />
+        </motion.div>
         </div>
       </div>
     </>

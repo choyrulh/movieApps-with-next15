@@ -12,7 +12,7 @@ import { logoutUser } from "@/action/Auth";
 import { useAuth } from "@/context/AuthContext";
 import { useUserProfile } from "@/hook/useUserProfile";
 import {ProfileDropDown} from "@/components/common/ProfileDropdown"
-
+ 
 const MemoizedBookmarkIcon = memo(BookmarkPlus);
 
 export const Navbar = () => {
@@ -46,6 +46,11 @@ export const Navbar = () => {
     setActiveDropdown(title);
   };
 
+  const handleCloseMenu = () => {
+    setMenuState(false)
+    setActiveDropdown(null)
+  }
+
   const navigation = [
     { title: "Home", path: "/" },
     { title: "TV/Show", path: "/tv" },
@@ -73,7 +78,7 @@ export const Navbar = () => {
             ? "bg-slate-900/95 backdrop-blur-sm shadow-xl"
             : "bg-transparent bg-opacity-50"
         } ${
-          ["/login", "/register"].includes(pathname) || pathname.startsWith("/dashboard/") ? "hidden" : "block"
+          ["/login", "/register"].includes(pathname) || pathname.startsWith("/dashboard") ? "hidden" : "block"
         } transition-all duration-300`}
       >
         <div className="flex items-center space-x-8 py-3 px-4 max-w-screen-xl mx-auto md:px-8">
@@ -200,8 +205,8 @@ export const Navbar = () => {
                     ) : (
                       <Link
                         href={item.path}
-                        onClick={() => setMenuState(false)}
-                        className="block"
+                        onClick={handleCloseMenu}
+                        className="block text-gray-400 hover:text-gray-100 py-1"
                       >
                         {item.title}
                       </Link>
@@ -213,6 +218,7 @@ export const Navbar = () => {
                 props={`mt-5 pt-5 border-t lg:hidden ${
                   isMobile ? "justify-self-end" : "unset"
                 }`}
+                onCloseMenu={handleCloseMenu}
               />
             </div>
             <div className="flex-1 flex items-center justify-end space-x-2 sm:space-x-6">
