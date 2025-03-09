@@ -25,6 +25,8 @@ import GoWatchButton from "@/components/ui/GoWatchButton";
 import useIsMobile from "@/hook/useIsMobile";
 import Link from "next/link";
 import dynamic from 'next/dynamic';
+import { useAuth } from "@/context/AuthContext";
+import { AddFavoriteButton } from "@/components/AddFavoriteButton"
 
 const DynamicRecommendation = dynamic(() => import('@/Fragments/Recommendation'), {
   ssr: false,
@@ -35,6 +37,7 @@ function DetailShow({ params }: { params: Promise<{ id: string }> }) {
   const [activeTab, setActiveTab] = useState("details");
   const [visibleCasts, setVisibleCasts] = useState(12);
   const isMobile = useIsMobile();
+  const {isAuthenticated} = useAuth();
 
   const {
     data: show,
@@ -206,7 +209,20 @@ function DetailShow({ params }: { params: Promise<{ id: string }> }) {
 
               {/* Details */}
               <div className="w-full md:w-2/3 text-white">
-                <h1 className="text-4xl font-bold mb-4">{show.name}</h1>
+                <h1 className="text-4xl font-bold mb-4">
+                  {show.name}
+                  {isAuthenticated && 
+                      <AddFavoriteButton
+                        item={{
+                            ...movie,
+                            title: movie.title ?? "",
+                            media_type: "movie",
+                            itemId: movie.id,
+                            type: "movie",
+                          }}
+                      />
+                    }
+                </h1>
 
                 <div className="flex items-center gap-4 mb-6">
                   <Rating value={show.vote_average} />
