@@ -159,7 +159,6 @@ function Watch() {
 
         await addRecentlyWatched(watchHistoryItem);
         setLastSavedProgress(progress);
-        console.log("Progress tersimpan ke API");
       } catch (error) {
         console.error("Gagal menyimpan progress:", error);
       } finally {

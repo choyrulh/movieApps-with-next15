@@ -36,7 +36,6 @@ const HistoryTontonan = () => {
             },
             // Season & episode sudah tersedia di data API
           }));
-          console.log("data 37: ", data);
         } else {
           // Ambil dari localStorage jika tidak terautentikasi
           const localData = localStorage.getItem("watchHistory");
@@ -62,10 +61,6 @@ const HistoryTontonan = () => {
                         episodeData.last_updated
                       ).getTime();
                       const currentLatest = latestTimestamp; // ✅ Directly use latestTimestamp (already a number)
-                      console.log("episodeTimestamp", episodeTimestamp);
-                      console.log("currentLatest", currentLatest);
-                      console.log("seasonNum", parseInt(seasonNum));
-                      console.log("episodeNum", parseInt(episodeNum));
 
                       if (episodeTimestamp > currentLatest) {
                         latestSeason = parseInt(seasonNum);
@@ -105,9 +100,7 @@ const HistoryTontonan = () => {
             };
           });
         }
-        console.log("data 60:", data);
         setMediaDataHistory(data || []);
-        console.log("mediaDataHistory 64:", mediaDataHistory);
       } catch (error) {
         console.error("Gagal memuat riwayat tontonan:", error);
         setMediaDataHistory([]);
@@ -162,7 +155,6 @@ const HistoryTontonan = () => {
   };
 
   if (!mediaDataHistory || mediaDataHistory.length === 0) return null;
-  console.log("mediaDataHistory 121: ", mediaDataHistory);
 
   return (
     <div className="px-4 py-6">
@@ -219,7 +211,6 @@ const HistoryTontonan = () => {
         className="flex space-x-4 overflow-x-auto pb-4 scrollbar-hide"
       >
         {mediaDataHistory?.map((media, index) => {
-          console.log(mediaDataHistory);
           const isTVShow = media.type === "tv";
           const progressPercentage = calculateProgress(media);
           const lastWatchedSeason = media.season;

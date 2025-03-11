@@ -82,7 +82,6 @@ export const AddToWatchListButton = ({ item }: { item: WatchlistItem }) => {
                 }),
           }
         );
-        console.log(response);
         isInWatchlist
           ? toast("Removed From Watchlist")
           : toast("Added to Watchlist");

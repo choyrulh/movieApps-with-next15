@@ -125,13 +125,13 @@ const MovieCard = ({
           {/* Action Buttons */}
           <div className="flex flex-row gap-2">
             <Link
-              href={`/movie/${movie.movieId}`}
+              href={`/${movie.type}/${movie.movieId}`}
               className="py-2 px-3 sm:py-2 sm:px-4 text-center bg-white/10 hover:bg-white/20 rounded-lg backdrop-blur-sm transition-colors text-xs sm:text-sm font-medium text-white"
             >
               View Details
             </Link>
             <Link
-              href={`/movie/${movie.movieId}/watch`}
+              href={`/${movie.type}/${movie.movieId}/watch`}
               className="p-2 sm:p-2.5 bg-blue-500/85 hover:bg-blue-600 rounded-lg transition-colors flex items-center justify-center"
             >
               <Play className="h-4 w-4 sm:h-5 sm:w-5 text-white" />

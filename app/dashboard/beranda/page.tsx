@@ -16,7 +16,7 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import useIsMobile from "@/hook/useIsMobile";
-import WatchStatistics from "@/Fragments/WatchStatistics"
+import WatchStatistics from "@/Fragments/WatchStatistics";
 
 // Data dummy untuk contoh
 const userData = {
@@ -44,12 +44,11 @@ export default function page() {
 
   if (!mounted) return null;
 
-   const formatDuration = (seconds: number) => {
+  const formatDuration = (seconds: number) => {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
     return `${hours}j ${minutes}m`;
   };
-  console.log("statsData: ", statsData)
 
   return (
     <>
@@ -150,12 +149,12 @@ export default function page() {
             </div>
 
             {/* Watch Statistics */}
-              <WatchStatistics 
-                statsType={statsType}
-                setStatsType={setStatsType}
-                statsData={statsData}
-              />
-        </motion.div>
+            <WatchStatistics
+              statsType={statsType}
+              setStatsType={setStatsType}
+              statsData={statsData}
+            />
+          </motion.div>
         </div>
       </div>
     </>
