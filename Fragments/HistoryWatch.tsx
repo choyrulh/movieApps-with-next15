@@ -4,6 +4,9 @@ import Link from "next/link";
 import { useShallow } from "zustand/react/shallow";
 import { useStore } from "@/store/useStore";
 import useIsMobile from "@/hook/useIsMobile";
+import { getHistoryWatchUser } from "@/Service/fetchUser";
+import { removeRecentlyWatched } from "@/Service/actionUser";
+import { useAuth } from "@/context/AuthContext";
 
 const HistoryTontonan = () => {
   // const { setHistoryData } = useStore(
@@ -14,52 +17,130 @@ const HistoryTontonan = () => {
   const [mediaDataHistory, setMediaDataHistory] = useState<any[]>([]);
   const isMobile = useIsMobile();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
-    // Ambil data dari localStorage dan konversi ke array
-    const localData = localStorage.getItem("watchHistory");
-    if (localData) {
-      const parsedData = JSON.parse(localData);
-      const historyArray = Object.values(parsedData).flatMap((item: any) => {
-        if (item.type === "tv") {
-          const transformedData = Object.values(parsedData)
-            .filter((item: any) => item.type === "tv" && item.last_watched)
-            .map((tvShow: any) => ({
-              ...tvShow,
-              season: tvShow.last_watched.season,
-              episode: tvShow.last_watched.episode,
-              progress: tvShow.last_watched.progress,
-              last_updated: tvShow.last_watched.timestamp,
-            }));
-        }
-        return item;
-      });
-      setMediaDataHistory(historyArray);
-    }
-  }, []);
+    const fetchWatchHistory = async () => {
+      try {
+        let data;
+        if (isAuthenticated) {
+          // Transformasi data API untuk struktur kompatibel
+          const apiData = await getHistoryWatchUser();
+          data = apiData.history.map((item: any) => ({
+            ...item,
+            id: item.contentId,
+            progress: {
+              percentage: parseFloat(item.progressPercentage),
+              watched: item.durationWatched,
+              duration: item.totalDuration,
+            },
+            // Season & episode sudah tersedia di data API
+          }));
+          console.log("data 37: ", data);
+        } else {
+          // Ambil dari localStorage jika tidak terautentikasi
+          const localData = localStorage.getItem("watchHistory");
+          if (!localData) {
+            setMediaDataHistory([]);
+            return;
+          }
 
-  const handleDelete = (mediaId: number, e: React.MouseEvent) => {
+          const parsedData = JSON.parse(localData);
+          data = Object.values(parsedData).map((item: any) => {
+            const lastWatched = item.last_watched;
+            let latestSeason: number | null = null;
+            let latestEpisode: number | null = null;
+            let latestTimestamp: number = 0; // ✅ Default to 0 instead of empty string
+
+            if (item.type === "tv" && item.seasons) {
+              // Iterasi semua season dan episode
+              Object.entries(item.seasons).forEach(
+                ([seasonNum, seasonData]: [string, any]) => {
+                  Object.entries(seasonData.episodes).forEach(
+                    ([episodeNum, episodeData]: [string, any]) => {
+                      const episodeTimestamp = new Date(
+                        episodeData.last_updated
+                      ).getTime();
+                      const currentLatest = latestTimestamp; // ✅ Directly use latestTimestamp (already a number)
+                      console.log("episodeTimestamp", episodeTimestamp);
+                      console.log("currentLatest", currentLatest);
+                      console.log("seasonNum", parseInt(seasonNum));
+                      console.log("episodeNum", parseInt(episodeNum));
+
+                      if (episodeTimestamp > currentLatest) {
+                        latestSeason = parseInt(seasonNum);
+                        latestEpisode = parseInt(episodeNum);
+                        latestTimestamp = episodeTimestamp;
+                      }
+                    }
+                  );
+                }
+              );
+            }
+
+            // Ambil data episode terakhir (jika TV Show)
+            const episodeData =
+              latestSeason !== null && latestEpisode !== null
+                ? item.seasons[latestSeason]?.episodes?.[latestEpisode]
+                : null;
+
+            return {
+              ...item,
+              id: item.contentId || item.id,
+              progress: {
+                watched:
+                  episodeData?.progress?.watched || item.progress?.watched || 0,
+                duration:
+                  episodeData?.progress?.duration ||
+                  item.progress?.duration ||
+                  0,
+                percentage:
+                  episodeData?.progress?.percentage ||
+                  item.progress?.percentage ||
+                  0,
+              },
+              season: latestSeason || item.last_watched?.season, // Fallback ke last_watched jika perlu
+              episode: latestEpisode || item.last_watched?.episode,
+              episode_title: episodeData?.episode_title,
+            };
+          });
+        }
+        console.log("data 60:", data);
+        setMediaDataHistory(data || []);
+        console.log("mediaDataHistory 64:", mediaDataHistory);
+      } catch (error) {
+        console.error("Gagal memuat riwayat tontonan:", error);
+        setMediaDataHistory([]);
+      }
+    };
+
+    fetchWatchHistory();
+  }, [isAuthenticated]); // Jalankan ulang saat status autentikasi berubah
+
+  const handleDelete = async (mediaId: number, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
-    const localData = localStorage.getItem("watchHistory");
-    if (localData) {
-      const parsedData = JSON.parse(localData);
-      delete parsedData[mediaId];
-
-      localStorage.setItem("watchHistory", JSON.stringify(parsedData));
-      setMediaDataHistory(Object.values(parsedData));
+    if (isAuthenticated) {
+      // Hapus dari API jika terautentikasi
+      await removeRecentlyWatched(mediaId + "");
+    } else {
+      // Hapus dari localStorage jika tidak terautentikasi
+      const localData = localStorage.getItem("watchHistory");
+      if (localData) {
+        const parsedData = JSON.parse(localData);
+        delete parsedData[mediaId];
+        localStorage.setItem("watchHistory", JSON.stringify(parsedData));
+      }
     }
+
+    // Update UI
+    setMediaDataHistory((prev) => prev.filter((item) => item.id !== mediaId));
   };
 
   // Calculate progress percentage
   const calculateProgress = (media: any) => {
-    if (media.progress?.percentage) {
-      return Math.round(media?.progress?.percentage);
-    } else {
-      return Math.round(media?.last_watched?.progress);
-    }
-    return 0;
+    return Math.round(media.progress?.percentage || 0);
   };
 
   const formatTime = (seconds: number) => {
@@ -81,6 +162,7 @@ const HistoryTontonan = () => {
   };
 
   if (!mediaDataHistory || mediaDataHistory.length === 0) return null;
+  console.log("mediaDataHistory 121: ", mediaDataHistory);
 
   return (
     <div className="px-4 py-6">
@@ -137,23 +219,28 @@ const HistoryTontonan = () => {
         className="flex space-x-4 overflow-x-auto pb-4 scrollbar-hide"
       >
         {mediaDataHistory?.map((media, index) => {
+          console.log(mediaDataHistory);
           const isTVShow = media.type === "tv";
           const progressPercentage = calculateProgress(media);
-          const lastWatchedSeason = media.last_watched?.season;
-          const lastWatchedEpisode = media.last_watched?.episode;
-          const watched = isTVShow
-            ? media.seasons[lastWatchedSeason].episodes[lastWatchedEpisode]
-                .progress?.watched
-            : media.progress?.watched;
-          const duration = isTVShow
-            ? media.seasons[lastWatchedSeason].episodes[lastWatchedEpisode]
-                .progress?.duration
-            : media.progress?.duration;
+          const lastWatchedSeason = media.season;
+          const lastWatchedEpisode = media.episode;
+          // const watched = isTVShow
+          //   ? media.seasons[lastWatchedSeason].episodes[lastWatchedEpisode]
+          //       .progress?.watched
+          //   : media.progress?.watched;
+          // const duration = isTVShow
+          //   ? media.seasons[lastWatchedSeason].episodes[lastWatchedEpisode]
+          //       .progress?.duration
+          //   : media.progress?.duration;
+          const uniqueKey = isAuthenticated
+            ? media._id // Asumsi API memberikan _id unik
+            : `${media.contentId}-${media.season}-${media.episode}`; // Gabungkan ID dengan season & episode
+
           return (
             <Link
               href={`/${media.type}/${media.id || media.contentId}/watch`}
-              key={media.id}
-              className="flex-shrink-0 w-48 bg-gray-700 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 relative group"
+              key={uniqueKey}
+              className="flex-shrink-0 w-48 bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 relative group"
             >
               {/* Delete Button */}
               <button
@@ -180,7 +267,7 @@ const HistoryTontonan = () => {
               {/* Badge untuk TV Show */}
               {isTVShow && (
                 <div className="absolute top-1 left-1 z-10 px-2 py-1 bg-black/50 rounded text-xs">
-                  S{media.last_watched?.season}E{media.last_watched?.episode}
+                  S{media.season}E{media.episode}
                 </div>
               )}
 
@@ -216,32 +303,30 @@ const HistoryTontonan = () => {
                 </div>
               </div>
               <div className="p-2">
-                <div className="w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
+                <div className="w-full bg-gray-700 rounded-full h-1.5 overflow-hidden">
                   <div
                     className="bg-blue-500 rounded-full h-full transition-all duration-300"
                     style={{
-                      width: `${Math.max(
-                        1,
-                        Math.min(progressPercentage || 0, 100)
-                      )}%`,
+                      width: `${progressPercentage}%`,
                       minWidth: "2px",
                     }}
                   />
                 </div>
 
                 <p className="text-xs text-gray-500 mt-1">
-                  {formatTime(watched)} / {formatTime(duration)}
+                  {formatTime(media.progress.watched)} /{" "}
+                  {formatTime(media.progress.duration)}
                 </p>
 
                 <p className="text-xs text-gray-500 mt-1">
                   Tonton {progressPercentage || 0}%
                 </p>
               </div>
-              {isTVShow && media.episode_title && (
+              {/*{isTVShow && media.episode_title && (
                 <span className="block text-xs text-gray-400">
                   {media.episode_title}
                 </span>
-              )}
+              )}*/}
             </Link>
           );
         })}

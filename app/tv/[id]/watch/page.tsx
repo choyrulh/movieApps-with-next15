@@ -17,10 +17,11 @@ import {
   Calendar,
 } from "lucide-react";
 import {
-  addRecentlyWatched,
+  // addRecentlyWatched,
   WatchHistory,
   fetchVideoProgress,
 } from "@/Service/actionUser";
+import { getShowProgressUser, addRecentlyWatched } from "@/Service/fetchUser";
 
 function page() {
   const pathname = usePathname();
@@ -56,6 +57,14 @@ function page() {
     retry: 2,
   });
 
+  // get progress tv
+  const { data: progress } = useQuery<any>({
+    queryKey: ["progress", id],
+    queryFn: () => getShowProgressUser(id as unknown as string),
+    staleTime: 5 * 60 * 1000,
+    retry: 2,
+  });
+
   useEffect(() => {
     videoProgressRef.current = videoProgress;
   }, [videoProgress]);
@@ -65,8 +74,7 @@ function page() {
   useEffect(() => {
     if (!show) return;
 
-    const interval = setInterval(async () => {
-      // Bandingkan dengan progress terakhir yang disimpan
+    const saveProgressPeriodically = async () => {
       if (
         videoProgress.watched !== lastSavedProgress.watched ||
         videoProgress.duration !== lastSavedProgress.duration
@@ -75,18 +83,13 @@ function page() {
           await saveProgress(videoProgress);
           setLastSavedProgress(videoProgress);
         } catch (error) {
-          console.error("Gagal menyimpan progress secara periodik:", error);
+          console.error("Gagal menyimpan progress:", error);
         }
       }
-    }, 30000); // Simpan setiap 30 detik
-
-    saveIntervalRef.current = interval;
-
-    return () => {
-      if (saveIntervalRef.current) {
-        clearInterval(saveIntervalRef.current);
-      }
     };
+
+    const interval = setInterval(saveProgressPeriodically, 30000);
+    return () => clearInterval(interval);
   }, [show, videoProgress, lastSavedProgress]);
 
   useEffect(() => {
@@ -146,78 +149,61 @@ function page() {
     };
   }, [id, season, episode, show]);
 
-  const saveProgress = useCallback(
-    async (progress: typeof videoProgress) => {
-      if (!show) return;
-
-      try {
-        // Simpan ke API
-        const historyItem = {
-          type: "tv" as const,
-          contentId: show.id,
-          season: parseInt(season),
-          episode: parseInt(episode),
-          title: show.name,
-          poster: show.poster_path,
-          backdrop_path: show.backdrop_path,
-          duration: progress.duration,
-          durationWatched: progress.watched,
-          totalDuration: progress.duration,
-          genres: show.genres?.map((g: any) => g.name) || [],
-          progressPercentage: progress.percentage,
-        };
-
-        await addRecentlyWatched(historyItem);
-
-        // Update local storage
-        const seasonData = show.seasons.find(
-          (s: any) => s.season_number === parseInt(season)
+  // Efek untuk inisialisasi progress
+  useEffect(() => {
+    const initializeProgress = async () => {
+      if (progress?.episodes?.length > 0) {
+        // Cari episode terakhir yang ditonton
+        const lastWatched = progress.episodes.reduce((latest: any, current: any) => 
+          new Date(current.watchedDate) > new Date(latest.watchedDate) ? current : latest
         );
 
-        const updatedHistory: TVHistory = {
-          contentId: show.id,
-          title: show.name,
-          type: "tv",
-          backdrop_path: show.backdrop_path,
-          poster_path: show.poster_path,
-          seasons: {
-            [season]: {
-              episodes: {
-                [episode]: {
-                  progress,
-                  last_updated: new Date().toISOString(),
-                  episode_title:
-                    seasonData?.episodes?.[parseInt(episode) - 1]?.name ||
-                    `Episode ${episode}`,
-                },
-              },
-            },
-          },
-          last_watched: {
-            season: parseInt(season),
-            episode: parseInt(episode),
-            progress: progress.percentage,
-            timestamp: new Date().toISOString(),
-          },
-          last_updated: new Date().toISOString(),
-        };
-
-        const history = JSON.parse(
-          localStorage.getItem("watchHistory") || "{}"
-        );
-        localStorage.setItem(
-          "watchHistory",
-          JSON.stringify({
-            ...history,
-            [show.id]: updatedHistory,
-          })
-        );
-      } catch (error) {
-        console.error("Gagal menyimpan progress:", error);
+        if (lastWatched) {
+          setSeason(lastWatched.season.toString());
+          setEpisode(lastWatched.episode.toString());
+          setVideoProgress({
+            watched: lastWatched.durationWatched,
+            duration: lastWatched.totalDuration,
+            percentage: lastWatched.progressPercentage
+          });
+        }
+      } else {
+        // Fallback ke localStorage jika tidak ada data API
+        const localProgress = localStorage.getItem("watchHistory");
+        if (localProgress) {
+          const parsed = JSON.parse(localProgress)[id];
+          if (parsed?.last_watched) {
+            setSeason(parsed.last_watched.season.toString());
+            setEpisode(parsed.last_watched.episode.toString());
+          }
+        }
       }
-    },
-    [show, season, episode]
-  );
+    };
+
+    initializeProgress();
+  }, [progress, id]);
+
+  // Fungsi penyimpanan progress yang disederhanakan
+  const saveProgress = useCallback(async (progress: typeof videoProgress) => {
+    if (!show) return;
+
+    const historyItem = {
+      type: "tv" as const,
+      contentId: show.id,
+      season: parseInt(season),
+      episode: parseInt(episode),
+      title: show.name,
+      poster: show.poster_path,
+      backdrop_path: show.backdrop_path,
+      duration: progress.duration,
+      durationWatched: progress.watched,
+      totalDuration: progress.duration,
+      genres: show.genres?.map((g: any) => g.name) || [],
+      progressPercentage: progress.percentage,
+    };
+
+    await addRecentlyWatched(historyItem);
+  }, [show, season, episode]);
 
   const getVideoUrl = () => {
     switch (selectedServer) {
@@ -313,31 +299,23 @@ function page() {
                   <div className="flex flex-wrap gap-2">
                     {Array.from({ length: totalEpisodes }, (_, i) => {
                       const epNum = (i + 1).toString();
-                      const history = JSON.parse(
-                        localStorage.getItem("watchHistory") || "{}"
-                      );
-                      const epProgress =
-                        history[id]?.seasons?.[season]?.episodes?.[epNum]
-                          ?.progress?.percentage || 0;
+                      const epProgress = progress?.episodes?.find(
+                        (ep: any) => ep.season === parseInt(season) && ep.episode === parseInt(epNum)
+                      )?.progressPercentage || 0;
 
                       return (
                         <button
                           key={epNum}
-                          onClick={() => {
-                            setEpisode(epNum);
-                            saveProgress(videoProgress);
-                          }}
+                          onClick={() => setEpisode(epNum)}
                           className={`px-3 py-1.5 rounded-lg relative ${
-                            episode === epNum
-                              ? "bg-blue-600 hover:bg-blue-700"
-                              : "bg-gray-800/50 hover:bg-gray-700/50"
+                            episode === epNum ? "bg-blue-600" : "bg-gray-800/50"
                           }`}
                         >
                           <span>{epNum}</span>
                           {epProgress > 0 && (
                             <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-700">
                               <div
-                                className="h-full bg-blue-500 transition-all duration-300"
+                                className="h-full bg-blue-500"
                                 style={{ width: `${epProgress}%` }}
                               />
                             </div>
