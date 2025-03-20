@@ -7,6 +7,7 @@ import { useWatchlistStore } from "@/store/useWatchListStore";
 import { Trash2, Star, Film, Heart, Award } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
+import { Metadata } from "../Metadata";
 
 const WatchlistPage = () => {
   const [data, setData] = useState();
@@ -32,119 +33,127 @@ const WatchlistPage = () => {
     : watchlist?.filter((item) => item.media_type === "person");
 
   return (
-    <div className="min-h-screen dark:bg-gray-900 p-8 pt-28">
-      <div className="max-w-7xl mx-auto space-y-12">
-        <motion.h1
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-4xl font-bold text-slate-300 dark:text-white text-center"
-        >
-          My Watchlist ✨
-        </motion.h1>
+    <>
+      <Metadata
+        seoTitle="Watchlist"
+        seoDescription="Your personal watchlist of movies, TV shows, and favorite stars."
+        seoKeywords="watch-list, movies, tv shows, stars"
+      />
 
-        <AnimatePresence>
-          {watchlist.length === 0 ? (
-            <motion.div
-              key="empty-state"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-center py-20 space-y-6"
-            >
-              <div className="text-6xl">🎥</div>
-              <p className="text-xl text-gray-600 dark:text-gray-300">
-                Start building your cinematic universe
-              </p>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-3 rounded-xl font-semibold shadow-lg"
+      <div className="min-h-screen dark:bg-gray-900 p-8 pt-28">
+        <div className="max-w-7xl mx-auto space-y-12">
+          <motion.h1
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-4xl font-bold text-slate-300 dark:text-white text-center"
+          >
+            My Watchlist ✨
+          </motion.h1>
+
+          <AnimatePresence>
+            {watchlist.length === 0 ? (
+              <motion.div
+                key="empty-state"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-center py-20 space-y-6"
               >
-                Explore Content
-              </motion.button>
-            </motion.div>
-          ) : (
-            <div className="space-y-16">
-              {/* Movies Section */}
-              {movies?.length > 0 && (
-                <section className="space-y-6">
-                  <motion.h2
-                    initial={{ x: -20 }}
-                    animate={{ x: 0 }}
-                    className="text-2xl font-bold text-slate-300 dark:text-white flex items-center gap-2"
-                  >
-                    <span className="bg-purple-600 w-2 h-8 rounded"></span>
-                    Movies ({movies.length})
-                  </motion.h2>
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                    <AnimatePresence>
-                      {movies.map((item) => (
-                        <MediaCard
-                          key={item.movieId}
-                          item={item}
-                          remove={removeFromWatchlist}
-                          type="movie"
-                        />
-                      ))}
-                    </AnimatePresence>
-                  </div>
-                </section>
-              )}
+                <div className="text-6xl">🎥</div>
+                <p className="text-xl text-gray-600 dark:text-gray-300">
+                  Start building your cinematic universe
+                </p>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-3 rounded-xl font-semibold shadow-lg"
+                >
+                  Explore Content
+                </motion.button>
+              </motion.div>
+            ) : (
+              <div className="space-y-16">
+                {/* Movies Section */}
+                {movies?.length > 0 && (
+                  <section className="space-y-6">
+                    <motion.h2
+                      initial={{ x: -20 }}
+                      animate={{ x: 0 }}
+                      className="text-2xl font-bold text-slate-300 dark:text-white flex items-center gap-2"
+                    >
+                      <span className="bg-purple-600 w-2 h-8 rounded"></span>
+                      Movies ({movies.length})
+                    </motion.h2>
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                      <AnimatePresence>
+                        {movies.map((item) => (
+                          <MediaCard
+                            key={item.movieId}
+                            item={item}
+                            remove={removeFromWatchlist}
+                            type="movie"
+                          />
+                        ))}
+                      </AnimatePresence>
+                    </div>
+                  </section>
+                )}
 
-              {/* TV Shows Section */}
-              {tvShows?.length > 0 && (
-                <section className="space-y-6">
-                  <motion.h2
-                    initial={{ x: -20 }}
-                    animate={{ x: 0 }}
-                    className="text-2xl font-bold text-slate-300 dark:text-white flex items-center gap-2"
-                  >
-                    <span className="bg-teal-600 w-2 h-8 rounded"></span>
-                    TV Shows ({tvShows.length})
-                  </motion.h2>
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                    <AnimatePresence>
-                      {tvShows.map((item, index) => (
-                        <MediaCard
-                          key={index}
-                          item={item}
-                          remove={removeFromWatchlist}
-                          type="tv"
-                        />
-                      ))}
-                    </AnimatePresence>
-                  </div>
-                </section>
-              )}
+                {/* TV Shows Section */}
+                {tvShows?.length > 0 && (
+                  <section className="space-y-6">
+                    <motion.h2
+                      initial={{ x: -20 }}
+                      animate={{ x: 0 }}
+                      className="text-2xl font-bold text-slate-300 dark:text-white flex items-center gap-2"
+                    >
+                      <span className="bg-teal-600 w-2 h-8 rounded"></span>
+                      TV Shows ({tvShows.length})
+                    </motion.h2>
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                      <AnimatePresence>
+                        {tvShows.map((item, index) => (
+                          <MediaCard
+                            key={index}
+                            item={item}
+                            remove={removeFromWatchlist}
+                            type="tv"
+                          />
+                        ))}
+                      </AnimatePresence>
+                    </div>
+                  </section>
+                )}
 
-              {/* People Section */}
-              {people?.length > 0 && (
-                <section className="space-y-6">
-                  <motion.h2
-                    initial={{ x: -20 }}
-                    animate={{ x: 0 }}
-                    className="text-2xl font-bold text-slate-300 dark:text-white flex items-center gap-2"
-                  >
-                    <span className="bg-pink-500 w-2 h-8 rounded"></span>
-                    Favorite Stars ({people.length})
-                  </motion.h2>
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-                    <AnimatePresence>
-                      {people.map((person) => (
-                        <PersonCard
-                          key={person.id}
-                          person={person}
-                          remove={removeFromWatchlist}
-                        />
-                      ))}
-                    </AnimatePresence>
-                  </div>
-                </section>
-              )}
-            </div>
-          )}
-        </AnimatePresence>
+                {/* People Section */}
+                {people?.length > 0 && (
+                  <section className="space-y-6">
+                    <motion.h2
+                      initial={{ x: -20 }}
+                      animate={{ x: 0 }}
+                      className="text-2xl font-bold text-slate-300 dark:text-white flex items-center gap-2"
+                    >
+                      <span className="bg-pink-500 w-2 h-8 rounded"></span>
+                      Favorite Stars ({people.length})
+                    </motion.h2>
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+                      <AnimatePresence>
+                        {people.map((person) => (
+                          <PersonCard
+                            key={person.id}
+                            person={person}
+                            remove={removeFromWatchlist}
+                          />
+                        ))}
+                      </AnimatePresence>
+                    </div>
+                  </section>
+                )}
+              </div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

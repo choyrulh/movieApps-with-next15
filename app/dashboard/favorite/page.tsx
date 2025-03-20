@@ -9,6 +9,7 @@ import { Heart, Play, Star, X, Calendar, ChevronDown } from "lucide-react";
 import Image from "next/image";
 import { useFavoriteStore } from "@/store/useFavoriteStore";
 import { AddFavoriteButton } from "@/components/AddFavoriteButton";
+import { Metadata } from "@/app/Metadata";
 
 const FavoriteCard = ({
   movie,
@@ -66,19 +67,19 @@ const FavoriteCard = ({
 
         {/* Action Buttons - Stack vertically on mobile */}
         <div className="flex flex-row gap-2">
-            <Link
-              href={`/${movie.type}/${movie.itemId}`}
-              className="py-2 px-3 sm:py-2 sm:px-4 text-center bg-white/10 hover:bg-white/20 rounded-lg backdrop-blur-sm transition-colors text-xs sm:text-sm font-medium text-white"
-            >
-              View Details
-            </Link>
-            <Link
-              href={`/${movie.type}/${movie.itemId}/watch`}
-              className="p-2 sm:p-2.5 bg-blue-500/85 hover:bg-blue-600 rounded-lg transition-colors flex items-center justify-center"
-            >
-              <Play className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
-            </Link>
-          </div>
+          <Link
+            href={`/${movie.type}/${movie.itemId}`}
+            className="py-2 px-3 sm:py-2 sm:px-4 text-center bg-white/10 hover:bg-white/20 rounded-lg backdrop-blur-sm transition-colors text-xs sm:text-sm font-medium text-white"
+          >
+            View Details
+          </Link>
+          <Link
+            href={`/${movie.type}/${movie.itemId}/watch`}
+            className="p-2 sm:p-2.5 bg-blue-500/85 hover:bg-blue-600 rounded-lg transition-colors flex items-center justify-center"
+          >
+            <Play className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+          </Link>
+        </div>
       </div>
     </motion.div>
   );
@@ -97,55 +98,65 @@ export default function Page() {
   if (error) return <div className="text-red-500">Error loading favorites</div>;
 
   return (
-    <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-6">
-      {/* Header - Stack vertically on mobile */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 sm:mb-8 gap-4">
-        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-          Favorite Movies
-        </h1>
-        <div className="flex items-center space-x-2 sm:space-x-4">
-          <button className="flex items-center text-xs sm:text-sm text-gray-400 hover:text-white transition-colors">
-            <span>Sort by</span>
-            <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4 ml-1" />
-          </button>
-        </div>
-      </div>
+    <>
+      <Metadata
+        seoTitle="Favorit - Dashboard"
+        seoDescription="Favorit tontonan yang disimpan"
+        seoKeywords="Favorite, histori, tontonan"
+      />
 
-      {isLoading ? (
-        <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
-          {[...Array(10)].map((_, i) => (
-            <Skeleton
-              key={i}
-              className="aspect-[2/3] w-full rounded-xl sm:rounded-2xl"
-            />
-          ))}
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-6">
+        {/* Header - Stack vertically on mobile */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 sm:mb-8 gap-4">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+            Favorite Movies
+          </h1>
+          <div className="flex items-center space-x-2 sm:space-x-4">
+            <button className="flex items-center text-xs sm:text-sm text-gray-400 hover:text-white transition-colors">
+              <span>Sort by</span>
+              <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4 ml-1" />
+            </button>
+          </div>
         </div>
-      ) : (
-        <>
+
+        {isLoading ? (
           <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
-            {favorites?.map((movie: any) => (
-              <FavoriteCard
-                key={movie._id}
-                movie={movie}
-                onClickRemove={() => removeFromFavorites(movie._id, movie.type)}
+            {[...Array(10)].map((_, i) => (
+              <Skeleton
+                key={i}
+                className="aspect-[2/3] w-full rounded-xl sm:rounded-2xl"
               />
             ))}
           </div>
-
-          {favorites?.length === 0 && (
-            <div className="flex flex-col items-center justify-center py-12 sm:py-20 text-center px-4">
-              <Heart className="h-12 w-12 sm:h-16 sm:w-16 text-gray-600 mb-3 sm:mb-4" />
-              <h2 className="text-xl sm:text-2xl font-semibold text-gray-400 mb-1.5 sm:mb-2">
-                No favorites yet
-              </h2>
-              <p className="text-gray-600 text-sm sm:text-base max-w-md">
-                Start adding movies to your favorites by clicking the heart icon
-                on any movie page.
-              </p>
+        ) : (
+          <>
+            <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
+              {favorites?.map((movie: any) => (
+                <FavoriteCard
+                  key={movie._id}
+                  movie={movie}
+                  onClickRemove={() =>
+                    removeFromFavorites(movie._id, movie.type)
+                  }
+                />
+              ))}
             </div>
-          )}
-        </>
-      )}
-    </div>
+
+            {favorites?.length === 0 && (
+              <div className="flex flex-col items-center justify-center py-12 sm:py-20 text-center px-4">
+                <Heart className="h-12 w-12 sm:h-16 sm:w-16 text-gray-600 mb-3 sm:mb-4" />
+                <h2 className="text-xl sm:text-2xl font-semibold text-gray-400 mb-1.5 sm:mb-2">
+                  No favorites yet
+                </h2>
+                <p className="text-gray-600 text-sm sm:text-base max-w-md">
+                  Start adding movies to your favorites by clicking the heart
+                  icon on any movie page.
+                </p>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    </>
   );
 }

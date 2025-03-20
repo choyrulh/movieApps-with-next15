@@ -24,20 +24,24 @@ import { AddToWatchListButton } from "@/components/AddWatchListButton";
 import GoWatchButton from "@/components/ui/GoWatchButton";
 import useIsMobile from "@/hook/useIsMobile";
 import Link from "next/link";
-import dynamic from 'next/dynamic';
+import dynamic from "next/dynamic";
 import { useAuth } from "@/context/AuthContext";
-import { AddFavoriteButton } from "@/components/AddFavoriteButton"
+import { AddFavoriteButton } from "@/components/AddFavoriteButton";
+import { Metadata } from "@/app/Metadata";
 
-const DynamicRecommendation = dynamic(() => import('@/Fragments/Recommendation'), {
-  ssr: false,
-})
+const DynamicRecommendation = dynamic(
+  () => import("@/Fragments/Recommendation"),
+  {
+    ssr: false,
+  }
+);
 
 function DetailShow({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const [activeTab, setActiveTab] = useState("details");
   const [visibleCasts, setVisibleCasts] = useState(12);
   const isMobile = useIsMobile();
-  const {isAuthenticated} = useAuth();
+  const { isAuthenticated } = useAuth();
 
   const {
     data: show,
@@ -66,15 +70,13 @@ function DetailShow({ params }: { params: Promise<{ id: string }> }) {
     retry: 2,
   });
 
-  
-  
   const { data: trailers, isLoading: isLoadingTrailer } = useQuery({
     queryKey: ["trailer tv", id],
     queryFn: () => getTrailerTV(id as unknown as string),
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
     retry: 2,
   });
-  
+
   const trailer = trailers?.results?.find(
     (video: Video) => video.site === "YouTube" && video.type === "Trailer"
   );
@@ -167,10 +169,11 @@ function DetailShow({ params }: { params: Promise<{ id: string }> }) {
 
   return (
     <>
-      <Head>
-        <title>{`${show.title} - SlashMovie`}</title>
-        <meta name="description" content={show.overview} />
-      </Head>
+      <Metadata
+        seoTitle={show.name ?? null}
+        seoDescription={show.overview}
+        seoKeywords={show.genres?.map((genre) => genre.name).join(", ")}
+      />
 
       <div className="min-h-screen bg-slate-900 pb-[5rem]">
         <main>
@@ -211,17 +214,17 @@ function DetailShow({ params }: { params: Promise<{ id: string }> }) {
               <div className="w-full md:w-2/3 text-white">
                 <h1 className="text-4xl font-bold mb-4 inline-flex items-center gap-2">
                   {show.name}
-                  {isAuthenticated && 
-                      <AddFavoriteButton
-                        item={{
-                            ...show,
-                            title: show.name ?? "",
-                            media_type: "tv",
-                            itemId: show.id,
-                            type: "tv",
-                          }}
-                      />
-                    }
+                  {isAuthenticated && (
+                    <AddFavoriteButton
+                      item={{
+                        ...show,
+                        title: show.name ?? "",
+                        media_type: "tv",
+                        itemId: show.id,
+                        type: "tv",
+                      }}
+                    />
+                  )}
                 </h1>
 
                 <div className="flex items-center gap-4 mb-6">
@@ -696,7 +699,7 @@ function DetailShow({ params }: { params: Promise<{ id: string }> }) {
           </div>
 
           <Suspense fallback={<p>Loading...</p>}>
-            <DynamicRecommendation id={id} type={"tv"}/>
+            <DynamicRecommendation id={id} type={"tv"} />
           </Suspense>
         </main>
       </div>

@@ -22,6 +22,7 @@ import {
   fetchVideoProgress,
 } from "@/Service/actionUser";
 import { getShowProgressUser, addRecentlyWatched } from "@/Service/fetchUser";
+import { Metadata } from "@/app/Metadata";
 
 function page() {
   const pathname = usePathname();
@@ -154,8 +155,11 @@ function page() {
     const initializeProgress = async () => {
       if (progress?.episodes?.length > 0) {
         // Cari episode terakhir yang ditonton
-        const lastWatched = progress.episodes.reduce((latest: any, current: any) => 
-          new Date(current.watchedDate) > new Date(latest.watchedDate) ? current : latest
+        const lastWatched = progress.episodes.reduce(
+          (latest: any, current: any) =>
+            new Date(current.watchedDate) > new Date(latest.watchedDate)
+              ? current
+              : latest
         );
 
         if (lastWatched) {
@@ -164,7 +168,7 @@ function page() {
           setVideoProgress({
             watched: lastWatched.durationWatched,
             duration: lastWatched.totalDuration,
-            percentage: lastWatched.progressPercentage
+            percentage: lastWatched.progressPercentage,
           });
         }
       } else {
@@ -184,26 +188,29 @@ function page() {
   }, [progress, id]);
 
   // Fungsi penyimpanan progress yang disederhanakan
-  const saveProgress = useCallback(async (progress: typeof videoProgress) => {
-    if (!show) return;
+  const saveProgress = useCallback(
+    async (progress: typeof videoProgress) => {
+      if (!show) return;
 
-    const historyItem = {
-      type: "tv" as const,
-      contentId: show.id,
-      season: parseInt(season),
-      episode: parseInt(episode),
-      title: show.name,
-      poster: show.poster_path,
-      backdrop_path: show.backdrop_path,
-      duration: progress.duration,
-      durationWatched: progress.watched,
-      totalDuration: progress.duration,
-      genres: show.genres?.map((g: any) => g.name) || [],
-      progressPercentage: progress.percentage,
-    };
+      const historyItem = {
+        type: "tv" as const,
+        contentId: show.id,
+        season: parseInt(season),
+        episode: parseInt(episode),
+        title: show.name,
+        poster: show.poster_path,
+        backdrop_path: show.backdrop_path,
+        duration: progress.duration,
+        durationWatched: progress.watched,
+        totalDuration: progress.duration,
+        genres: show.genres?.map((g: any) => g.name) || [],
+        progressPercentage: progress.percentage,
+      };
 
-    await addRecentlyWatched(historyItem);
-  }, [show, season, episode]);
+      await addRecentlyWatched(historyItem);
+    },
+    [show, season, episode]
+  );
 
   const getVideoUrl = () => {
     switch (selectedServer) {
@@ -236,184 +243,201 @@ function page() {
     selectedSeasonData?.episodes?.[parseInt(episode) - 1];
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white pb-20">
-      <main
-        className={`mx-auto pt-8 transition-all duration-500 ${
-          isFullScreen ? "max-w-full" : "max-w-7xl px-4"
-        }`}
-      >
-        {show && !isFullScreen && (
-          <div className="max-w-7xl mx-auto px-4 pt-4">
-            <div className="flex items-start gap-6">
-              <div className="flex-1">
-                <h1 className="text-3xl font-bold mb-2">{show.name}</h1>
-                <div className="flex items-center gap-4 text-gray-300 mb-4">
-                  <span className="flex items-center gap-1.5">
-                    <Clock className="h-4 w-4" />S{season} E{episode}:{" "}
-                    {currentEpisodeData?.name}
-                  </span>
-                  {videoProgress.percentage > 0 && (
-                    <span className="bg-blue-500/20 text-blue-400 px-2.5 py-1 rounded-full text-sm">
-                      {Math.round(videoProgress.percentage)}% watched
+    <>
+      <Metadata
+        seoTitle={`${show.name} - watch`}
+        seoDescription={show.overview}
+        seoKeywords={show.genres?.map((genre: any) => genre.name).join(", ")}
+      />
+
+      <div className="min-h-screen bg-gray-900 text-white pb-20">
+        <main
+          className={`mx-auto pt-8 transition-all duration-500 ${
+            isFullScreen ? "max-w-full" : "max-w-7xl px-4"
+          }`}
+        >
+          {show && !isFullScreen && (
+            <div className="max-w-7xl mx-auto px-4 pt-4">
+              <div className="flex items-start gap-6">
+                <div className="flex-1">
+                  <h1 className="text-3xl font-bold mb-2">{show.name}</h1>
+                  <div className="flex items-center gap-4 text-gray-300 mb-4">
+                    <span className="flex items-center gap-1.5">
+                      <Clock className="h-4 w-4" />S{season} E{episode}:{" "}
+                      {currentEpisodeData?.name}
                     </span>
-                  )}
-                </div>
-
-                {/* Season & Episode Selection */}
-                <div className="flex flex-wrap gap-3 mb-4">
-                  {/* Season Dropdown */}
-                  <div className="relative">
-                    <button
-                      onClick={() => setShowSeasonDropdown(!showSeasonDropdown)}
-                      className="flex items-center gap-2 bg-black/60 backdrop-blur-sm px-4 py-2 rounded-full transition-colors hover:bg-black/80"
-                    >
-                      <Calendar className="h-5 w-5 text-blue-400" />
-                      <span className="text-sm">Season {season}</span>
-                      <ChevronDown className="h-4 w-4" />
-                    </button>
-
-                    {showSeasonDropdown && (
-                      <div className="absolute mt-2 w-48 bg-gray-800/95 backdrop-blur-xl rounded-xl shadow-lg border border-gray-700 overflow-hidden z-20">
-                        {show.seasons.map((s: any) => (
-                          <button
-                            key={s.season_number}
-                            onClick={() => {
-                              setSeason(s.season_number.toString());
-                              setShowSeasonDropdown(false);
-                              setEpisode("1");
-                            }}
-                            className={`w-full px-4 py-3 text-sm flex items-center gap-3 ${
-                              season === s.season_number.toString()
-                                ? "bg-blue-600/20 text-blue-400"
-                                : "hover:bg-gray-700/30"
-                            } transition-colors`}
-                          >
-                            <Calendar className="h-4 w-4 flex-shrink-0" />
-                            <span>Season {s.season_number}</span>
-                          </button>
-                        ))}
-                      </div>
+                    {videoProgress.percentage > 0 && (
+                      <span className="bg-blue-500/20 text-blue-400 px-2.5 py-1 rounded-full text-sm">
+                        {Math.round(videoProgress.percentage)}% watched
+                      </span>
                     )}
                   </div>
 
-                  <div className="flex flex-wrap gap-2">
-                    {Array.from({ length: totalEpisodes }, (_, i) => {
-                      const epNum = (i + 1).toString();
-                      const epProgress = progress?.episodes?.find(
-                        (ep: any) => ep.season === parseInt(season) && ep.episode === parseInt(epNum)
-                      )?.progressPercentage || 0;
+                  {/* Season & Episode Selection */}
+                  <div className="flex flex-wrap gap-3 mb-4">
+                    {/* Season Dropdown */}
+                    <div className="relative">
+                      <button
+                        onClick={() =>
+                          setShowSeasonDropdown(!showSeasonDropdown)
+                        }
+                        className="flex items-center gap-2 bg-black/60 backdrop-blur-sm px-4 py-2 rounded-full transition-colors hover:bg-black/80"
+                      >
+                        <Calendar className="h-5 w-5 text-blue-400" />
+                        <span className="text-sm">Season {season}</span>
+                        <ChevronDown className="h-4 w-4" />
+                      </button>
 
-                      return (
-                        <button
-                          key={epNum}
-                          onClick={() => setEpisode(epNum)}
-                          className={`px-3 py-1.5 rounded-lg relative ${
-                            episode === epNum ? "bg-blue-600" : "bg-gray-800/50"
-                          }`}
-                        >
-                          <span>{epNum}</span>
-                          {epProgress > 0 && (
-                            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-700">
-                              <div
-                                className="h-full bg-blue-500"
-                                style={{ width: `${epProgress}%` }}
-                              />
-                            </div>
-                          )}
-                        </button>
-                      );
-                    })}
+                      {showSeasonDropdown && (
+                        <div className="absolute mt-2 w-48 bg-gray-800/95 backdrop-blur-xl rounded-xl shadow-lg border border-gray-700 overflow-hidden z-20">
+                          {show.seasons.map((s: any) => (
+                            <button
+                              key={s.season_number}
+                              onClick={() => {
+                                setSeason(s.season_number.toString());
+                                setShowSeasonDropdown(false);
+                                setEpisode("1");
+                              }}
+                              className={`w-full px-4 py-3 text-sm flex items-center gap-3 ${
+                                season === s.season_number.toString()
+                                  ? "bg-blue-600/20 text-blue-400"
+                                  : "hover:bg-gray-700/30"
+                              } transition-colors`}
+                            >
+                              <Calendar className="h-4 w-4 flex-shrink-0" />
+                              <span>Season {s.season_number}</span>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex flex-wrap gap-2">
+                      {Array.from({ length: totalEpisodes }, (_, i) => {
+                        const epNum = (i + 1).toString();
+                        const epProgress =
+                          progress?.episodes?.find(
+                            (ep: any) =>
+                              ep.season === parseInt(season) &&
+                              ep.episode === parseInt(epNum)
+                          )?.progressPercentage || 0;
+
+                        return (
+                          <button
+                            key={epNum}
+                            onClick={() => setEpisode(epNum)}
+                            className={`px-3 py-1.5 rounded-lg relative ${
+                              episode === epNum
+                                ? "bg-blue-600"
+                                : "bg-gray-800/50"
+                            }`}
+                          >
+                            <span>{epNum}</span>
+                            {epProgress > 0 && (
+                              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-700">
+                                <div
+                                  className="h-full bg-blue-500"
+                                  style={{ width: `${epProgress}%` }}
+                                />
+                              </div>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="hidden lg:block w-72">
-                <div className="bg-gray-800/50 rounded-xl p-4">
-                  <h3 className="text-sm font-semibold mb-3">Streaming Info</h3>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-gray-400">Quality:</span>
-                      <span className="text-blue-400">HD 1080p</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-400">Server:</span>
-                      <span className="text-blue-400">{selectedServer}</span>
+                <div className="hidden lg:block w-72">
+                  <div className="bg-gray-800/50 rounded-xl p-4">
+                    <h3 className="text-sm font-semibold mb-3">
+                      Streaming Info
+                    </h3>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Quality:</span>
+                        <span className="text-blue-400">HD 1080p</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Server:</span>
+                        <span className="text-blue-400">{selectedServer}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Controls */}
-        <div className="flex items-center gap-4 mb-4 ml-4">
-          <button
-            onClick={() => setIsFullScreen(!isFullScreen)}
-            className="flex items-center gap-2 bg-black/60 backdrop-blur-sm px-4 py-2 rounded-full transition-all hover:bg-black/80"
-          >
-            {isFullScreen ? (
-              <>
-                <Shrink className="h-5 w-5 text-blue-400" />
-                <span className="text-sm">Exit Screen</span>
-              </>
-            ) : (
-              <>
-                <Expand className="h-5 w-5 text-blue-400" />
-                <span className="text-sm">Enter Screen</span>
-              </>
-            )}
-          </button>
-
-          <div className="relative">
+          {/* Controls */}
+          <div className="flex items-center gap-4 mb-4 ml-4">
             <button
-              onClick={() => setShowServerDropdown(!showServerDropdown)}
-              className="flex items-center gap-2 bg-black/60 backdrop-blur-sm px-4 py-2 rounded-full transition-colors hover:bg-black/80"
+              onClick={() => setIsFullScreen(!isFullScreen)}
+              className="flex items-center gap-2 bg-black/60 backdrop-blur-sm px-4 py-2 rounded-full transition-all hover:bg-black/80"
             >
-              <Monitor className="h-5 w-5 text-blue-400" />
-              <span className="text-sm">{selectedServer}</span>
-              <ChevronDown className="h-4 w-4" />
+              {isFullScreen ? (
+                <>
+                  <Shrink className="h-5 w-5 text-blue-400" />
+                  <span className="text-sm">Exit Screen</span>
+                </>
+              ) : (
+                <>
+                  <Expand className="h-5 w-5 text-blue-400" />
+                  <span className="text-sm">Enter Screen</span>
+                </>
+              )}
             </button>
 
-            {showServerDropdown && (
-              <div className="absolute mt-2 w-48 bg-gray-800/95 backdrop-blur-xl rounded-xl shadow-lg border border-gray-700 overflow-hidden">
-                {[1, 2, 3, 4].map((serverNum) => (
-                  <button
-                    key={serverNum}
-                    onClick={() => {
-                      setSelectedServer(`server ${serverNum}`);
-                      setShowServerDropdown(false);
-                    }}
-                    className={`w-full px-4 py-3 text-sm flex items-center gap-3 ${
-                      selectedServer === `server ${serverNum}`
-                        ? "bg-blue-600/20 text-blue-400"
-                        : "hover:bg-gray-700/30"
-                    } transition-colors`}
-                  >
-                    <Tv className="h-4 w-4 flex-shrink-0" />
-                    <span>Server {serverNum}</span>
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
+            <div className="relative">
+              <button
+                onClick={() => setShowServerDropdown(!showServerDropdown)}
+                className="flex items-center gap-2 bg-black/60 backdrop-blur-sm px-4 py-2 rounded-full transition-colors hover:bg-black/80"
+              >
+                <Monitor className="h-5 w-5 text-blue-400" />
+                <span className="text-sm">{selectedServer}</span>
+                <ChevronDown className="h-4 w-4" />
+              </button>
 
-        {/* Video Player */}
-        <div
-          className={`${
-            isFullScreen ? "h-screen" : "aspect-video"
-          } w-full bg-black rounded-lg overflow-hidden mt-4`}
-        >
-          <iframe
-            src={getVideoUrl()}
-            frameBorder="0"
-            allowFullScreen
-            className="w-full h-full"
-          ></iframe>
-        </div>
-      </main>
-    </div>
+              {showServerDropdown && (
+                <div className="absolute mt-2 w-48 bg-gray-800/95 backdrop-blur-xl rounded-xl shadow-lg border border-gray-700 overflow-hidden">
+                  {[1, 2, 3, 4].map((serverNum) => (
+                    <button
+                      key={serverNum}
+                      onClick={() => {
+                        setSelectedServer(`server ${serverNum}`);
+                        setShowServerDropdown(false);
+                      }}
+                      className={`w-full px-4 py-3 text-sm flex items-center gap-3 ${
+                        selectedServer === `server ${serverNum}`
+                          ? "bg-blue-600/20 text-blue-400"
+                          : "hover:bg-gray-700/30"
+                      } transition-colors`}
+                    >
+                      <Tv className="h-4 w-4 flex-shrink-0" />
+                      <span>Server {serverNum}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Video Player */}
+          <div
+            className={`${
+              isFullScreen ? "h-screen" : "aspect-video"
+            } w-full bg-black rounded-lg overflow-hidden mt-4`}
+          >
+            <iframe
+              src={getVideoUrl()}
+              frameBorder="0"
+              allowFullScreen
+              className="w-full h-full"
+            ></iframe>
+          </div>
+        </main>
+      </div>
+    </>
   );
 }
 

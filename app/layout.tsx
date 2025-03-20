@@ -5,8 +5,7 @@ import { Navbar } from "@/components/ui/navbar";
 import ReactQueryProvider from "@/lib/ReactQueryProvider";
 import Footer from "@/components/Footer";
 import { AuthProvider } from "@/context/AuthContext";
-import { Toaster } from "@/components/ui/sonner"
-
+import { Toaster } from "@/components/ui/sonner";
 
 // import PageTransition from "@/components/PageTransition";
 
@@ -22,7 +21,10 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "SlashMovie ",
+  title: {
+    template: "%s | SlashVerse",
+    default: "SlashVerse",
+  },
   description: "Movie app by Slash",
 };
 
@@ -38,7 +40,7 @@ export default function RootLayout({
       >
         <AuthProvider>
           <ReactQueryProvider>
-          <Navbar />
+            <Navbar />
             {/*<PageTransition>*/}
             {children}
             <Toaster />

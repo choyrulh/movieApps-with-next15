@@ -20,6 +20,7 @@ import {
 } from "@/Service/actionUser";
 import { toast } from "sonner";
 import { Modal } from "@/components/common/Modal";
+import { Metadata } from "@/app/Metadata";
 
 const MovieHistoryCard = ({
   item,
@@ -80,7 +81,7 @@ const MovieHistoryCard = ({
           {Math.floor(item.durationWatched / 3600).toFixed(0)}h{" "}
           {Math.floor((item.durationWatched % 3600) / 60)}m
         </div>
-        {item.type === 'tv' && (
+        {item.type === "tv" && (
           <div className="absolute top-1 right-1 bg-black/80 px-2 py-1 rounded text-xs">
             S{item.season} E{item.episode}
           </div>
@@ -104,7 +105,7 @@ const MovieHistoryCard = ({
               // style={{ width: `${item.progressPercentage}%` }}
               initial={{ width: 0 }}
               animate={{ width: `${item.progressPercentage}%` }}
-              transition={{ duration: 0.5}}
+              transition={{ duration: 0.5 }}
             />
           </div>
           <div className="flex justify-between text-xs">
@@ -185,75 +186,83 @@ export default function Page() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-        <div className="flex items-center gap-4">
-          <div className="p-3 rounded-full bg-blue-500/85">
-            <Clock className="w-8 h-8 text-white" />
+    <>
+      <Metadata
+        seoTitle="Histori Tontonan - Dashboard"
+        seoDescription="Histori tontonan yang pernah kamu tonton"
+        seoKeywords="History, histori, tontonan"
+      />
+
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+          <div className="flex items-center gap-4">
+            <div className="p-3 rounded-full bg-blue-500/85">
+              <Clock className="w-8 h-8 text-white" />
+            </div>
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-bold">Riwayat Nonton</h1>
+              <p className="text-gray-400">
+                Film dan series yang pernah kamu tonton
+              </p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold">Riwayat Nonton</h1>
-            <p className="text-gray-400">
-              Film dan series yang pernah kamu tonton
+
+          {historyData?.history?.length > 0 && (
+            <button
+              onClick={() => setShowClearAllModal(true)}
+              className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-sm font-medium disabled:opacity-50 transition-colors flex items-center gap-2"
+            >
+              Hapus Semua
+            </button>
+          )}
+        </div>
+
+        {isLoading ? (
+          <div className="space-y-4">
+            {[...Array(5)].map((_, i) => (
+              <Skeleton key={i} className="h-32 w-full rounded-xl" />
+            ))}
+          </div>
+        ) : error ? (
+          <div className="text-center py-16 text-red-500 flex flex-col items-center gap-4">
+            <AlertTriangle className="w-12 h-12" />
+            <p>Gagal memuat riwayat nonton</p>
+            <button
+              onClick={() => refetch()}
+              className="px-4 py-2 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors"
+            >
+              Coba Lagi
+            </button>
+          </div>
+        ) : historyData?.history?.length > 0 ? (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="space-y-4"
+          >
+            {historyData.history.map((item: any) => (
+              <MovieHistoryCard key={item._id} item={item} onDelete={refetch} />
+            ))}
+          </motion.div>
+        ) : (
+          <div className="flex flex-col items-center justify-center py-20 text-center">
+            <Film className="h-16 w-16 text-gray-600 mb-4" />
+            <h2 className="text-2xl font-semibold text-gray-400 mb-2">
+              Belum ada riwayat
+            </h2>
+            <p className="text-gray-600 max-w-md">
+              Mulai tonton film atau series favoritmu dan akan muncul di sini
             </p>
           </div>
-        </div>
-
-        {historyData?.history?.length > 0 && (
-          <button
-            onClick={() => setShowClearAllModal(true)}
-            className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-sm font-medium disabled:opacity-50 transition-colors flex items-center gap-2"
-          >
-            Hapus Semua
-          </button>
         )}
+        <Modal
+          isOpen={showClearAllModal}
+          onClose={() => setShowClearAllModal(false)}
+          onConfirm={handleClearAllConfirm}
+          title="Hapus Semua Riwayat"
+          message="Apakah Anda yakin ingin menghapus semua riwayat tontonan? Tindakan ini tidak dapat dibatalkan."
+        />
       </div>
-
-      {isLoading ? (
-        <div className="space-y-4">
-          {[...Array(5)].map((_, i) => (
-            <Skeleton key={i} className="h-32 w-full rounded-xl" />
-          ))}
-        </div>
-      ) : error ? (
-        <div className="text-center py-16 text-red-500 flex flex-col items-center gap-4">
-          <AlertTriangle className="w-12 h-12" />
-          <p>Gagal memuat riwayat nonton</p>
-          <button
-            onClick={() => refetch()}
-            className="px-4 py-2 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors"
-          >
-            Coba Lagi
-          </button>
-        </div>
-      ) : historyData?.history?.length > 0 ? (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="space-y-4"
-        >
-          {historyData.history.map((item: any) => (
-            <MovieHistoryCard key={item._id} item={item} onDelete={refetch} />
-          ))}
-        </motion.div>
-      ) : (
-        <div className="flex flex-col items-center justify-center py-20 text-center">
-          <Film className="h-16 w-16 text-gray-600 mb-4" />
-          <h2 className="text-2xl font-semibold text-gray-400 mb-2">
-            Belum ada riwayat
-          </h2>
-          <p className="text-gray-600 max-w-md">
-            Mulai tonton film atau series favoritmu dan akan muncul di sini
-          </p>
-        </div>
-      )}
-      <Modal
-        isOpen={showClearAllModal}
-        onClose={() => setShowClearAllModal(false)}
-        onConfirm={handleClearAllConfirm}
-        title="Hapus Semua Riwayat"
-        message="Apakah Anda yakin ingin menghapus semua riwayat tontonan? Tindakan ini tidak dapat dibatalkan."
-      />
-    </div>
+    </>
   );
 }

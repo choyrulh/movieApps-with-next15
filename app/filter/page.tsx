@@ -2,7 +2,14 @@
 
 import { useState, useMemo } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { FilterSection, genres, years, lang, ratings, types } from "@/components/common/FilterComponent";
+import {
+  FilterSection,
+  genres,
+  years,
+  lang,
+  ratings,
+  types,
+} from "@/components/common/FilterComponent";
 import { useQuery } from "@tanstack/react-query";
 import { getFiltered } from "@/Service/fetchMovie";
 import MovieCard from "@/components/movieCard";
@@ -15,7 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
+import { Metadata } from "../Metadata";
 
 function page() {
   const [page, setPage] = useState(1);
@@ -45,7 +52,7 @@ function page() {
     setPage(1);
   };
 
-   // Cek apakah ada filter yang aktif
+  // Cek apakah ada filter yang aktif
   const hasFilters = useMemo(() => {
     return (
       filters.genre.length > 0 ||
@@ -71,121 +78,126 @@ function page() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 pt-20">
-      {/* Search and Filters Row */}
-      <div className="mb-8 space-y-4">
-        {/* Filter Controls */}
-        <div className="flex flex-wrap gap-4">
-          <FilterSection
-            title="Genre"
-            options={genres}
-            selected={filters.genre}
-            onChange={(v) => handleFilterChange("genre", v)}
-            multi
-          />
+    <>
+      <Metadata
+        seoTitle="Filter"
+        seoDescription="Filter movies by genre, year, country, rating, language, and type."
+        seoKeywords="Filter, Genre, Year, Country, Rating, Language, Type"
+      />
+      <div className="container mx-auto px-4 py-8 pt-20">
+        {/* Search and Filters Row */}
+        <div className="mb-8 space-y-4">
+          {/* Filter Controls */}
+          <div className="flex flex-wrap gap-4">
+            <FilterSection
+              title="Genre"
+              options={genres}
+              selected={filters.genre}
+              onChange={(v) => handleFilterChange("genre", v)}
+              multi
+            />
 
-          <FilterSection
-            title="Tahun"
-            options={years}
-            selected={filters.year}
-            onChange={(v) => handleFilterChange("year", v)}
-            multi
-          />
+            <FilterSection
+              title="Tahun"
+              options={years}
+              selected={filters.year}
+              onChange={(v) => handleFilterChange("year", v)}
+              multi
+            />
 
-          <FilterSection
-            title="Negara"
-            options={lang}
-            selected={filters.lang}
-            onChange={(v) => handleFilterChange("lang", v)}
-            multi
-          />
+            <FilterSection
+              title="Negara"
+              options={lang}
+              selected={filters.lang}
+              onChange={(v) => handleFilterChange("lang", v)}
+              multi
+            />
 
-          <FilterSection
-            title="Rating"
-            options={ratings}
-            selected={[filters.rating.toString()]}
-            onChange={(v) => handleFilterChange("rating", v[0])}
-            multi={false}
-          />
+            <FilterSection
+              title="Rating"
+              options={ratings}
+              selected={[filters.rating.toString()]}
+              onChange={(v) => handleFilterChange("rating", v[0])}
+              multi={false}
+            />
 
-          <FilterSection
-            title="Tipe"
-            options={types}
-            selected={[filters.type]}
-            onChange={(v) => handleFilterChange("type", v[0])}
-            multi={false}
-          />
+            <FilterSection
+              title="Tipe"
+              options={types}
+              selected={[filters.type]}
+              onChange={(v) => handleFilterChange("type", v[0])}
+              multi={false}
+            />
 
-          <Select
-            value={filters.sort}
-            onValueChange={(value) => handleFilterChange("sort", value)}
-          >
-            <SelectTrigger className="w-[160px]">
-              <SelectValue placeholder="Urutan" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="newest">Terbaru</SelectItem>
-              <SelectItem value="oldest">Terlama</SelectItem>
-            </SelectContent>
-          </Select>
-
-           {hasFilters && (
-            <button
-              onClick={handleReset}
-              className="px-4 py-2 bg-background border hover:bg-accent text-foreground rounded-md text-sm font-medium transition-all flex items-center gap-2 shadow-sm hover:shadow-md duration-200"
+            <Select
+              value={filters.sort}
+              onValueChange={(value) => handleFilterChange("sort", value)}
             >
-              <RefreshCw className="w-4 h-4" />
-              <span>Reset Filter</span>
-            </button>
-          )}
-        </div>
-      </div>
+              <SelectTrigger className="w-[160px]">
+                <SelectValue placeholder="Urutan" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="newest">Terbaru</SelectItem>
+                <SelectItem value="oldest">Terlama</SelectItem>
+              </SelectContent>
+            </Select>
 
-      {/* Content Area */}
-      {isLoading ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-          {[...Array(10)].map((_, i) => (
-            <Skeleton key={i} className="h-64 w-full rounded-lg" />
-          ))}
+            {hasFilters && (
+              <button
+                onClick={handleReset}
+                className="px-4 py-2 bg-background border hover:bg-accent text-foreground rounded-md text-sm font-medium transition-all flex items-center gap-2 shadow-sm hover:shadow-md duration-200"
+              >
+                <RefreshCw className="w-4 h-4" />
+                <span>Reset Filter</span>
+              </button>
+            )}
+          </div>
         </div>
-      ) : data?.results?.length === 0 ? (
-        <p className="text-center text-lg text-gray-400">Tidak ada data</p>
-      ) : (
-        <>
+
+        {/* Content Area */}
+        {isLoading ? (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-            {data?.results?.map((movie: Movie) => (
-              <MovieCard key={movie.id} movie={movie} />
+            {[...Array(10)].map((_, i) => (
+              <Skeleton key={i} className="h-64 w-full rounded-lg" />
             ))}
           </div>
+        ) : data?.results?.length === 0 ? (
+          <p className="text-center text-lg text-gray-400">Tidak ada data</p>
+        ) : (
+          <>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+              {data?.results?.map((movie: Movie) => (
+                <MovieCard key={movie.id} movie={movie} />
+              ))}
+            </div>
 
-          {/* Pagination */}
-          <div className="mt-8 flex justify-center items-center gap-4">
-            <button
-              onClick={() => setPage((old) => Math.max(old - 1, 1))}
-              disabled={page === 1}
-              className="p-2 rounded-full hover:bg-gray-100 disabled:opacity-50 disabled:hover:bg-transparent"
-            >
-              <ChevronLeft />
-            </button>
+            {/* Pagination */}
+            <div className="mt-8 flex justify-center items-center gap-4">
+              <button
+                onClick={() => setPage((old) => Math.max(old - 1, 1))}
+                disabled={page === 1}
+                className="p-2 rounded-full hover:bg-gray-100 disabled:opacity-50 disabled:hover:bg-transparent"
+              >
+                <ChevronLeft />
+              </button>
 
-            <span className="font-medium">
-              Halaman {page} dari {data?.total_pages}
-            </span>
+              <span className="font-medium">
+                Halaman {page} dari {data?.total_pages}
+              </span>
 
-            <button
-              onClick={() => setPage((old) => (!isFetching ? old + 1 : old))}
-              disabled={isFetching || page >= data?.total_pages}
-              className="p-2 rounded-full hover:bg-gray-100 disabled:opacity-50 disabled:hover:bg-transparent"
-            >
-              <ChevronRight />
-            </button>
-          </div>
-        </>
-      )}
-    </div>
+              <button
+                onClick={() => setPage((old) => (!isFetching ? old + 1 : old))}
+                disabled={isFetching || page >= data?.total_pages}
+                className="p-2 rounded-full hover:bg-gray-100 disabled:opacity-50 disabled:hover:bg-transparent"
+              >
+                <ChevronRight />
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+    </>
   );
 }
 
 export default page;
-
-

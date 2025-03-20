@@ -17,6 +17,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import useIsMobile from "@/hook/useIsMobile";
 import WatchStatistics from "@/Fragments/WatchStatistics";
+import { Metadata } from "@/app/Metadata";
 
 // Data dummy untuk contoh
 const userData = {
@@ -52,6 +53,12 @@ export default function page() {
 
   return (
     <>
+      <Metadata
+        seoTitle="Statistik - Dashboard"
+        seoDescription="Statistik Histori Tontonan"
+        seoKeywords="statistik, histori, tontonan"
+      />
+
       <div className="min-h-screen bg-gray-900 text-white">
         {/* Main Content */}
         <div className="px-4 md:px-8 py-6">

@@ -8,6 +8,7 @@ import { Star, Play, X, Calendar } from "lucide-react";
 import Image from "next/image";
 import { useWatchlistStore } from "@/store/useWatchListStore";
 import { AddToWatchListButton } from "@/components/AddWatchListButton";
+import { Metadata } from "@/app/Metadata";
 
 export default function Page() {
   const {
@@ -19,49 +20,58 @@ export default function Page() {
   });
   const { removeFromWatchlist } = useWatchlistStore();
 
-  if (error) return <div className="text-red-500 px-4">Error loading watchlist</div>;
+  if (error)
+    return <div className="text-red-500 px-4">Error loading watchlist</div>;
 
   return (
-    <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-6">
-      {/* Header */}
-      <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-6 sm:mb-8 px-2">
-        My Watchlist
-      </h1>
+    <>
+      <Metadata
+        seoTitle="Watchlist - Dashboard"
+        seoDescription="Watchlist Histori Tontonan"
+        seoKeywords="Watchlist, histori, tontonan"
+      />
 
-      {isLoading ? (
-        <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3 sm:gap-4">
-          {[...Array(10)].map((_, i) => (
-            <Skeleton
-              key={i}
-              className="aspect-[2/3] w-full rounded-lg sm:rounded-xl"
-            />
-          ))}
-        </div>
-      ) : watchlist?.length > 0 ? (
-        <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3 sm:gap-4">
-          {watchlist?.map((movie: any) => (
-            <MovieCard
-              key={movie._id}
-              movie={movie}
-              onClickRemove={() => removeFromWatchlist(movie._id)}
-            />
-          ))}
-        </div>
-      ) : (
-        <div className="flex flex-col items-center justify-center py-12 sm:py-20 text-center px-4">
-          <div className="mb-4 p-4 bg-gray-800 rounded-full">
-            <Calendar className="h-12 w-12 sm:h-16 sm:w-16 text-gray-400" />
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-6">
+        {/* Header */}
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-6 sm:mb-8 px-2">
+          My Watchlist
+        </h1>
+
+        {isLoading ? (
+          <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3 sm:gap-4">
+            {[...Array(10)].map((_, i) => (
+              <Skeleton
+                key={i}
+                className="aspect-[2/3] w-full rounded-lg sm:rounded-xl"
+              />
+            ))}
           </div>
-          <h2 className="text-xl sm:text-2xl font-semibold text-gray-300 mb-2">
-            Your Watchlist is Empty
-          </h2>
-          <p className="text-gray-400 text-sm sm:text-base max-w-md">
-            Start adding movies to watch later by clicking the "+ Watchlist" button
-            on any movie page.
-          </p>
-        </div>
-      )}
-    </div>
+        ) : watchlist?.length > 0 ? (
+          <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3 sm:gap-4">
+            {watchlist?.map((movie: any) => (
+              <MovieCard
+                key={movie._id}
+                movie={movie}
+                onClickRemove={() => removeFromWatchlist(movie._id)}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center py-12 sm:py-20 text-center px-4">
+            <div className="mb-4 p-4 bg-gray-800 rounded-full">
+              <Calendar className="h-12 w-12 sm:h-16 sm:w-16 text-gray-400" />
+            </div>
+            <h2 className="text-xl sm:text-2xl font-semibold text-gray-300 mb-2">
+              Your Watchlist is Empty
+            </h2>
+            <p className="text-gray-400 text-sm sm:text-base max-w-md">
+              Start adding movies to watch later by clicking the "+ Watchlist"
+              button on any movie page.
+            </p>
+          </div>
+        )}
+      </div>
+    </>
   );
 }
 

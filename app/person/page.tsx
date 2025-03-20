@@ -23,6 +23,7 @@ import {
 import { PopularityChart } from "@/components/PopularityChart";
 import { NetworkGraph } from "@/components/NetworkGraph";
 import Link from "next/link";
+import { Metadata } from "../Metadata";
 
 export type Person = {
   id: number;
@@ -558,89 +559,97 @@ export default function PopularPeoplePage() {
   if (error) return <ErrorState />;
 
   return (
-    <div className="min-h-screen dark:bg-gray-900 p-8">
-      <div className="max-w-7xl pt-12 mx-auto space-y-12">
-        {allPeople.length > 0 && <HighlightPerson person={allPeople[0]} />}
+    <>
+      <Metadata
+        seoTitle="Popular Actors"
+        seoDescription="Discover the most popular and trending actors in the movie industry, from Hollywood legends to rising stars."
+        seoKeywords="popular actors, famous movie stars, best Hollywood actors, trending film stars, award-winning actors, top movie stars, rising actors in film"
+      />
 
-        <DepartmentFilter
-          selected={selectedDepartment}
-          setSelected={setSelectedDepartment}
-        />
+      <div className="min-h-screen dark:bg-gray-900 p-8">
+        <div className="max-w-7xl pt-12 mx-auto space-y-12">
+          {allPeople.length > 0 && <HighlightPerson person={allPeople[0]} />}
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="grid lg:grid-cols-2 gap-6"
-        >
-          <PopularityChart people={filteredPeople} />
-          <NetworkGraph people={filteredPeople} />
-        </motion.div>
+          <DepartmentFilter
+            selected={selectedDepartment}
+            setSelected={setSelectedDepartment}
+          />
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-trasnparent/20  dark:bg-gray-800 rounded-2xl p-8 backdrop-blur-lg shadow-2xl border border-purple-500 dark:border-gray-700"
-        >
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-            <motion.h2
-              initial={{ x: -20 }}
-              animate={{ x: 0 }}
-              className="text-3xl font-bold dark:text-white bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent"
-            >
-              {selectedDepartment || "All"} Stars
-              <span className="text-purple-500 ml-2">
-                ({filteredPeople.length})
-              </span>
-            </motion.h2>
-            <ViewToggle viewMode={viewMode} setViewMode={setViewMode} />
-          </div>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="grid lg:grid-cols-2 gap-6"
+          >
+            <PopularityChart people={filteredPeople} />
+            <NetworkGraph people={filteredPeople} />
+          </motion.div>
 
-          <AnimatePresence>
-            <motion.div
-              layout
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-            >
-              {filteredPeople.slice(1).map((person) => (
-                <PersonCard
-                  key={person.id}
-                  person={person}
-                  viewMode={viewMode}
-                />
-              ))}
-            </motion.div>
-          </AnimatePresence>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-trasnparent/20  dark:bg-gray-800 rounded-2xl p-8 backdrop-blur-lg shadow-2xl border border-purple-500 dark:border-gray-700"
+          >
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+              <motion.h2
+                initial={{ x: -20 }}
+                animate={{ x: 0 }}
+                className="text-3xl font-bold dark:text-white bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent"
+              >
+                {selectedDepartment || "All"} Stars
+                <span className="text-purple-500 ml-2">
+                  ({filteredPeople.length})
+                </span>
+              </motion.h2>
+              <ViewToggle viewMode={viewMode} setViewMode={setViewMode} />
+            </div>
 
-          {/* Load More Button */}
-          <div className="mt-8 flex justify-center">
-            <motion.button
-              onClick={() => fetchNextPage()}
-              disabled={!hasNextPage || isFetchingNextPage}
-              className={`px-8 py-3 rounded-full flex items-center gap-2 transition-all ${
-                hasNextPage
-                  ? "bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white shadow-lg"
-                  : "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
-              }`}
-              whileHover={hasNextPage ? { scale: 1.05 } : {}}
-              whileTap={hasNextPage ? { scale: 0.95 } : {}}
-            >
-              {isFetchingNextPage ? (
-                <>
-                  <Loader className="animate-spin" />
-                  Loading...
-                </>
-              ) : hasNextPage ? (
-                <>
-                  <ChevronDown className="text-lg" />
-                  Load More
-                </>
-              ) : (
-                "No More Results"
-              )}
-            </motion.button>
-          </div>
-        </motion.div>
+            <AnimatePresence>
+              <motion.div
+                layout
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+              >
+                {filteredPeople.slice(1).map((person) => (
+                  <PersonCard
+                    key={person.id}
+                    person={person}
+                    viewMode={viewMode}
+                  />
+                ))}
+              </motion.div>
+            </AnimatePresence>
+
+            {/* Load More Button */}
+            <div className="mt-8 flex justify-center">
+              <motion.button
+                onClick={() => fetchNextPage()}
+                disabled={!hasNextPage || isFetchingNextPage}
+                className={`px-8 py-3 rounded-full flex items-center gap-2 transition-all ${
+                  hasNextPage
+                    ? "bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white shadow-lg"
+                    : "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
+                }`}
+                whileHover={hasNextPage ? { scale: 1.05 } : {}}
+                whileTap={hasNextPage ? { scale: 0.95 } : {}}
+              >
+                {isFetchingNextPage ? (
+                  <>
+                    <Loader className="animate-spin" />
+                    Loading...
+                  </>
+                ) : hasNextPage ? (
+                  <>
+                    <ChevronDown className="text-lg" />
+                    Load More
+                  </>
+                ) : (
+                  "No More Results"
+                )}
+              </motion.button>
+            </div>
+          </motion.div>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 

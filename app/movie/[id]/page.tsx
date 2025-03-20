@@ -21,7 +21,7 @@ import {
   Heart,
   ChevronLeftIcon,
   ChevronRightIcon,
-  Play
+  Play,
 } from "lucide-react";
 import {
   BanknotesIcon,
@@ -34,21 +34,24 @@ import useIsMobile from "@/hook/useIsMobile";
 import Link from "next/link";
 import { MovieCardSecond } from "@/components/MovieCardSecond";
 import Recommendation from "@/Fragments/Recommendation";
-import dynamic from 'next/dynamic';
+import dynamic from "next/dynamic";
 import { useAuth } from "@/context/AuthContext";
-import { AddFavoriteButton } from "@/components/AddFavoriteButton"
+import { AddFavoriteButton } from "@/components/AddFavoriteButton";
+import { Metadata } from "@/app/Metadata";
 
-const DynamicRecommendation = dynamic(() => import('@/Fragments/Recommendation'), {
-  ssr: false,
-})
+const DynamicRecommendation = dynamic(
+  () => import("@/Fragments/Recommendation"),
+  {
+    ssr: false,
+  }
+);
 
 function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const [activeTab, setActiveTab] = useState("financials");
   const [visibleCasts, setVisibleCasts] = useState(12);
   const isMobile = useIsMobile();
-  const {isAuthenticated} = useAuth();
-
+  const { isAuthenticated } = useAuth();
 
   const {
     data: movie,
@@ -162,10 +165,11 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
 
   return (
     <>
-      <Head>
-        <title>{`${movie.title} - SlashMovie`}</title>
-        <meta name="description" content={movie.overview} />
-      </Head>
+      <Metadata
+        seoTitle={movie.title}
+        seoDescription={movie.overview}
+        seoKeywords={movie.genres?.map((genre) => genre.name).join(", ")}
+      />
 
       <div className="min-h-screen bg-slate-900 pb-[5rem]">
         <main>
@@ -205,18 +209,18 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
               {/* Details */}
               <div className="w-full md:w-2/3 text-white">
                 <h1 className="text-4xl font-bold mb-4 inline-flex items-center gap-2">
-                  {movie.title} 
-                  {isAuthenticated && 
+                  {movie.title}
+                  {isAuthenticated && (
                     <AddFavoriteButton
                       item={{
-                          ...movie,
-                          title: movie.title ?? "",
-                          media_type: "movie",
-                          itemId: movie.id,
-                          type: "movie",
-                        }}
+                        ...movie,
+                        title: movie.title ?? "",
+                        media_type: "movie",
+                        itemId: movie.id,
+                        type: "movie",
+                      }}
                     />
-                  }
+                  )}
                 </h1>
 
                 <div className="flex items-center gap-4 mb-6">
@@ -554,7 +558,7 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
             </div>
           </div>
           <Suspense fallback={<p>Loading...</p>}>
-            <Recommendation id={id} type={"movie"}/>
+            <Recommendation id={id} type={"movie"} />
           </Suspense>
         </main>
       </div>

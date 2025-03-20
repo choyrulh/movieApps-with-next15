@@ -7,6 +7,7 @@ import { Movie } from "@/types/movie.";
 import { getDetailMovie } from "@/Service/fetchMovie";
 import { Monitor, ChevronDown, Tv, Expand, Shrink, Clock } from "lucide-react";
 import { addRecentlyWatched, WatchHistory } from "@/Service/actionUser";
+import { Metadata } from "@/app/Metadata";
 
 function Watch() {
   const pathname = usePathname();
@@ -226,125 +227,135 @@ function Watch() {
   // };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white pb-20">
-      <main
-        className={`mx-auto pt-8 transition-all duration-500 ${
-          isFullScreen ? "max-w-full" : "max-w-7xl px-4"
-        }`}
-      >
-        {movie && !isFullScreen && (
-          <div className="max-w-7xl mx-auto px-4 pt-4">
-            <div className="flex items-start gap-6">
-              <div className="flex-1">
-                <h1 className="text-3xl font-bold mb-2">{movie.title}</h1>
-                <div className="flex items-center gap-4 text-gray-300 mb-4">
-                  {movie.runtime && (
-                    <span className="flex items-center gap-1.5">
-                      <Clock className="h-4 w-4" />
-                      {Math.floor(movie.runtime / 60)}h {movie.runtime % 60}m
-                    </span>
-                  )}
-                  {videoProgress.percentage > 0 && (
-                    <span className="bg-blue-500/20 text-blue-400 px-2.5 py-1 rounded-full text-sm">
-                      {Math.round(videoProgress.percentage)}% watched
-                    </span>
-                  )}
-                </div>
-              </div>
+    <>
+      <Metadata
+        seoTitle={`Watch ${movie?.title}`}
+        seoDescription={movie?.overview}
+        seoKeywords={movie?.genres?.map((genre) => genre.name).join(", ")}
+      />
 
-              <div className="hidden lg:block w-72">
-                <div className="bg-gray-800/50 rounded-xl p-4">
-                  <h3 className="text-sm font-semibold mb-3">Streaming Info</h3>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-gray-400">Quality:</span>
-                      <span className="text-blue-400">HD 1080p</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-400">Server:</span>
-                      <span className="text-blue-400">{selectedServer}</span>
+      <div className="min-h-screen bg-gray-900 text-white pb-20">
+        <main
+          className={`mx-auto pt-8 transition-all duration-500 ${
+            isFullScreen ? "max-w-full" : "max-w-7xl px-4"
+          }`}
+        >
+          {movie && !isFullScreen && (
+            <div className="max-w-7xl mx-auto px-4 pt-4">
+              <div className="flex items-start gap-6">
+                <div className="flex-1">
+                  <h1 className="text-3xl font-bold mb-2">{movie.title}</h1>
+                  <div className="flex items-center gap-4 text-gray-300 mb-4">
+                    {movie.runtime && (
+                      <span className="flex items-center gap-1.5">
+                        <Clock className="h-4 w-4" />
+                        {Math.floor(movie.runtime / 60)}h {movie.runtime % 60}m
+                      </span>
+                    )}
+                    {videoProgress.percentage > 0 && (
+                      <span className="bg-blue-500/20 text-blue-400 px-2.5 py-1 rounded-full text-sm">
+                        {Math.round(videoProgress.percentage)}% watched
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="hidden lg:block w-72">
+                  <div className="bg-gray-800/50 rounded-xl p-4">
+                    <h3 className="text-sm font-semibold mb-3">
+                      Streaming Info
+                    </h3>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Quality:</span>
+                        <span className="text-blue-400">HD 1080p</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Server:</span>
+                        <span className="text-blue-400">{selectedServer}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        )}
-        {/* Bagian atas: Tombol Fullscreen & Dropdown Server */}
-        <div className="flex items-center gap-4 mb-4 ml-4">
-          {/* Tombol Enter/Exit Fullscreen */}
-          <button
-            onClick={() => setIsFullScreen(!isFullScreen)}
-            className="flex items-center gap-2 bg-black/60 backdrop-blur-sm px-4 py-2 rounded-full transition-all hover:bg-black/80"
-          >
-            {isFullScreen ? (
-              <>
-                <Shrink className="h-5 w-5 text-blue-400" />
-                <span className="text-sm">Exit Screen</span>
-              </>
-            ) : (
-              <>
-                <Expand className="h-5 w-5 text-blue-400" />
-                <span className="text-sm">Enter Screen</span>
-              </>
-            )}
-          </button>
-
-          {/* Dropdown Server */}
-          <div className="relative">
+          )}
+          {/* Bagian atas: Tombol Fullscreen & Dropdown Server */}
+          <div className="flex items-center gap-4 mb-4 ml-4">
+            {/* Tombol Enter/Exit Fullscreen */}
             <button
-              onClick={() => setShowServerDropdown(!showServerDropdown)}
-              className="flex items-center gap-2 bg-black/60 backdrop-blur-sm px-4 py-2 rounded-full transition-colors hover:bg-black/80"
+              onClick={() => setIsFullScreen(!isFullScreen)}
+              className="flex items-center gap-2 bg-black/60 backdrop-blur-sm px-4 py-2 rounded-full transition-all hover:bg-black/80"
             >
-              <Monitor className="h-5 w-5 text-blue-400" />
-              <span className="text-sm">{selectedServer}</span>
-              <ChevronDown className="h-4 w-4" />
+              {isFullScreen ? (
+                <>
+                  <Shrink className="h-5 w-5 text-blue-400" />
+                  <span className="text-sm">Exit Screen</span>
+                </>
+              ) : (
+                <>
+                  <Expand className="h-5 w-5 text-blue-400" />
+                  <span className="text-sm">Enter Screen</span>
+                </>
+              )}
             </button>
 
-            {/* Dropdown List */}
-            {showServerDropdown && (
-              <div className="absolute mt-2 w-48 bg-gray-800/95 backdrop-blur-xl rounded-xl shadow-lg border border-gray-700 overflow-hidden">
-                {[1, 2, 3, 4, 5, 6].map((serverNum) => (
-                  <button
-                    key={serverNum}
-                    onClick={() => {
-                      setSelectedServer(`server ${serverNum}`);
-                      localStorage.setItem(
-                        "selectedVideoServer",
-                        `server ${serverNum}`
-                      );
-                      setShowServerDropdown(false);
-                    }}
-                    className={`w-full px-4 py-3 text-sm flex items-center gap-3 ${
-                      selectedServer === `server ${serverNum}`
-                        ? "bg-blue-600/20 text-blue-400"
-                        : "hover:bg-gray-700/30"
-                    } transition-colors`}
-                  >
-                    <Tv className="h-4 w-4 flex-shrink-0" />
-                    <span>Server {serverNum}</span>
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
+            {/* Dropdown Server */}
+            <div className="relative">
+              <button
+                onClick={() => setShowServerDropdown(!showServerDropdown)}
+                className="flex items-center gap-2 bg-black/60 backdrop-blur-sm px-4 py-2 rounded-full transition-colors hover:bg-black/80"
+              >
+                <Monitor className="h-5 w-5 text-blue-400" />
+                <span className="text-sm">{selectedServer}</span>
+                <ChevronDown className="h-4 w-4" />
+              </button>
 
-        {/* Video Player */}
-        <div
-          className={`${
-            isFullScreen ? "h-screen" : "aspect-video"
-          } w-full bg-black rounded-lg overflow-hidden mt-4`}
-        >
-          <iframe
-            src={getVideoUrl()}
-            frameBorder="0"
-            allowFullScreen
-            className="w-full h-full"
-          ></iframe>
-        </div>
-      </main>
-    </div>
+              {/* Dropdown List */}
+              {showServerDropdown && (
+                <div className="absolute mt-2 w-48 bg-gray-800/95 backdrop-blur-xl rounded-xl shadow-lg border border-gray-700 overflow-hidden">
+                  {[1, 2, 3, 4, 5, 6].map((serverNum) => (
+                    <button
+                      key={serverNum}
+                      onClick={() => {
+                        setSelectedServer(`server ${serverNum}`);
+                        localStorage.setItem(
+                          "selectedVideoServer",
+                          `server ${serverNum}`
+                        );
+                        setShowServerDropdown(false);
+                      }}
+                      className={`w-full px-4 py-3 text-sm flex items-center gap-3 ${
+                        selectedServer === `server ${serverNum}`
+                          ? "bg-blue-600/20 text-blue-400"
+                          : "hover:bg-gray-700/30"
+                      } transition-colors`}
+                    >
+                      <Tv className="h-4 w-4 flex-shrink-0" />
+                      <span>Server {serverNum}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Video Player */}
+          <div
+            className={`${
+              isFullScreen ? "h-screen" : "aspect-video"
+            } w-full bg-black rounded-lg overflow-hidden mt-4`}
+          >
+            <iframe
+              src={getVideoUrl()}
+              frameBorder="0"
+              allowFullScreen
+              className="w-full h-full"
+            ></iframe>
+          </div>
+        </main>
+      </div>
+    </>
   );
 }
 
