@@ -245,7 +245,7 @@ function page() {
   return (
     <>
       <Metadata
-        seoTitle={`${show.name} - watch`}
+        seoTitle={`${show.name ?? null} - watch`}
         seoDescription={show.overview}
         seoKeywords={show.genres?.map((genre: any) => genre.name).join(", ")}
       />
