@@ -241,13 +241,13 @@ function page() {
   const totalEpisodes = selectedSeasonData?.episode_count || 0;
   const currentEpisodeData =
     selectedSeasonData?.episodes?.[parseInt(episode) - 1];
-
+  console.log("show: ", show)
   return (
     <>
       <Metadata
-        seoTitle={`${show.name ?? null} - watch`}
-        seoDescription={show.overview}
-        seoKeywords={show.genres?.map((genre: any) => genre.name).join(", ")}
+        seoTitle={`${show?.name} - watch`}
+        seoDescription={show?.overview}
+        seoKeywords={show?.genres?.map((genre: any) => genre.name).join(", ")}
       />
 
       <div className="min-h-screen bg-gray-900 text-white pb-20">

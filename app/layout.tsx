@@ -22,8 +22,8 @@ const geistMono = localFont({
 
 export const metadata: Metadata = {
   title: {
-    template: "%s | SlashVerse",
     default: "SlashVerse",
+    template: "%s | SlashVerse",
   },
   description: "Movie app by Slash",
 };
