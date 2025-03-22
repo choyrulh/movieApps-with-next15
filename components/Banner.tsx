@@ -192,8 +192,8 @@ function Banner({ type }: { type: "movie" | "tv" }) {
           transition={{ duration: 0.8 }}
           className="max-w-2xl space-y-4 text-white"
         >
-          <h1 className="text-xl md:text-5xl font-bold drop-shadow-2xl">
-            {currentMovie.title ? currentMovie.title : currentMovie.name}
+          <h1 className="text-xl md:text-5xl font-bold [text-shadow:_0_2px_8px_rgb(0_0_0_/_0.5)]">
+            {currentMovie.title || currentMovie.name}
           </h1>
 
           <div className="flex items-center gap-4 text-sm md:text-base">
