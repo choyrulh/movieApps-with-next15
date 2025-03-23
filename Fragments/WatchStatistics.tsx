@@ -22,6 +22,21 @@ const WatchStatistics = ({
   const overallData = statsData?.data?.overall || {};
   const recentActivity = statsData?.data?.recentActivity || [];
 
+   // Format durasi dalam jam
+  const formatHours = (seconds: number) => {
+    if (!seconds) return "0j 0m";
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    return `${hours}j ${minutes}m`;
+  };
+
+  // Hitung max duration untuk scaling grafik
+  const maxDuration = Math.max(
+    ...periodData.map((e: any) => e.totalDuration || 0),
+    1 // Minimal 1 untuk menghindari pembagian 0
+  );
+
+
   return (
     <div>
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
@@ -38,7 +53,7 @@ const WatchStatistics = ({
             onClick={() => setStatsType("month")}
             className={`px-4 py-2 rounded-lg transition-colors flex items-center gap-2 ${
               statsType === "month"
-                ? "bg-blue-600 text-white"
+                ? "bg-blue-500 text-white"
                 : "bg-gray-700 text-gray-300 hover:bg-gray-600"
             }`}
           >
@@ -49,7 +64,7 @@ const WatchStatistics = ({
             onClick={() => setStatsType("week")}
             className={`px-4 py-2 rounded-lg transition-colors flex items-center gap-2 ${
               statsType === "week"
-                ? "bg-blue-600 text-white"
+                ? "bg-blue-500 text-white"
                 : "bg-gray-700 text-gray-300 hover:bg-gray-600"
             }`}
           >
@@ -111,44 +126,70 @@ const WatchStatistics = ({
           />
         </div>
 
-        <div className="mt-6 ">
+        <div className="mt-6">
           <div className="flex justify-between text-sm text-gray-400 mb-2">
             <span>Aktivitas Menonton</span>
             <span>{statsType === "month" ? "Bulan Ini" : "Minggu Ini"}</span>
           </div>
-          <div className="h-16 flex items-end space-x-2">
-            {statsData?.data?.period?.data?.map((entry: any, index: number) => {
-              const maxDuration = Math.max(
-                ...statsData.data.period.data.map((e: any) => e.totalDuration)
-              );
-              const height = (entry.totalDuration / (maxDuration || 1)) * 100;
+          
+          {/* Container grafik */}
+          <div className="h-64 bg-gray-700/30 rounded-lg p-4">
+            {periodData?.length > 0 ? (
+              <div className="flex items-end justify-between h-full gap-1">
+                {periodData.map((entry: any, index: number) => {
+                  const maxDuration = Math.max(
+                    ...periodData.map((e: any) => e.totalDuration),
+                    1 // Pastikan tidak division by zero
+                  );
+                  
+                  const heightPercentage = (entry.totalDuration / maxDuration) * 100;
+                  const barHeight = `${heightPercentage}%`;
 
-              return (
-                <motion.div
-                  key={index}
-                  className="bg-blue-600 rounded-t w-full hover:bg-blue-500 transition-colors"
-                  style={{ height: `${height}%` }}
-                  initial={{ height: 0 }}
-                  animate={{ height: `${height}%` }}
-                  transition={{
-                    duration: 0.5,
-                    delay: index * 0.05,
-                    type: "spring",
-                  }}
-                />
-              );
-            })}
+                  return (
+                    <motion.div
+                      key={index}
+                      className="flex-1 bg-blue-500 rounded-t relative transition-all"
+                      style={{ height: barHeight }}
+                      initial={{ height: 0 }}
+                      animate={{ height: barHeight }}
+                      transition={{ duration: 0.5, delay: index * 0.1 }}
+                    >
+                      {/* Label durasi */}
+                      <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs text-blue-300 whitespace-nowrap">
+                        {formatHours(entry.totalDuration)}
+                      </div>
+                      
+                      {/* Tooltip hover */}
+                      <div className="hidden group-hover:block absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-1 bg-gray-800 rounded text-xs">
+                        {statsType === 'month' ? entry.label : entry.dayOfWeek}
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="h-full flex items-center justify-center text-gray-400">
+                Tidak ada aktivitas menonton
+              </div>
+            )}
           </div>
-          <div className="flex justify-between text-xs text-gray-500 mt-2">
-            {statsData?.data?.period.data.map((entry: any, index: number) => (
-              <span key={index}>
-                {statsType === "month"
-                  ? `${entry.label}`
-                  : `${entry.dayOfWeek}`}
+
+          {/* Label sumbu X */}
+          <div className="flex justify-between text-xs text-gray-500 mt-2 px-2">
+            {periodData?.map((entry: any) => (
+              <span 
+                key={entry.label || entry.date} 
+                className="flex-1 text-center truncate"
+              >
+                {statsType === 'month' 
+                  ? entry.label?.replace('Minggu ', 'W') 
+                  : entry.dayOfWeek}
               </span>
             ))}
           </div>
         </div>
+
+
 
         {/* Additional Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-gray-700">
@@ -417,26 +458,21 @@ const WatchStatistics = ({
   );
 };
 
+// Komponen StatBox dengan error handling
 const StatBox = ({ icon, title, value, color }: any) => (
-  <motion.div
-    className="bg-gray-800/50 p-4 rounded-xl transition-colors relative overflow-hidden"
-    whileHover={{
-      scale: 1.02,
-      transition: { duration: 0.2 },
-    }}
+  <motion.div 
+    className="bg-gray-800/50 p-4 rounded-xl"
+    whileHover={{ scale: 1.02 }}
   >
     <div className="flex items-center gap-3">
-      <div
-        className={`p-2 rounded-lg bg-opacity-20 ${color.replace(
-          "text",
-          "bg"
-        )}`}
-      >
+      <div className={`p-2 rounded-lg bg-opacity-20 ${color.replace("text", "bg")}`}>
         {icon}
       </div>
       <div>
-        <div className="text-sm text-gray-400 mb-1">{title}</div>
-        <div className={`text-xl font-semibold ${color}`}>{value || "-"}</div>
+        <div className="text-sm text-gray-400">{title}</div>
+        <div className={`text-xl font-semibold ${color}`}>
+          {value ?? "-"}
+        </div>
       </div>
     </div>
   </motion.div>

@@ -4,62 +4,71 @@ import React, { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Star, Award, Film, TrendingUp } from "lucide-react";
 import { Person } from "@/app/person/page";
+import Image from "next/image"
+
+const StatBox = ({ icon, value, label }: { icon: React.ReactNode; value: any; label: string }) => (
+  <div className="bg-gray-800 p-2 rounded-md text-center">
+    <div className="flex justify-center">{icon}</div>
+    <div className="text-lg font-semibold text-gray-100 mt-1">{value}</div>
+    <div className="text-xs text-gray-400">{label}</div>
+  </div>
+);
 
 export const NetworkGraph = ({ people }: { people: Person[] }) => {
   const [selectedActor, setSelectedActor] = useState<number>(0);
 
-  // Mock data - replace with real data from your API
+  // Data mock - sesuaikan dengan API Anda
   const actorDetails = people.map((person) => ({
     ...person,
-    rating: (Math.random() * 2 + 3).toFixed(1), // Random rating between 3-5
-    awards: Math.floor(Math.random() * 5), // Random number of awards
+    rating: (Math.random() * 2 + 3).toFixed(1),
+    awards: Math.floor(Math.random() * 5),
     topGenres: ["Drama", "Action", "Comedy"]
       .sort(() => Math.random() - 0.5)
       .slice(0, 2),
-    recentFilms: 3 + Math.floor(Math.random() * 4), // Random number of recent films
+    recentFilms: 3 + Math.floor(Math.random() * 4),
   }));
 
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="bg-gradient-to-br from-indigo-900/40 to-purple-900/40 rounded-2xl p-6 shadow-2xl border border-white/10 backdrop-blur-sm"
+      className="bg-gray-800 rounded-xl p-4 md:p-6 border border-gray-700 shadow-sm"
     >
-      <h2 className="text-2xl font-bold text-white mb-6">Featured Cast</h2>
+      <h2 className="text-xl font-semibold text-gray-100 mb-4">Featured Cast</h2>
 
-      <div className="grid md:grid-cols-2 gap-6">
-        {/* Actor Cards */}
-        <div className="space-y-4">
+      <div className="grid md:grid-cols-2 gap-4 md:gap-6">
+        {/* Actor List */}
+        <div className="space-y-3">
           {actorDetails.slice(0, 5).map((actor, index) => (
             <motion.div
               key={actor.id}
-              initial={{ x: -20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
               transition={{ delay: index * 0.1 }}
-              className={`p-4 rounded-xl cursor-pointer transition-all ${
+              className={`p-3 rounded-lg cursor-pointer transition-colors ${
                 selectedActor === index
-                  ? "bg-white/15 shadow-lg"
-                  : "bg-white/5 hover:bg-white/10"
+                  ? "bg-gray-700 border border-purple-500/30"
+                  : "bg-gray-900 hover:bg-gray-700/50 border border-transparent"
               }`}
               onClick={() => setSelectedActor(index)}
             >
-              <div className="flex items-center gap-4">
-                <motion.img
+              <div className="flex items-center gap-3">
+                <Image
                   src={`https://image.tmdb.org/t/p/w200${actor.profile_path}`}
                   alt={actor.name}
-                  className="w-16 h-16 rounded-lg object-cover"
-                  whileHover={{ scale: 1.05 }}
+                  width={48}
+                  height={48}
+                  className="w-12 h-12 rounded-md object-cover"
+                  loading="lazy"
                 />
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-white">
-                    {actor.name}
-                  </h3>
-                  <div className="flex items-center gap-2 text-white/60 text-sm">
+                  <h3 className="font-medium text-gray-100">{actor.name}</h3>
+                  <div className="flex items-center gap-2 text-gray-400 text-sm mt-1">
                     <Star className="w-4 h-4 text-yellow-400" />
                     <span>{actor.rating}</span>
-                    <span className="mx-2">•</span>
-                    <Film className="w-4 h-4" />
-                    <span>{actor.recentFilms} recent films</span>
+                    <span className="mx-1">•</span>
+                    <Film className="w-4 h-4 text-blue-400" />
+                    <span>{actor.recentFilms} films</span>
                   </div>
                 </div>
               </div>
@@ -71,62 +80,55 @@ export const NetworkGraph = ({ people }: { people: Person[] }) => {
         <AnimatePresence mode="wait">
           <motion.div
             key={selectedActor}
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="bg-white/5 rounded-xl p-6 space-y-6"
+            exit={{ opacity: 0, y: -10 }}
+            className="bg-gray-900 rounded-lg p-4 space-y-4 border border-gray-700"
           >
-            <div className="relative">
-              <motion.img
+            <div className="relative aspect-video rounded-md overflow-hidden">
+              <Image
                 src={`https://image.tmdb.org/t/p/w500${actorDetails[selectedActor]?.profile_path}`}
                 alt={actorDetails[selectedActor]?.name}
-                className="w-full h-64 object-cover rounded-lg"
-                layoutId={`actor-image-${selectedActor}`}
+                fill
+                className="object-cover"
+                loading="lazy"
               />
-              <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent rounded-b-lg">
-                <h2 className="text-2xl font-bold text-white">
+              <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/90">
+                <h2 className="text-lg font-semibold text-gray-100">
                   {actorDetails[selectedActor]?.name}
                 </h2>
               </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-4">
-              <div className="bg-white/10 rounded-lg p-4 text-center">
-                <Star className="w-6 h-6 text-yellow-400 mx-auto mb-2" />
-                <div className="text-2xl font-bold text-white">
-                  {actorDetails[selectedActor]?.rating}
-                </div>
-                <div className="text-xs text-white/60">Rating</div>
-              </div>
-
-              <div className="bg-white/10 rounded-lg p-4 text-center">
-                <Award className="w-6 h-6 text-purple-400 mx-auto mb-2" />
-                <div className="text-2xl font-bold text-white">
-                  {actorDetails[selectedActor]?.awards}
-                </div>
-                <div className="text-xs text-white/60">Awards</div>
-              </div>
-
-              <div className="bg-white/10 rounded-lg p-4 text-center">
-                <Film className="w-6 h-6 text-blue-400 mx-auto mb-2" />
-                <div className="text-2xl font-bold text-white">
-                  {actorDetails[selectedActor]?.recentFilms}
-                </div>
-                <div className="text-xs text-white/60">Recent Films</div>
-              </div>
+            <div className="grid grid-cols-3 gap-2">
+              <StatBox
+                icon={<Star className="w-5 h-5 text-yellow-400" />}
+                value={actorDetails[selectedActor]?.rating}
+                label="Rating"
+              />
+              <StatBox
+                icon={<Award className="w-5 h-5 text-purple-400" />}
+                value={actorDetails[selectedActor]?.awards}
+                label="Awards"
+              />
+              <StatBox
+                icon={<Film className="w-5 h-5 text-blue-400" />}
+                value={actorDetails[selectedActor]?.recentFilms}
+                label="Films"
+              />
             </div>
 
-            <div className="space-y-4">
-              <div className="flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-white/60" />
-                <span className="text-white/60">Top Genres</span>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-gray-400">
+                <TrendingUp className="w-5 h-5" />
+                <span className="text-sm">Top Genres</span>
               </div>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 {actorDetails[selectedActor]?.topGenres.map(
-                  (genre: any, index: number) => (
+                  (genre: string, index: number) => (
                     <span
                       key={index}
-                      className="px-3 py-1 bg-white/10 rounded-full text-sm text-white/80"
+                      className="px-2.5 py-1 bg-gray-800 rounded-full text-sm text-gray-300"
                     >
                       {genre}
                     </span>

@@ -3,64 +3,59 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Person } from "@/app/person/page";
+import useIsMobile from "@/hook/useIsMobile";
 
 export const PopularityChart = ({ people }: { people: Person[] }) => {
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const isMobile = useIsMobile();
   const maxPopularity = Math.max(...people.map((p) => p.popularity));
-  const chartHeight = 400;
-  const barWidth = 40;
-  const spacing = 25;
-  const gradientId = `popularity-gradient-${Math.random()
-    .toString(16)
-    .slice(2)}`;
+
+  // Responsive dimensions
+  const chartHeight = isMobile ? 260 : 340;
+  const barWidth = isMobile ? 28 : 36;
+  const spacing = isMobile ? 12 : 20;
+  const maxBarsVisible = isMobile ? 8 : 12;
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-2xl border border-gray-100 dark:border-gray-700">
-      <h3 className="text-2xl font-bold mb-6 bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+    <div className="bg-gray-800 rounded-xl p-4 border border-gray-700">
+      <h3 className="text-lg font-semibold text-gray-100 mb-4">
         Popularity Distribution
       </h3>
 
-      <div className="relative h-96 overflow-x-auto">
+      <div className="relative h-[300px] sm:h-[360px] overflow-x-auto pb-3">
         <svg
           width={Math.max(800, people.length * (barWidth + spacing))}
           height={chartHeight}
           className="w-full h-full"
         >
-          {/* Gradient definition */}
-          <defs>
-            <linearGradient id={gradientId} x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#8B5CF6" stopOpacity="0.8" />
-              <stop offset="100%" stopColor="#3B82F6" stopOpacity="0.8" />
-            </linearGradient>
-          </defs>
-
           {/* Grid lines */}
-          {[0, 25, 50, 75, 100].map((percent, i) => {
-            const y = chartHeight - 40 - (percent / 100) * (chartHeight - 60);
-            return (
-              <g key={i}>
-                <line
-                  x1="60"
-                  x2="100%"
-                  y1={y}
-                  y2={y}
-                  stroke="currentColor"
-                  strokeOpacity="0.1"
-                  className="text-gray-300 dark:text-gray-600"
-                />
-                <text
-                  x="50"
-                  y={y + 4}
-                  className="text-gray-500 dark:text-gray-400 text-sm"
-                >
-                  {Math.round((percent / 100) * maxPopularity)}
-                </text>
-              </g>
-            );
-          })}
+          <g>
+            {[0, 25, 50, 75, 100].map((percent, i) => {
+              const y = chartHeight - 40 - (percent / 100) * (chartHeight - 60);
+              return (
+                <g key={i}>
+                  <line
+                    x1="60"
+                    x2="100%"
+                    y1={y}
+                    y2={y}
+                    className="stroke-gray-700"
+                    strokeWidth="0.5"
+                  />
+                  <text
+                    x="50"
+                    y={y + 4}
+                    className="text-xs fill-gray-400"
+                  >
+                    {Math.round((percent / 100) * maxPopularity)}
+                  </text>
+                </g>
+              );
+            })}
+          </g>
 
           {/* Bars */}
-          {people.slice(0, 12).map((person, index) => {
+          {people.slice(0, maxBarsVisible).map((person, index) => {
             const barHeight =
               (person.popularity / maxPopularity) * (chartHeight - 60);
             const x = 80 + index * (barWidth + spacing);
@@ -69,56 +64,30 @@ export const PopularityChart = ({ people }: { people: Person[] }) => {
             return (
               <g
                 key={person.id}
-                onMouseEnter={() => setHoveredIndex(index)}
-                onMouseLeave={() => setHoveredIndex(null)}
+                onMouseEnter={() => setActiveIndex(index)}
+                onMouseLeave={() => setActiveIndex(null)}
+                onTouchStart={() => setActiveIndex(index)}
+                className="cursor-pointer"
               >
-                {/* Background bar */}
-                <rect
-                  x={x}
-                  y={chartHeight - 40}
-                  width={barWidth}
-                  height={chartHeight - 40}
-                  fill="currentColor"
-                  className="text-gray-100 dark:text-gray-700"
-                  rx="4"
-                />
-
-                {/* Main bar */}
                 <motion.rect
                   x={x}
                   y={y}
                   width={barWidth}
                   height={barHeight}
-                  fill={`url(#${gradientId})`}
+                  className="fill-purple-500"
                   rx="4"
                   initial={{ height: 0 }}
                   animate={{ height: barHeight }}
-                  transition={{
-                    duration: 0.8,
-                    delay: index * 0.05,
-                    type: "spring",
-                  }}
-                />
-
-                {/* Interactive overlay */}
-                <rect
-                  x={x - 5}
-                  y={y - 10}
-                  width={barWidth + 10}
-                  height={barHeight + 20}
-                  fill="transparent"
-                  className="cursor-pointer"
+                  transition={{ duration: 0.4, delay: index * 0.03 }}
                 />
 
                 {/* Name label */}
                 <text
                   x={x + barWidth / 2}
                   y={chartHeight - 20}
-                  className="text-gray-600 dark:text-gray-300 text-xs font-medium"
+                  className="text-[10px] fill-gray-300"
                   textAnchor="middle"
-                  transform={`rotate(35 ${x + barWidth / 2} ${
-                    chartHeight - 20
-                  })`}
+                  transform={`rotate(45 ${x + barWidth / 2} ${chartHeight - 20})`}
                 >
                   {person.name.split(" ")[0]}
                 </text>
@@ -126,70 +95,48 @@ export const PopularityChart = ({ people }: { people: Person[] }) => {
             );
           })}
 
-          {/* Hover tooltip */}
-          {hoveredIndex !== null && (
-            <g
-              transform={`translate(${
-                80 + hoveredIndex * (barWidth + spacing)
-              },0)`}
-            >
-              <motion.foreignObject
-                x={-50}
-                y={
-                  chartHeight -
-                  40 -
-                  (people[hoveredIndex].popularity / maxPopularity) *
-                    (chartHeight - 60) -
-                  100
-                }
-                width={100}
-                height={90}
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-              >
-                <div className="bg-white dark:bg-gray-700 p-3 rounded-xl shadow-2xl border border-gray-100 dark:border-gray-600 text-center">
-                  <div className="text-sm font-bold text-gray-800 dark:text-white mb-1">
-                    {people[hoveredIndex].name}
-                  </div>
-                  <div className="text-xs text-purple-600 dark:text-purple-400 font-semibold">
-                    Popularity Score
-                  </div>
-                  <div className="text-lg font-bold text-gray-700 dark:text-gray-200">
-                    {people[hoveredIndex].popularity.toFixed(0)}
-                  </div>
-                  <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 rotate-45 w-3 h-3 bg-white dark:bg-gray-700 border-b border-r border-gray-100 dark:border-gray-600" />
-                </div>
-              </motion.foreignObject>
+          {/* Active indicator */}
+          {activeIndex !== null && (
+            <g transform={`translate(${80 + activeIndex * (barWidth + spacing)},0)`}>
+              <rect
+                x={barWidth / 2 - 1}
+                y={0}
+                width="2"
+                height={chartHeight - 40}
+                className="fill-purple-400"
+              />
+              <circle
+                cx={barWidth / 2}
+                cy={chartHeight - 40 - (people[activeIndex].popularity / maxPopularity) * (chartHeight - 60)}
+                r="4"
+                className="fill-purple-400"
+              />
             </g>
           )}
         </svg>
 
         {/* Axis labels */}
-        <div className="absolute left-0 bottom-8 -rotate-90 origin-left text-gray-500 dark:text-gray-400 text-sm font-medium">
+        <div className="absolute left-0 bottom-14 -rotate-90 origin-left text-gray-400 text-xs">
           Popularity Score
         </div>
-        <div className="absolute left-1/2 bottom-2 transform -translate-x-1/2 text-gray-500 dark:text-gray-400 text-sm font-medium">
+        <div className="absolute left-1/2 bottom-4 -translate-x-1/2 text-gray-400 text-xs">
           Celebrities
         </div>
       </div>
 
-      {/* Legend */}
-      <div className="mt-6 flex items-center justify-center gap-4">
+      {/* Simplified Legend */}
+      <div className="mt-4 flex justify-center gap-3">
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded bg-gradient-to-b from-purple-600 to-blue-600" />
-          <span className="text-sm text-gray-600 dark:text-gray-300">
-            Popularity Score
-          </span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded bg-gray-100 dark:bg-gray-700" />
-          <span className="text-sm text-gray-600 dark:text-gray-300">
-            Max Possible
-          </span>
+          <div className="w-3 h-3 rounded bg-purple-500" />
+          <span className="text-xs text-gray-300">Popularity Score</span>
         </div>
       </div>
+
+      {isMobile && (
+        <div className="pt-2 text-center text-xs text-gray-400">
+          ← Scroll to explore →
+        </div>
+      )}
     </div>
   );
 };
-
-// export default PopularityChart
