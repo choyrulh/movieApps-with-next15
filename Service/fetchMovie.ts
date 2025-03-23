@@ -371,3 +371,18 @@ export const getFiltered = async (params: Record<string, any>) => {
     return error;
   }
 };
+
+export const getSeasonDetails = async (
+  showId: string,
+  seasonNumber: string
+) => {
+  try {
+    const response = await axios.get(
+      `https://api.themoviedb.org/3/tv/${showId}/season/${seasonNumber}?api_key=${api_key}`
+    );
+    const data = await response.data;
+    return data;
+  } catch (error) {
+    return error;
+  }
+};

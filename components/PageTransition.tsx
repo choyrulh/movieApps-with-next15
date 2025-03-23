@@ -132,12 +132,88 @@ const slideFromSideVariants = {
   }
 };
 
+// Opsi Baru 1: Transisi Gentle Fade Slide (Paling Ringan)
+const gentleFadeSlide = {
+  initial: { 
+    opacity: 0, 
+    y: 12 
+  },
+  animate: { 
+    opacity: 1, 
+    y: 0,
+    transition: { 
+      duration: 0.28, 
+      ease: [0.25, 0.25, 0.5, 1] 
+    }
+  },
+  exit: { 
+    opacity: 0, 
+    y: -12,
+    transition: { 
+      duration: 0.24, 
+      ease: [0.25, 0.25, 0.5, 1] 
+    }
+  }
+};
+
+// Opsi Baru 2: Transisi Soft Scale (Sangat Halus)
+const softScaleVariants = {
+  initial: { 
+    opacity: 0, 
+    scale: 0.995 
+  },
+  animate: { 
+    opacity: 1, 
+    scale: 1,
+    transition: { 
+      duration: 0.3, 
+      ease: "easeOut" 
+    }
+  },
+  exit: { 
+    opacity: 0, 
+    scale: 0.995,
+    transition: { 
+      duration: 0.25, 
+      ease: "easeIn" 
+    }
+  }
+};
+
+// Opsi Baru 3: Transisi Fluid Move (Gerakan Cair)
+const fluidMoveVariants = {
+  initial: { 
+    opacity: 0, 
+    x: '-2%',
+    filter: 'brightness(0.98)'
+  },
+  animate: { 
+    opacity: 1, 
+    x: '0%',
+    filter: 'brightness(1)',
+    transition: { 
+      duration: 0.32, 
+      ease: [0.33, 1, 0.68, 1] 
+    }
+  },
+  exit: { 
+    opacity: 0, 
+    x: '2%',
+    filter: 'brightness(0.98)',
+    transition: { 
+      duration: 0.28, 
+      ease: [0.33, 1, 0.68, 1] 
+    }
+  }
+};
+
+
 export default function PageTransition({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   
   // Anda dapat mengubah variasi yang digunakan dengan mengganti variabel di bawah ini
   // Pilihan: fadeBlurVariants, slideUpVariants, flipVariants, zoomFadeVariants, slideFromSideVariants
-  const activeVariants = fadeBlurVariants;
+  const activeVariants = fluidMoveVariants;
 
   return (
     <AnimatePresence mode="wait" initial={false}>
@@ -147,7 +223,7 @@ export default function PageTransition({ children }: { children: ReactNode }) {
         initial="initial"
         animate="animate"
         exit="exit"
-        className="min-h-screen w-full"
+        className="min-h-screen w-full will-change-transform"
       >
         {children}
       </motion.div>
