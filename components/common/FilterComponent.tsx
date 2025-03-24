@@ -1,48 +1,131 @@
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { ChevronLeft, ChevronRight, Search } from "lucide-react";
+'use client'
+
+import { useState, useRef, useEffect, useCallback } from "react";
+import { X, ChevronDown, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface FilterSectionProps {
   title: string;
   options: Array<{ value: string; label: string }>;
-  selected: string[];
+  selected: string |string[];
   onChange: (value: string) => void;
-  multi?: boolean;
+  resetValue?: string;
 }
+
 export const FilterSection = ({
   title,
   options,
   selected,
   onChange,
-  multi = false,
+  resetValue = "",
 }: FilterSectionProps) => {
-  const displayValue =
-    options.find((opt) => opt.value === selected[0])?.label || title;
-  // const displayValue = options.find((opt) => opt.value === selected)?.label || title;
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Dynamic display text calculation
+  const displayText = useCallback(() => {
+    if (selected) {
+      return options.find(opt => opt.value === selected)?.label || title;
+    }
+    return title;
+  }, [selected, title, options]);
+
+  const handleClickOutside = useCallback((event: MouseEvent) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      setIsOpen(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [handleClickOutside]);
+
+  const handleSelect = (value: string) => {
+    onChange(value === "__RESET__" ? resetValue : value);
+    setIsOpen(false);
+  };
+
+  const handleClear = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onChange(resetValue);
+  };
 
   return (
-    <Select value={multi ? undefined : selected[0]} onValueChange={onChange}>
-      <SelectTrigger className="w-[160px] text-left">
-        <span className={cn("truncate", !selected && "text-muted-foreground")}>
-          {displayValue}
+    <div className="relative w-full max-w-[170px]" ref={dropdownRef}>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className={cn(
+          "flex items-center justify-between w-full px-4 py-2 text-sm",
+          "bg-gray-700/80 dark:bg-gray-800  rounded-xl",
+          "transition-all",
+          "focus:outline-none focus:ring-2 focus:ring-primary-500/30",
+          "group relative duration-200 ease-out",
+          isOpen && "ring-2 ring-primary-500/30"
+        )}
+        aria-haspopup="listbox"
+        aria-expanded={isOpen}
+      >
+        <span className={cn(
+          "truncate text-left transition-colors",
+          selected 
+            ? "text-gray-100 dark:text-white font-medium" 
+            : "text-gray-300 dark:text-gray-400"
+        )}>
+          {displayText()}
         </span>
-      </SelectTrigger>
-      <SelectContent>
-        {options.map((option) => (
-          <SelectItem key={option.value} value={option.value}>
-            {option.label}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
+        
+        <div className="flex items-center gap-2 ml-2">
+          {selected && selected !== resetValue && (
+  <button
+    onClick={handleClear}
+    className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+    aria-label="Clear selection"
+  >
+    <X className="w-4 h-4 text-gray-400 hover:text-red-500" />
+  </button>
+)}
+          <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? "rotate-180" : ""} text-gray-400`} />
+        </div>
+      </button>
+
+      <div
+        className={cn(
+          "absolute z-50 w-full mt-2 bg-gray-700/80 dark:bg-gray-800 rounded-xl shadow-lg",
+          "transform origin-top transition-all duration-200 ease-out",
+          isOpen ? "scale-y-100 opacity-100" : "scale-y-95 opacity-0 pointer-events-none",
+          "max-h-60 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
+        )}
+        role="listbox"
+      >
+        <div className="divide-y divide-gray-100 dark:divide-gray-700">
+          {options.map((option) => (
+            <button
+              key={option.value}
+              onClick={() => handleSelect(option.value)}
+              className={cn(
+                "w-full px-4 py-3 text-sm text-left text-gray-400",
+                "flex items-center justify-between",
+                "hover:bg-primary-50/50 dark:hover:bg-gray-700/50 transition-colors",
+                "text-gray-100 dark:text-gray-200",
+                selected === option.value && "bg-primary-50/30 dark:bg-gray-700/30 font-medium"
+              )}
+              role="option"
+              aria-selected={selected === option.value}
+            >
+              <span>{option.label}</span>
+              {selected === option.value && (
+                <Check className="w-4 h-4 text-primary-500 shrink-0" />
+              )}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 };
+
+
 
 export const genres = [
   { value: "28", label: "Action" },

@@ -15,17 +15,40 @@ import { Metadata } from "../Metadata";
 const Upcoming = () => {
   const [type, setType] = useState<"movie" | "tv">("movie");
   const [page, setPage] = useState(1);
+  const [releaseFilter, setReleaseFilter] = useState<"all" | "month">("all");
+
+  // Fungsi untuk menghitung rentang tanggal
+  const getDateRange = () => {
+    const today = new Date(); // Tanggal hari ini
+    const startDate = new Date(today); // Salin objek agar tidak terpengaruh
+    const endDate = new Date(today); // Buat salinan baru untuk endDate
+
+    endDate.setDate(today.getDate() + 30); // Tambahkan 30 hari dari hari ini
+
+    return {
+      start: startDate.toISOString().split("T")[0], // Format YYYY-MM-DD
+      end: endDate.toISOString().split("T")[0], // Format YYYY-MM-DD
+    };
+  };
 
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["upcoming", type, page],
-    queryFn: () => getUpcomingShow(type, page.toString()),
-    // keepPreviousData: true,
+    queryKey: ["upcoming", type, page, releaseFilter],
+    queryFn: () => {
+      const params =
+        releaseFilter === "month" && type === "movie" ? getDateRange() : {};
+      return getUpcomingShow(type, page.toString(), params);
+    },
     staleTime: 5000,
   });
 
   const handleTypeChange = (newType: "movie" | "tv") => {
     setPage(1);
     setType(newType);
+  };
+
+  const handleFilterChange = (filter: "all" | "month") => {
+    setPage(1);
+    setReleaseFilter(filter);
   };
 
   if (isError) {
@@ -68,51 +91,63 @@ const Upcoming = () => {
       />
 
       <section className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
-        <div className="container mx-auto px-4 py-6 ">
-          <div className="flex flex-col md:flex-row justify-between items-center mb-12 gap-4 pt-16 px-4">
+        <div className="container mx-auto px-4 py-6">
+          <div className="flex flex-col md:flex-col justify-between items-center mb-12 gap-4 pt-16 px-4">
             <h1 className="text-center font-bold text-4xl text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">
               Upcoming {type === "movie" ? "Movies" : "TV Shows"}
             </h1>
-            <div className="flex gap-2 p-1 rounded-full bg-slate-800">
-              <button
-                onClick={() => handleTypeChange("movie")}
-                className={cn(
-                  "px-6 py-2 rounded-full transition-colors",
-                  type === "movie"
-                    ? "bg-cyan-500 text-white"
-                    : "hover:bg-slate-700 text-slate-300"
-                )}
-              >
-                Movie
-              </button>
-              <button
-                onClick={() => handleTypeChange("tv")}
-                className={cn(
-                  "px-6 py-2 rounded-full transition-colors",
-                  type === "tv"
-                    ? "bg-cyan-500 text-white"
-                    : "hover:bg-slate-700 text-slate-300"
-                )}
-              >
-                TV/Show
-              </button>
+            <div className="flex flex-row gap-4 items-end">
+              <div className="flex gap-2 p-1 rounded-full bg-slate-800">
+                <button
+                  onClick={() => handleTypeChange("movie")}
+                  className={cn(
+                    "px-6 py-2 rounded-full transition-colors",
+                    type === "movie"
+                      ? "bg-cyan-500 text-white"
+                      : "hover:bg-slate-700 text-slate-300"
+                  )}
+                >
+                  Movie
+                </button>
+                <button
+                  onClick={() => handleTypeChange("tv")}
+                  className={cn(
+                    "px-6 py-2 rounded-full transition-colors",
+                    type === "tv"
+                      ? "bg-cyan-500 text-white"
+                      : "hover:bg-slate-700 text-slate-300"
+                  )}
+                >
+                  TV/Show
+                </button>
+              </div>
+              {type === "movie" && (
+                <div className="flex gap-2 p-1 rounded-full bg-slate-800">
+                  <button
+                    onClick={() => handleFilterChange("all")}
+                    className={cn(
+                      "px-6 py-2 rounded-full transition-colors",
+                      releaseFilter === "all"
+                        ? "bg-cyan-500 text-white"
+                        : "hover:bg-slate-700 text-slate-300"
+                    )}
+                  >
+                    All
+                  </button>
+                  <button
+                    onClick={() => handleFilterChange("month")}
+                    className={cn(
+                      "px-6 py-2 rounded-full transition-colors",
+                      releaseFilter === "month"
+                        ? "bg-cyan-500 text-white"
+                        : "hover:bg-slate-700 text-slate-300"
+                    )}
+                  >
+                    Month
+                  </button>
+                </div>
+              )}
             </div>
-            {/*<div className="flex gap-4">
-            <Button
-              variant={type === "movie" ? "destructive" : "default"}
-              onClick={() => handleTypeChange("movie")}
-              className="rounded-full"
-            >
-              Movies
-            </Button>
-            <Button
-              variant={type === "tv" ? "destructive" : "default"}
-              onClick={() => handleTypeChange("tv")}
-              className="rounded-full"
-            >
-              TV Shows
-            </Button>
-          </div>*/}
           </div>
 
           {isLoading ? (

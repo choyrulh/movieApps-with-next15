@@ -11,7 +11,7 @@ import { State, useStore } from "@/store/useStore";
 import useIsMobile from "@/hook/useIsMobile";
 
 const parseReleaseDate = (dateStr: string): Date | null => {
-  const [year, month, day] = dateStr.split('-').map(Number);
+  const [year, month, day] = dateStr.split("-").map(Number);
   if (year && month && day) {
     return new Date(year, month - 1, day);
   }
@@ -19,46 +19,45 @@ const parseReleaseDate = (dateStr: string): Date | null => {
 };
 
 const getBadgeStyle = (label: string | null) => {
-  switch(label) {
-    case 'Baru':
+  switch (label) {
+    case "Baru":
       return {
-        background: 'bg-green-500',
-        shadow: 'shadow-green-500/20',
-        after: 'after:border-green-700'
+        background: "bg-green-500",
+        shadow: "shadow-green-500/20",
+        after: "after:border-green-700",
       };
-    case 'Upcoming':
+    case "Upcoming":
       return {
-        background: 'bg-purple-500',
-        shadow: 'shadow-purple-500/20',
-        after: 'after:border-purple-700'
+        background: "bg-purple-500",
+        shadow: "shadow-purple-500/20",
+        after: "after:border-purple-700",
       };
-    case 'Rilis Bulan Ini':
+    case "Rilis Bulan Ini":
       return {
-        background: 'bg-blue-500',
-        shadow: 'shadow-blue-500/20',
-        after: 'after:border-blue-700'
+        background: "bg-blue-500",
+        shadow: "shadow-blue-500/20",
+        after: "after:border-blue-700",
       };
-    case 'Belum Rilis':
+    case "Belum Rilis":
       return {
-        background: 'bg-gray-500',
-        shadow: 'shadow-gray-500/20',
-        after: 'after:border-gray-700'
+        background: "bg-gray-500",
+        shadow: "shadow-gray-500/20",
+        after: "after:border-gray-700",
       };
-    case 'TBA':
+    case "TBA":
       return {
-        background: 'bg-red-500',
-        shadow: 'shadow-red-500/20',
-        after: 'after:border-red-700'
+        background: "bg-red-500",
+        shadow: "shadow-red-500/20",
+        after: "after:border-red-700",
       };
     default:
       return {
-        background: '',
-        shadow: '',
-        after: ''
+        background: "",
+        shadow: "",
+        after: "",
       };
   }
 };
-
 
 const MovieCard = ({ movie }: { movie: Movie }) => {
   const isMobile = useIsMobile();
@@ -81,24 +80,38 @@ const MovieCard = ({ movie }: { movie: Movie }) => {
     today.setHours(0, 0, 0, 0);
 
     if (isNaN(releaseDate.getTime())) {
-      label = 'TBA';
+      label = "TBA";
     } else {
       releaseDate.setHours(0, 0, 0, 0);
+      const getDateRange = () => {
+        const today = new Date();
+        const startDate = new Date(today);
+        const endDate = new Date(today);
+        endDate.setDate(today.getDate() + 30);
+
+        return {
+          start: startDate,
+          end: endDate,
+        };
+      };
+
+      const today = new Date();
+      const dateRange = getDateRange();
 
       if (releaseDate > today) {
-        const isCurrentMonth = releaseDate.getMonth() === today.getMonth() &&
-          releaseDate.getFullYear() === today.getFullYear();
+        const isCurrentMonth =
+          releaseDate >= dateRange.start && releaseDate <= dateRange.end;
 
         if (isCurrentMonth) {
-          label = 'Rilis Bulan Ini';
+          label = "Rilis Bulan Ini";
         } else {
           const timeDiff = releaseDate.getTime() - today.getTime();
           const dayDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
 
           if (dayDiff <= 30) {
-            label = 'Upcoming';
+            label = "Upcoming";
           } else {
-            label = 'Belum Rilis';
+            label = "Belum Rilis";
           }
         }
       } else {
@@ -106,15 +119,15 @@ const MovieCard = ({ movie }: { movie: Movie }) => {
         const dayDiff = Math.floor(timeDiff / (1000 * 3600 * 24));
 
         if (dayDiff <= 90) {
-          label = 'Baru';
+          label = "Baru";
         }
       }
     }
   } else {
-    label = 'TBA';
+    label = "TBA";
   }
 
-    const badgeStyle = getBadgeStyle(label);
+  const badgeStyle = getBadgeStyle(label);
   return (
     <motion.div
       className="group relative bg-slate-800 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow"
@@ -126,7 +139,9 @@ const MovieCard = ({ movie }: { movie: Movie }) => {
         <div className="relative aspect-[2/3]">
           {movie.poster_path ? (
             <Image
-              src={`https://image.tmdb.org/t/p/${isMobile ? "w300" : "w500"}${movie.poster_path}`}
+              src={`https://image.tmdb.org/t/p/${isMobile ? "w300" : "w500"}${
+                movie.poster_path
+              }`}
               alt={movie.title ?? movie.name ?? ""}
               fill
               className="object-cover group-hover:opacity-75 transition-opacity"
@@ -139,7 +154,8 @@ const MovieCard = ({ movie }: { movie: Movie }) => {
           )}
           {label && (
             <div className="absolute -right-2 top-4">
-              <div className={`
+              <div
+                className={`
                 relative
                 flex
                 items-center
@@ -168,7 +184,8 @@ const MovieCard = ({ movie }: { movie: Movie }) => {
                 after:-translate-x-1/2
                 after:bg-inherit
                 after:rounded-l-full
-              `}>
+              `}
+              >
                 <span className="relative z-10">{label}</span>
               </div>
             </div>
@@ -181,7 +198,7 @@ const MovieCard = ({ movie }: { movie: Movie }) => {
           </h3>
           <div className="flex items-center justify-between mt-2">
             <span className="text-cyan-400 text-sm">
-              {releaseDateStr ? new Date(releaseDateStr).getFullYear() : 'TBA'}
+              {releaseDateStr ? new Date(releaseDateStr).getFullYear() : "TBA"}
             </span>
             <Rating value={movie.vote_average} />
           </div>

@@ -23,6 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Metadata } from "../Metadata";
+import { cn } from "@/lib/utils";
 
 function page() {
   const [page, setPage] = useState(1);
@@ -64,18 +65,19 @@ function page() {
     );
   }, [filters]);
 
-  const handleReset = () => {
-    setFilters({
-      genre: [],
-      sort: "",
-      type: "movie",
-      country: [],
-      rating: 0,
-      lang: [],
-      year: [],
-    });
-    setPage(1);
-  };
+// Pastikan handleReset menggunakan array baru
+const handleReset = () => {
+  setFilters({
+    genre: [],
+    sort: "",
+    type: "movie",
+    country: [],
+    rating: 0,
+    lang: [],
+    year: [],
+  });
+  setPage(1);
+};
 
   return (
     <>
@@ -94,7 +96,7 @@ function page() {
               options={genres}
               selected={filters.genre}
               onChange={(v) => handleFilterChange("genre", v)}
-              multi
+              resetValue=""
             />
 
             <FilterSection
@@ -102,7 +104,7 @@ function page() {
               options={years}
               selected={filters.year}
               onChange={(v) => handleFilterChange("year", v)}
-              multi
+              resetValue=""
             />
 
             <FilterSection
@@ -110,42 +112,50 @@ function page() {
               options={lang}
               selected={filters.lang}
               onChange={(v) => handleFilterChange("lang", v)}
-              multi
+              resetValue=""
             />
 
             <FilterSection
               title="Rating"
               options={ratings}
               selected={[filters.rating.toString()]}
-              onChange={(v) => handleFilterChange("rating", v[0])}
-              multi={false}
+              onChange={(v) => handleFilterChange("rating", parseInt(v))}
+              resetValue="0"
             />
 
             <FilterSection
               title="Tipe"
               options={types}
               selected={[filters.type]}
-              onChange={(v) => handleFilterChange("type", v[0])}
-              multi={false}
+              onChange={(v) => handleFilterChange("type", v)}
+              resetValue="movie"
             />
 
-            <Select
-              value={filters.sort}
-              onValueChange={(value) => handleFilterChange("sort", value)}
-            >
-              <SelectTrigger className="w-[160px]">
-                <SelectValue placeholder="Urutan" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="newest">Terbaru</SelectItem>
-                <SelectItem value="oldest">Terlama</SelectItem>
-              </SelectContent>
-            </Select>
+            <FilterSection
+              title="Urutkan"
+              options={[
+                { value: "newest", label: "Terbaru" },
+                { value: "oldest", label: "Terlama" },
+                { value: "__RESET__", label: "Cancel" }
+              ]}
+              selected={filters.sort}
+              onChange={(value) => handleFilterChange("sort", value)}
+              resetValue=""
+            />
+
 
             {hasFilters && (
               <button
                 onClick={handleReset}
-                className="px-4 py-2 bg-background border hover:bg-accent text-foreground rounded-md text-sm font-medium transition-all flex items-center gap-2 shadow-sm hover:shadow-md duration-200"
+                className={cn(
+      "px-3 py-1.5 text-sm font-medium",
+      "bg-gray-700/80 dark:bg-gray-800 hover:bg-red-500/20",
+      "border border-red-500/30 hover:border-red-500/50",
+      "text-red-400 hover:text-red-300",
+      "rounded-xl transition-all duration-200",
+      "flex items-center gap-2",
+      "shadow-sm hover:shadow-red-500/10"
+    )}
               >
                 <RefreshCw className="w-4 h-4" />
                 <span>Reset Filter</span>

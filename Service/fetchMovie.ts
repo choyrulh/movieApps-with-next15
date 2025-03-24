@@ -334,17 +334,31 @@ export const getRecommendedMovies = async (id: string, type: string) => {
   }
 };
 
-export const getUpcomingShow = async (type: "movie" | "tv", page: string) => {
+export const getUpcomingShow = async (
+  type: "movie" | "tv",
+  page: string,
+  dateRange?: { start?: string; end?: string }
+) => {
   try {
-    const response = await axios.get(
-      `${url}/discover/${type}?api_key=${api_key}&region=ID&sort_by=${
-        type === "movie" ? "release_date" : "first_air_date"
-      }.desc&with_original_language=id&page=${page}`
-    );
-    const data = await response.data;
-    return data;
+    const params: Record<string, string> = {
+      api_key: api_key!,
+      region: "ID",
+      sort_by: type === "movie" ? "release_date.desc" : "first_air_date.desc",
+      with_original_language: "id",
+      page: page,
+    };
+
+    // Tambahkan filter tanggal khusus untuk movie
+    if (type === "movie" && dateRange?.start && dateRange?.end) {
+      params["primary_release_date.gte"] = dateRange.start;
+      params["primary_release_date.lte"] = dateRange.end;
+    }
+
+    const response = await axios.get(`${url}/discover/${type}`, { params });
+
+    return response.data;
   } catch (error) {
-    return error;
+    throw error; // Lebih baik di-throw untuk handling error di component
   }
 };
 
@@ -383,6 +397,39 @@ export const getSeasonDetails = async (
     const data = await response.data;
     return data;
   } catch (error) {
+    return error;
+  }
+};
+
+export const getReleaseMovieCurrentMonth = async (
+  thisDate: string,
+  country: string
+) => {
+  try {
+    const date = new Date();
+    const formattedThisDate = date.toISOString().split("T")[0];
+    const next30Days = new Date(date.setDate(date.getDate() + 30))
+      .toISOString()
+      .split("T")[0];
+
+    // Menentukan format language berdasarkan country
+    let language =
+      country === country.toLowerCase()
+        ? `${country.toLowerCase()}-${country.toUpperCase()}`
+        : country.toLowerCase();
+
+    const response = await fetch(
+      `${url}/discover/movie?api_key=${api_key}&region=${country}&sort_by=release_date.desc&primary_release_date.gte=${formattedThisDate}&primary_release_date.lte=${next30Days}&with_release_type=3%7C2&page=1&language=${language}`
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching data:", error);
     return error;
   }
 };
