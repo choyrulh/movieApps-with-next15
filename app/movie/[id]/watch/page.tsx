@@ -238,7 +238,7 @@ function Watch() {
   return (
     <>
       <Metadata
-        seoTitle={`Watch ${movie?.title}`}
+        seoTitle={`${movie?.title} - Watch SlashVerse`}
         seoDescription={movie?.overview}
         seoKeywords={movie?.genres?.map((genre) => genre.name).join(", ")}
       />

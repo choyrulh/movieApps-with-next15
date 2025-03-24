@@ -298,7 +298,7 @@ function page() {
   return (
     <>
       <Metadata
-        seoTitle={`${show?.name} - Stream on CineWave`}
+        seoTitle={`${show?.name} - Watch SlashVerse`}
         seoDescription={show?.overview}
         seoKeywords={show?.genres?.map((genre: any) => genre.name).join(", ")}
       />
