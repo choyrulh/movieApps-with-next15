@@ -79,6 +79,23 @@ const handleReset = () => {
   setPage(1);
 };
 
+const totalPages = data?.total_pages || 0;
+const currentPage = page;
+
+const paginationRange = useMemo(() => {
+    const range = [];
+    const maxPages = 5;
+    const startPage = Math.max(1, currentPage - Math.floor(maxPages / 2));
+    const endPage = Math.min(totalPages, startPage + maxPages - 1);
+
+    for (let i = startPage; i <= endPage; i++) {
+      range.push(i);
+    }
+
+    return range;
+  }, [currentPage, totalPages]);
+
+
   return (
     <>
       <Metadata
@@ -148,14 +165,14 @@ const handleReset = () => {
               <button
                 onClick={handleReset}
                 className={cn(
-      "px-3 py-1.5 text-sm font-medium",
-      "bg-gray-700/80 dark:bg-gray-800 hover:bg-red-500/20",
-      "border border-red-500/30 hover:border-red-500/50",
-      "text-red-400 hover:text-red-300",
-      "rounded-xl transition-all duration-200",
-      "flex items-center gap-2",
-      "shadow-sm hover:shadow-red-500/10"
-    )}
+                  "px-3 py-1.5 text-sm font-medium",
+                  "bg-gray-700/80 dark:bg-gray-800 hover:bg-red-500/20",
+                  "border border-red-500/30 hover:border-red-500/50",
+                  "text-red-400 hover:text-red-300",
+                  "rounded-xl transition-all duration-200",
+                  "flex items-center gap-2",
+                  "shadow-sm hover:shadow-red-500/10"
+                )}
               >
                 <RefreshCw className="w-4 h-4" />
                 <span>Reset Filter</span>
@@ -182,25 +199,36 @@ const handleReset = () => {
             </div>
 
             {/* Pagination */}
-            <div className="mt-8 flex justify-center items-center gap-4">
+            <div className="flex justify-center gap-4 mt-12 text-black">
               <button
                 onClick={() => setPage((old) => Math.max(old - 1, 1))}
-                disabled={page === 1}
-                className="p-2 rounded-full hover:bg-gray-100 disabled:opacity-50 disabled:hover:bg-transparent"
+                disabled={page === 1 || isFetching}
+                className="p-2 rounded-lg bg-slate-800 text-slate-400 hover:text-cyan-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <ChevronLeft />
+                <ChevronLeft className="h-5 w-5" />
               </button>
 
-              <span className="font-medium">
-                Halaman {page} dari {data?.total_pages}
-              </span>
+              {paginationRange.map((pageNum) => (
+                <button
+                  key={pageNum}
+                  onClick={() => setPage(pageNum)}
+                  disabled={isFetching}
+                  className={`min-w-[2.5rem] h-10 rounded-lg transition-colors ${
+                    pageNum === page
+                      ? "bg-cyan-500/20 text-cyan-400"
+                      : "bg-slate-800 text-slate-400 hover:text-cyan-400"
+                  } disabled:opacity-50 disabled:cursor-not-allowed`}
+                >
+                  {pageNum}
+                </button>
+              ))}
 
               <button
-                onClick={() => setPage((old) => (!isFetching ? old + 1 : old))}
+                onClick={() => setPage((old) => old + 1)}
                 disabled={isFetching || page >= data?.total_pages}
-                className="p-2 rounded-full hover:bg-gray-100 disabled:opacity-50 disabled:hover:bg-transparent"
+                className="p-2 rounded-lg bg-slate-800 text-slate-400 hover:text-cyan-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <ChevronRight />
+                <ChevronRight className="h-5 w-5" />
               </button>
             </div>
           </>

@@ -77,14 +77,14 @@ export const FilterSection = ({
         
         <div className="flex items-center gap-2 ml-2">
           {selected && selected !== resetValue && (
-  <button
-    onClick={handleClear}
-    className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-    aria-label="Clear selection"
-  >
-    <X className="w-4 h-4 text-gray-400 hover:text-red-500" />
-  </button>
-)}
+            <button
+              onClick={handleClear}
+              className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              aria-label="Clear selection"
+            >
+              <X className="w-4 h-4 text-gray-400 hover:text-red-500" />
+            </button>
+          )}
           <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? "rotate-180" : ""} text-gray-400`} />
         </div>
       </button>

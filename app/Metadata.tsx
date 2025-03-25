@@ -9,9 +9,11 @@ export const Metadata: React.FC<Props> = ({
   seoDescription,
   seoKeywords,
 }: Props) => {
+  const siteTitle = "SlashVerse"; // Set your global site title
+  const fullTitle = seoTitle ? `${seoTitle} | ${siteTitle}` : siteTitle;
   return (
     <>
-      <title>{seoTitle}</title>
+      <title>{fullTitle}</title>
       <meta name="description" content={seoDescription} />
       <meta name="keywords" content={seoKeywords} />
     </>
