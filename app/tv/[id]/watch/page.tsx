@@ -45,6 +45,7 @@ function page() {
   const [showSeasonDropdown, setShowSeasonDropdown] = useState(false);
 
   const videoProgressRef = useRef(videoProgress);
+  const videoPlayerRef = useRef<HTMLDivElement>(null);
 
   const [lastSavedProgress, setLastSavedProgress] = useState({
     watched: 0,
@@ -295,6 +296,25 @@ function page() {
     [hasPreviousEpisode, hasNextEpisode, previousEpisode, nextEpisode]
   );
 
+  const handleEpisodeChange = useCallback(
+    (episodeNumber: string) => {
+      // Update episode state
+      setEpisode(episodeNumber);
+      
+      // Scroll to video player section smoothly
+      // Use setTimeout to ensure DOM has updated before scrolling
+      setTimeout(() => {
+        if (videoPlayerRef.current) {
+          videoPlayerRef.current.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'start' 
+          });
+        }
+      }, 0);
+    }, 
+    [] // Empty dependency array since it doesn't depend on any changing values
+  );
+
   return (
     <>
       <Metadata
@@ -368,6 +388,7 @@ function page() {
 
           {/* Video Player Section */}
           <div
+            ref={videoPlayerRef}
             className={`relative group ${
               isFullScreen ? "h-screen" : "aspect-video"
             } bg-black`}
@@ -540,11 +561,7 @@ function page() {
           }
           hover:ring-blue-300 hover:scale-[1.02] rounded-xl overflow-hidden shadow-xl
           bg-gray-800`}
-                            onClick={() =>{
-                              setEpisode(ep.episode_number.toString())
-                              window.scrollTo({ top: 0, behavior: "smooth" });
-                              }
-                            }
+                            onClick={() => handleEpisodeChange(ep.episode_number.toString())}
                           >
                             {/* Image Container */}
                             <div className="relative aspect-video">
