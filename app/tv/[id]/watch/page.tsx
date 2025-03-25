@@ -540,8 +540,10 @@ function page() {
           }
           hover:ring-blue-300 hover:scale-[1.02] rounded-xl overflow-hidden shadow-xl
           bg-gray-800`}
-                            onClick={() =>
+                            onClick={() =>{
                               setEpisode(ep.episode_number.toString())
+                              window.scrollTo({ top: 0, behavior: "smooth" });
+                              }
                             }
                           >
                             {/* Image Container */}
