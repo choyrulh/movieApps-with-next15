@@ -265,7 +265,7 @@ function Banner({ type }: { type: "movie" | "tv" }) {
 
           {movieGenres && movieGenres.length > 0 && (
   <div className="flex gap-2 flex-wrap">
-    {movieGenres.slice(0, 3).map((genre) => (
+    {movieGenres.slice(0, 3).map((genre: any) => (
       <span 
         key={genre}
         className="px-3 py-1 text-xs rounded-full bg-white/10 backdrop-blur-md text-white"
