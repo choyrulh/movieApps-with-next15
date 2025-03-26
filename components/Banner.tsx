@@ -11,6 +11,48 @@ import Link from "next/link";
 import { memo } from "react";
 import useIsMobile from "@/hook/useIsMobile";
 
+export const genres = {
+  movie: [
+    { id: 28, name: "Action" },
+    { id: 12, name: "Adventure" },
+    { id: 16, name: "Animation" },
+    { id: 35, name: "Comedy" },
+    { id: 80, name: "Crime" },
+    { id: 99, name: "Documentary" },
+    { id: 18, name: "Drama" },
+    { id: 10751, name: "Family" },
+    { id: 14, name: "Fantasy" },
+    { id: 36, name: "History" },
+    { id: 27, name: "Horror" },
+    { id: 10402, name: "Music" },
+    { id: 9648, name: "Mystery" },
+    { id: 10749, name: "Romance" },
+    { id: 878, name: "Science Fiction" },
+    { id: 10770, name: "TV Movie" },
+    { id: 53, name: "Thriller" },
+    { id: 10752, name: "War" },
+    { id: 37, name: "Western" },
+  ],
+  tv: [
+    { id: 10759, name: "Action & Adventure" },
+    { id: 16, name: "Animation" },
+    { id: 35, name: "Comedy" },
+    { id: 80, name: "Crime" },
+    { id: 99, name: "Documentary" },
+    { id: 18, name: "Drama" },
+    { id: 10751, name: "Family" },
+    { id: 10762, name: "Kids" },
+    { id: 9648, name: "Mystery" },
+    { id: 10763, name: "News" },
+    { id: 10764, name: "Reality" },
+    { id: 10765, name: "Sci-Fi & Fantasy" },
+    { id: 10766, name: "Soap" },
+    { id: 10767, name: "Talk" },
+    { id: 10768, name: "War & Politics" },
+    { id: 37, name: "Western" },
+  ],
+} as const;
+
 function Banner({ type }: { type: "movie" | "tv" }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [pauseAutoSlide, setPauseAutoSlide] = useState(false);
@@ -111,6 +153,11 @@ function Banner({ type }: { type: "movie" | "tv" }) {
 
   const currentMovie = data.results[activeIndex];
 
+  const movieGenres = currentMovie.genre_ids?.map((id) => 
+    genres[type].find((g) => g.id === id)?.name
+  ).filter(Boolean);
+
+
   const handleSlideClick = (index: number) => {
     setActiveIndex(index);
     setProgress(0);
@@ -197,6 +244,9 @@ function Banner({ type }: { type: "movie" | "tv" }) {
           </h1>
 
           <div className="flex items-center gap-4 text-sm md:text-base">
+           <span className="bg-gradient-to-r from-cyan-600 to-blue-500 px-3 py-1 rounded-full text-xs font-bold">
+            Trending #{activeIndex + 1}
+          </span>
             <div className="flex items-center gap-1">
               <Star className="w-4 h-4 text-yellow-400 fill-current" />
               <span>{currentMovie.vote_average.toFixed(1)}</span>
@@ -212,6 +262,20 @@ function Banner({ type }: { type: "movie" | "tv" }) {
             <span>•</span>
             <span>{currentMovie.original_language.toUpperCase()}</span>
           </div>
+
+          {movieGenres && movieGenres.length > 0 && (
+  <div className="flex gap-2 flex-wrap">
+    {movieGenres.slice(0, 3).map((genre) => (
+      <span 
+        key={genre}
+        className="px-3 py-1 text-xs rounded-full bg-white/10 backdrop-blur-md text-white"
+      >
+        {genre}
+      </span>
+    ))}
+  </div>
+)}
+
 
           <p className="line-clamp-3 text-sm md:text-base text-slate-200">
             {currentMovie.overview}
