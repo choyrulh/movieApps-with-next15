@@ -153,7 +153,7 @@ function Banner({ type }: { type: "movie" | "tv" }) {
 
   const currentMovie = data.results[activeIndex];
 
-  const movieGenres = currentMovie.genre_ids?.map((id) => 
+  const movieGenres = currentMovie.genre_ids?.map((id: any) => 
     genres[type].find((g) => g.id === id)?.name
   ).filter(Boolean);
 
