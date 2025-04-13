@@ -266,7 +266,7 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
                       }}
                     />
                     <GoWatchButton params={id} typeData={"movie"}>
-                      <Play /> Watch
+                      <Play /> Play
                     </GoWatchButton>
                   </div>
                 </div>

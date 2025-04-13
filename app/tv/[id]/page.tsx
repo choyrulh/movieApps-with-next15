@@ -275,7 +275,7 @@ function DetailShow({ params }: { params: Promise<{ id: string }> }) {
                       }}
                     />
                     <GoWatchButton params={id} typeData={"tv"}>
-                      <Play /> Watch
+                      <Play /> Play
                     </GoWatchButton>
                   </div>
                 </div>

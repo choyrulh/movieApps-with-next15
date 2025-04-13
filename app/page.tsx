@@ -16,6 +16,7 @@ import { usePathname } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { ScrollToTopButton } from "@/components/ScrollToTopButton";
+import axios from "axios";
 
 const Banner = dynamic(() => import("@/components/Banner"), {
   ssr: true,
@@ -57,12 +58,31 @@ export default function Home() {
   });
 
   useEffect(() => {
+    // Kirim request tracking saat komponen dimount
+    const trackAccess = async () => {
+      try {
+        await axios.post(
+          "https://backend-movie-apps-api-one.vercel.app/api/logs",
+          {},
+          {
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+      } catch (error) {
+        console.error("Tracking error:", error);
+      }
+    };
+
+    trackAccess();
+  }, []);
+
+  useEffect(() => {
     if (genresId && moviesGenre) {
       setAllMovies(moviesGenre?.results);
     } else if (movies && !genresId) {
       setAllMovies((prevMovies) => {
         const movieSet = new Set(prevMovies.map((m) => m.id));
-        const uniqueMovies = movies.filter((m) => !movieSet.has(m.id));
+        const uniqueMovies = movies?.filter((m) => !movieSet.has(m.id));
         return [...prevMovies, ...uniqueMovies];
       });
     }
@@ -100,8 +120,10 @@ export default function Home() {
           ) : (
             <>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-                {allMovies?.map((movie: Movie) => (
-                  <MovieCard key={movie.id} movie={movie} />
+                {allMovies?.map((movie: Movie, index: number) => (
+                  <MovieCard 
+                  key={movie.id || `movie-${index}`} 
+                  movie={movie} />
                 ))}
               </div>
               <div className="flex justify-center mt-8">
