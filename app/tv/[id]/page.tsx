@@ -289,7 +289,7 @@ function DetailShow({ params }: { params: Promise<{ id: string }> }) {
               </div>
 
               {/* Tab Content Container */}
-              <div className="transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]">
+              <div className="transition-all duration-300 ease-&lsqb;cubic-bezier(0.4,0,0.2,1)&rsqb;">
                 {activeTab === "details" && (
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     {/* Seasons */}

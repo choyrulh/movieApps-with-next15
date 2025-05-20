@@ -145,27 +145,28 @@ export const getDetailMovie = async (id: number, params = {}) => {
 
     return response.data;
 
-    // const data = await response.json();
-    // return data;
   } catch (error) {
-    return error;
+    throw new Error('Failed to fetch movie details');
   }
 };
 
 export const getDetailShow = async (id: number, params = {}) => {
   try {
     // const response = await axios.get(`${url}/tv/${id}?api_key=${api_key}`);
-    const response = await fetch(`${url}/tv/${id}?api_key=${api_key}`);
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
+    const response = await axios.get(`${url}/tv/${id}?api_key=${api_key}`, {
+      params: {
+        api_key: api_key,
+        ...params,
+      },
+    });
 
-    const data = await response.json();
-    return data;
+    return response.data;
+
   } catch (error) {
-    return error;
+    throw new Error('Failed to fetch show details');
   }
 };
+
 export const getCastsDetailMovie = async (id: string) => {
   try {
     const response = await axios.get(

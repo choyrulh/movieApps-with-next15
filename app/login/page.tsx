@@ -36,7 +36,7 @@ export default function LoginPage() {
         }
 
         // Jika gagal login, tampilkan error
-        return { error: "Invalid credentials" };
+        return { error: response.message || "Login failed. Please try again." };
       } catch (err) {
         return {
           error:

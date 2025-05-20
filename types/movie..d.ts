@@ -62,3 +62,12 @@ interface Video {
   site: string;
   type: string;
 }
+
+export type Cast = {
+  id: number;
+  name: string;
+  character: string;
+  profile_path: string | null;
+  known_for_department: string;
+  order: number;
+}

@@ -280,7 +280,7 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
               </div>
 
               {/* Tab Content Container */}
-              <div className="transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]">
+              <div className="transition-all duration-300 ease-&lsqb;cubic-bezier(0.4,0,0.2,1)&rsqb;">
                 {/* Financials Tab */}
                 {activeTab === "financials" && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

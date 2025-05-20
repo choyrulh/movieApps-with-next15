@@ -33,6 +33,9 @@ function Watch() {
   const saveIntervalRef = useRef<NodeJS.Timeout>();
   const isSavingRef = useRef(false);
   const [showServerDropdown, setShowServerDropdown] = useState(false);
+  const [isCastExpanded, setIsCastExpanded] = useState(false);
+  
+  
   const {
     data: movie,
     isLoading,
@@ -41,7 +44,7 @@ function Watch() {
     queryKey: ["movie", id],
     queryFn: () =>
       getDetailMovie(id as unknown as number, {
-        append_to_response: "videos",
+        append_to_response: "videos,credits", 
       }),
 
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
@@ -234,6 +237,7 @@ function Watch() {
   //   setSelectedServer(server);
   //   localStorage.setItem("selectedVideoServer", server);
   // };
+  console.log(movie)
 
   return (
     <>
@@ -371,6 +375,58 @@ function Watch() {
               </div>
             </div>
           </div>
+
+          {movie?.credits?.cast && (
+  <div className={`${isFullScreen ? "px-4" : ""} mt-8`}>
+    <div className="max-w-7xl mx-auto">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-xl font-semibold text-gray-200">Cast</h2>
+        {movie.credits.cast.length > 6 && (
+          <button
+            onClick={() => setIsCastExpanded(!isCastExpanded)}
+            className="text-blue-400 hover:text-blue-300 text-sm"
+          >
+            {isCastExpanded ? "Tampilkan Sedikit" : "Lihat Semua"}
+          </button>
+        )}
+      </div>
+      
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+        {movie.credits.cast
+          .slice(0, isCastExpanded ? movie.credits.cast.length : 6)
+          .map((actor: any) => (
+            <div
+              key={actor.id}
+              className="group bg-gray-800 rounded-lg overflow-hidden hover:bg-gray-700/50 transition-colors"
+            >
+              <div className="aspect-[2/3] relative">
+                <Image
+                  src={
+                    actor.profile_path
+                      ? `https://image.tmdb.org/t/p/w300${actor.profile_path}`
+                      : "/no-avatar.png"
+                  }
+                  alt={actor.name}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 640px) 30vw, 15vw"
+                  loading="lazy"
+                />
+              </div>
+              <div className="p-2">
+                <p className="text-sm font-medium text-white truncate">
+                  {actor.name}
+                </p>
+                <p className="text-xs text-gray-400 truncate">
+                  {actor.character}
+                </p>
+              </div>
+            </div>
+          ))}
+      </div>
+    </div>
+  </div>
+)}
         </main>
       </div>
     </>

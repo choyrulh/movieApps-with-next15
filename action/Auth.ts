@@ -16,8 +16,18 @@ export const loginUser = async (
   });
 
   const data = await res.json();
-  if (data.error || data.status === "error") {
-    throw new Error(data.message);
+  if (!res.ok || data.status === "error") {
+    return {
+      status: "error",
+      message: data.message || "Login failed. Please try again.",
+      data: {
+        user: {
+          _id: 0,
+          name: "",
+          email: "",
+        },
+      },
+    };
   }
 
   return data;
