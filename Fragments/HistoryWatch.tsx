@@ -110,25 +110,63 @@ const HistoryTontonan = () => {
     fetchWatchHistory();
   }, [isAuthenticated]); // Jalankan ulang saat status autentikasi berubah
 
-  const handleDelete = async (mediaId: number, e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    if (isAuthenticated) {
-      // Hapus dari API jika terautentikasi
-      await removeRecentlyWatched(mediaId + "");
-    } else {
-      // Hapus dari localStorage jika tidak terautentikasi
-      const localData = localStorage.getItem("watchHistory");
-      if (localData) {
+  const fetchWatchHistory = async () => {
+    try {
+      let data;
+      if (isAuthenticated) {
+        const apiData = await getHistoryWatchUser();
+        data = apiData.history.map((item: any) => ({
+          ...item,
+          id: item.contentId,
+          progress: {
+            percentage: parseFloat(item.progressPercentage),
+            watched: item.durationWatched,
+            duration: item.totalDuration,
+          },
+        }));
+      } else {
+        const localData = localStorage.getItem("watchHistory");
+        if (!localData) {
+          setMediaDataHistory([]);
+          return;
+        }
         const parsedData = JSON.parse(localData);
-        delete parsedData[mediaId];
-        localStorage.setItem("watchHistory", JSON.stringify(parsedData));
+        data = Object.values(parsedData).map((item: any) => {
+          // ... (kode transformasi lokal tetap sama)
+        });
       }
+      setMediaDataHistory(data || []);
+    } catch (error) {
+      console.error("Gagal memuat riwayat tontonan:", error);
+      setMediaDataHistory([]);
     }
-
-    // Update UI
-    setMediaDataHistory((prev) => prev.filter((item) => item.id !== mediaId));
+  };
+  
+  const handleDelete = async (mediaId: string) => {
+    try {
+      if (isAuthenticated) {
+        await removeRecentlyWatched(mediaId);
+      } else {
+        const localData = localStorage.getItem("watchHistory");
+        if (localData) {
+          const parsedData = JSON.parse(localData);
+          delete parsedData[mediaId];
+          localStorage.setItem("watchHistory", JSON.stringify(parsedData));
+        }
+      }
+      
+      // Set state loading sementara
+      setMediaDataHistory(prev => prev.filter(item => 
+        isAuthenticated ? item._id !== mediaId : item.id !== mediaId
+      ));
+      
+      // Lakukan fetch ulang untuk memastikan data benar-benar fresh
+      await fetchWatchHistory();
+    } catch (error) {
+      console.error("Gagal menghapus:", error);
+      // Kembalikan ke state sebelumnya jika error
+      await fetchWatchHistory();
+    }
   };
 
   // Calculate progress percentage
@@ -163,47 +201,49 @@ const HistoryTontonan = () => {
           History Tontonan
         </h2>
         {!isMobile && mediaDataHistory.length > 5 && (
-          <>
-            <div className="relative">
-              <button
-                onClick={() => handleScroll("left")}
-                className=" z-20 bg-gradient-to-r from-gray-800/90 to-transparent rounded-l-md hover:from-gray-700/90 transition-all"
-              >
-                <svg
-                  className="w-6 h-6 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 19l-7-7 7-7"
-                  />
-                </svg>
-              </button>
-              <button
-                onClick={() => handleScroll("right")}
-                className=" z-20 bg-gradient-to-l from-gray-800/90 to-transparent rounded-r-md hover:from-gray-700/90 transition-all"
-              >
-                <svg
-                  className="w-6 h-6 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
-              </button>
-            </div>
-          </>
-        )}
+  <div className="flex gap-2">
+    <button
+      onClick={() => handleScroll("left")}
+      className="z-20 p-2 bg-gray-800/80 hover:bg-gray-700/90 rounded-full transition-all shadow-lg backdrop-blur-sm hover:ring-2 hover:ring-gray-500"
+      aria-label="Scroll left"
+    >
+      <svg
+        className="w-5 h-5 text-white"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M15 19l-7-7 7-7"
+        />
+      </svg>
+    </button>
+    <button
+      onClick={() => handleScroll("right")}
+      className="z-20 p-2 bg-gray-800/80 hover:bg-gray-700/90 rounded-full transition-all shadow-lg backdrop-blur-sm"
+      aria-label="Scroll right"
+    >
+      <svg
+        className="w-5 h-5 text-white"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M9 5l7 7-7 7"
+        />
+      </svg>
+    </button>
+  </div>
+)}
       </div>
 
       <div
@@ -235,7 +275,11 @@ const HistoryTontonan = () => {
             >
               {/* Delete Button */}
               <button
-                onClick={(e) => handleDelete(media.id, e)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  handleDelete(isAuthenticated ? media._id : media.id.toString());
+                }}
                 className={`absolute top-1 right-0 z-10 p-1 bg-black/50 rounded-full hover:bg-black/80 transition-colors ${
                   isMobile ? "opacity-100" : "opacity-0"
                 } group-hover:opacity-100`}
