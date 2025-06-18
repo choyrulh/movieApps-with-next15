@@ -74,7 +74,7 @@ export const PopularityChart = ({ people }: { people: Person[] }) => {
                   y={y}
                   width={barWidth}
                   height={barHeight}
-                  className="fill-purple-500"
+                  className="fill-green-500"
                   rx="4"
                   initial={{ height: 0 }}
                   animate={{ height: barHeight }}
@@ -103,13 +103,13 @@ export const PopularityChart = ({ people }: { people: Person[] }) => {
                 y={0}
                 width="2"
                 height={chartHeight - 40}
-                className="fill-purple-400"
+                className="fill-green-400"
               />
               <circle
                 cx={barWidth / 2}
                 cy={chartHeight - 40 - (people[activeIndex].popularity / maxPopularity) * (chartHeight - 60)}
                 r="4"
-                className="fill-purple-400"
+                className="fill-green-400"
               />
             </g>
           )}
@@ -127,7 +127,7 @@ export const PopularityChart = ({ people }: { people: Person[] }) => {
       {/* Simplified Legend */}
       <div className="mt-4 flex justify-center gap-3">
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded bg-purple-500" />
+          <div className="w-3 h-3 rounded bg-green-500" />
           <span className="text-xs text-gray-300">Popularity Score</span>
         </div>
       </div>

@@ -171,7 +171,7 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
         seoKeywords={movie.genres?.map((genre) => genre.name).join(", ")}
       />
 
-      <div className="min-h-screen bg-slate-900 pb-[5rem]">
+      <div className="min-h-screen pb-[5rem]">
         <main>
           {/* Backdrop Image */}
           <div className="relative h-[100vh] pb-8">
@@ -240,7 +240,7 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
                     {movie.genres.map((genre: Genre) => (
                       <span
                         key={genre.id}
-                        className="px-3 py-1 bg-cyan-500 rounded-full text-sm"
+                        className="px-3 py-1 bg-green-600 rounded-full text-sm"
                       >
                         {genre.name}
                       </span>

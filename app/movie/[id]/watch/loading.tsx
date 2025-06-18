@@ -3,7 +3,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Loading() {
   return (
-    <div className="min-h-screen bg-gray-900 pb-20">
+    <div className="min-h-screen bg-black pb-20">
       <div className="max-w-7xl mx-auto px-4 pt-28 space-y-4 animate-pulse">
         {/* Title Skeleton */}
         <Skeleton className="h-6 w-48 bg-gray-800 rounded-lg" />

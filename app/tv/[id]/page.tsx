@@ -175,7 +175,7 @@ function DetailShow({ params }: { params: Promise<{ id: string }> }) {
         seoKeywords={show.genres?.map((genre) => genre.name).join(", ")}
       />
 
-      <div className="min-h-screen bg-slate-900 pb-[5rem]">
+      <div className="min-h-screen pb-[5rem]">
         <main>
           {/* Backdrop Image */}
           <div className="relative h-[100vh]">

@@ -128,7 +128,7 @@ function Banner({ type }: { type: "movie" | "tv" }) {
 
   if (isError || !data?.results?.length) {
     return (
-      <div className="h-[60vh] md:h-[80vh] flex flex-col items-center justify-center gap-4 bg-slate-900 text-red-400">
+      <div className="h-[60vh] md:h-[80vh] flex flex-col items-center justify-center gap-4 bg-black text-red-400">
         <span className="text-4xl">⚠️</span>
         <p className="text-xl font-medium">Failed to load banner</p>
         <button
@@ -190,7 +190,7 @@ function Banner({ type }: { type: "movie" | "tv" }) {
       onMouseLeave={() => setPauseAutoSlide(false)}
     >
       {/* Progress Bar */}
-      <div className="absolute top-0 left-0 right-0 h-1 z-50 bg-slate-700/50">
+      <div className="absolute top-0 left-0 right-0 h-1 z-50 bg-black/50">
         <motion.div
           className="h-full bg-red-500"
           initial={{ width: 0 }}
@@ -227,7 +227,7 @@ function Banner({ type }: { type: "movie" | "tv" }) {
               className="object-cover"
             />
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
         </motion.div>
       </AnimatePresence>
 
@@ -244,7 +244,7 @@ function Banner({ type }: { type: "movie" | "tv" }) {
           </h1>
 
           <div className="flex items-center gap-4 text-sm md:text-base">
-           <span className="bg-gradient-to-r from-cyan-600 to-blue-500 px-3 py-1 rounded-full text-xs font-bold">
+           <span className="bg-gradient-to-r from-green-600 to-green-400 px-3 py-1 rounded-full text-xs font-bold text-white shadow-lg shadow-green-500/20">
             Trending #{activeIndex + 1}
           </span>
             <div className="flex items-center gap-1">

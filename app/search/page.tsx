@@ -135,12 +135,12 @@ const SearchResultsPage = () => {
         seoDescription={`Discover ${typeSearch} results for "${searchQuery}"`}
         seoKeywords={`search, ${searchQuery}, ${selectedType}`}
       />
-      <div className="min-h-screen bg-slate-900">
+      <div className="min-h-screen">
         {/* Search Header */}
         <motion.div
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="sticky top-0 z-50 bg-slate-800 shadow-xl"
+          className="sticky top-0 z-50 bg-black/90 shadow-xl"
         >
           <div className="container mx-auto px-4 py-6">
             <div className="relative max-w-2xl mx-auto">
@@ -159,8 +159,8 @@ const SearchResultsPage = () => {
                 value={searchQuery}
                 onChange={handleChange}
                 placeholder={`Search ${selectedType}...`}
-                className="w-full pl-10 pr-4 py-3 rounded-lg bg-slate-700 text-white placeholder-slate-400 
-                focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent
+                className="w-full pl-10 pr-4 py-3 rounded-lg bg-[#222222]/50 text-white placeholder-gray-400
+                focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent
                 transition-all duration-200"
                 autoFocus
               />
@@ -169,7 +169,7 @@ const SearchResultsPage = () => {
         </motion.div>
 
         {/* Filter Buttons */}
-        <div className="grid grid-cols-4 gap-2 p-1 bg-slate-700/50 rounded-lg">
+        <div className="grid grid-cols-4 gap-2 p-1 bg-[#111111]/50 rounded-lg">
           {contentTypes.map((type) => {
             const Icon = type.icon;
             const isSelected = selectedType === type.value;
@@ -185,13 +185,13 @@ const SearchResultsPage = () => {
                       transition-all duration-200 gap-2
                       ${
                         isSelected
-                          ? "bg-cyan-500/20 text-cyan-400 shadow-lg"
-                          : "hover:bg-slate-600/50 text-slate-400 hover:text-slate-200"
+                          ? "bg-green-500/20 text-green-400 shadow-lg"
+                          : "hover:bg-green-600/50 text-gray-400 hover:text-green-200"
                       }
                     `}
               >
                 <Icon
-                  className={`h-5 w-5 ${isSelected ? "text-cyan-400" : ""}`}
+                  className={`h-5 w-5 ${isSelected ? "text-green-400" : ""}`}
                 />
                 <span className="text-xs font-medium">{type.label}</span>
               </button>
@@ -208,7 +208,7 @@ const SearchResultsPage = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="text-center py-20 text-slate-400"
+                className="text-center py-20 text-gray-400"
               >
                 <div className="text-4xl mb-4">{typeSearch}</div>
                 <p className="text-xl">{`Start typing to search ${selectedType} `}</p>
@@ -288,7 +288,7 @@ const SearchResultsPage = () => {
               <button
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1 || isLoading}
-                className="p-2 rounded-lg bg-slate-800 text-slate-400 hover:text-cyan-400 
+                className="p-2 rounded-lg bg-slate-800 text-slate-400 hover:text-green-400 
                 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <ChevronLeft className="h-5 w-5" />
@@ -302,8 +302,8 @@ const SearchResultsPage = () => {
                   className={`min-w-[2.5rem] h-10 rounded-lg transition-colors
                   ${
                     pageNum === currentPage
-                      ? "bg-cyan-500/20 text-cyan-400"
-                      : "bg-slate-800 text-slate-400 hover:text-cyan-400"
+                      ? "bg-green-500/20 text-green-400"
+                      : "bg-slate-800 text-slate-400 hover:text-green-400"
                   }
                   disabled:opacity-50 disabled:cursor-not-allowed`}
                 >
@@ -314,7 +314,7 @@ const SearchResultsPage = () => {
               <button
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages || isLoading}
-                className="p-2 rounded-lg bg-slate-800 text-slate-400 hover:text-cyan-400 
+                className="p-2 rounded-lg bg-slate-800 text-slate-400 hover:text-green-400 
                 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <ChevronRight className="h-5 w-5" />

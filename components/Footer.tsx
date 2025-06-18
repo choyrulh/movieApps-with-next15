@@ -101,7 +101,7 @@ const Footer = () => {
               whileInView={{ opacity: 1, x: 0 }}
               className="flex items-center gap-2"
             >
-              <Clapperboard className="w-8 h-8 text-purple-400" />
+              <Clapperboard className="w-8 h-8 text-green-400" />
               <TitleText />
             </motion.div>
             <p className="text-sm text-gray-400">
@@ -171,7 +171,7 @@ const Footer = () => {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="px-6 py-2 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg font-semibold text-white hover:shadow-lg hover:shadow-purple-500/30 transition-all"
+                className="px-6 py-2 bg-gradient-to-r from-green-500 to-blue-500 rounded-lg font-semibold text-white hover:shadow-lg hover:shadow-purple-500/30 transition-all"
               >
                 Subscribe
               </motion.button>

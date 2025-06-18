@@ -53,7 +53,7 @@ const WatchStatistics = ({
             onClick={() => setStatsType("month")}
             className={`px-4 py-2 rounded-lg transition-colors flex items-center gap-2 ${
               statsType === "month"
-                ? "bg-blue-500 text-white"
+                ? "bg-green-500 text-white"
                 : "bg-gray-700 text-gray-300 hover:bg-gray-600"
             }`}
           >
@@ -64,7 +64,7 @@ const WatchStatistics = ({
             onClick={() => setStatsType("week")}
             className={`px-4 py-2 rounded-lg transition-colors flex items-center gap-2 ${
               statsType === "week"
-                ? "bg-blue-500 text-white"
+                ? "bg-green-500 text-white"
                 : "bg-gray-700 text-gray-300 hover:bg-gray-600"
             }`}
           >
@@ -80,7 +80,7 @@ const WatchStatistics = ({
             icon={<Clock size={20} />}
             title="Durasi"
             value={overallData.formattedWatchTime}
-            color="text-blue-400"
+            color="text-green-400"
           />
 
           <StatBox
@@ -148,14 +148,14 @@ const WatchStatistics = ({
                   return (
                     <motion.div
                       key={index}
-                      className="flex-1 bg-blue-500 rounded-t relative transition-all"
+                      className="flex-1 bg-green-500 rounded-t relative transition-all"
                       style={{ height: barHeight }}
                       initial={{ height: 0 }}
                       animate={{ height: barHeight }}
                       transition={{ duration: 0.5, delay: index * 0.1 }}
                     >
                       {/* Label durasi */}
-                      <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs text-blue-300 whitespace-nowrap">
+                      <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs text-green-300 whitespace-nowrap">
                         {formatHours(entry.totalDuration)}
                       </div>
                       
@@ -195,9 +195,9 @@ const WatchStatistics = ({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-gray-700">
           <div className="space-y-4 mt-8">
             <div className="flex items-center gap-2 text-sm">
-              <Clock size={16} className="text-blue-400" />
+              <Clock size={16} className="text-green-400" />
               <span className="font-medium">Waktu Nonton Favorit:</span>
-              <span className="text-blue-400">
+              <span className="text-green-400">
                 {summaryData.favoriteWatchTimes?.[0]?.timeOfDay || "-"}
               </span>
             </div>
@@ -280,7 +280,7 @@ const WatchStatistics = ({
                             activity.progressPercentage >= 90
                               ? "bg-green-500"
                               : activity.progressPercentage >= 50
-                              ? "bg-blue-500"
+                              ? "bg-green-500"
                               : "bg-purple-500"
                           }`}
                           style={{ width: `${activity.progressPercentage}%` }}
@@ -293,7 +293,7 @@ const WatchStatistics = ({
                         activity.progressPercentage >= 100
                           ? "bg-green-500/20 text-green-400"
                           : activity.progressPercentage >= 90
-                          ? "bg-blue-500/20 text-blue-400"
+                          ? "bg-green-500/20 text-green-400"
                           : activity.progressPercentage >= 50
                           ? "bg-yellow-500/20 text-yellow-400"
                           : "bg-gray-500/20 text-gray-400"
@@ -361,7 +361,7 @@ const WatchStatistics = ({
                     <span className="text-md font-semibold text-green-400">
                       {summaryData.completionRate || 0}% Tuntas
                     </span>
-                    <span className="text-md font-semibold text-blue-400">
+                    <span className="text-md font-semibold text-green-400">
                       {100 - (summaryData.completionRate || 0)}% Progress
                     </span>
                   </div>
@@ -375,7 +375,7 @@ const WatchStatistics = ({
                     style={{
                       width: `${100 - (summaryData.completionRate || 0)}%`,
                     }}
-                    className="bg-blue-500 shadow-none flex flex-col justify-center"
+                    className="bg-green-500 shadow-none flex flex-col justify-center"
                   />
                 </div>
               </div>
@@ -401,7 +401,7 @@ const WatchStatistics = ({
                     <span className="text-xs font-semibold text-green-400">
                       {summaryData.completionRate || 0}% Tuntas
                     </span>
-                    <span className="text-xs font-semibold text-blue-400">
+                    <span className="text-xs font-semibold text-green-400">
                       {100 - (summaryData.completionRate || 0)}% Progress
                     </span>
                   </div>
@@ -413,7 +413,7 @@ const WatchStatistics = ({
                   />
                   <div
                     style={{ width: `${100 - (summaryData.completionRate || 0)}%` }}
-                    className="bg-blue-500 shadow-none flex flex-col justify-center"
+                    className="bg-green-500 shadow-none flex flex-col justify-center"
                   />
                 </div>
               </div>

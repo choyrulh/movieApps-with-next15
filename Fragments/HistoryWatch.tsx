@@ -184,7 +184,7 @@ const HistoryTontonan = () => {
   const handleScroll = (direction: "left" | "right") => {
     const container = scrollContainerRef.current;
     if (container) {
-      const scrollAmount = container.children[0]?.clientWidth + 16; // item width + gap (1rem = 16px)
+      const scrollAmount = container.children[0]?.clientWidth + 512; // item width + gap (1rem = 16px)
       container.scrollBy({
         left: direction === "left" ? -scrollAmount : scrollAmount,
         behavior: "smooth",
@@ -201,48 +201,48 @@ const HistoryTontonan = () => {
           History Tontonan
         </h2>
         {!isMobile && mediaDataHistory.length > 5 && (
-  <div className="flex gap-2">
-    <button
-      onClick={() => handleScroll("left")}
-      className="z-20 p-2 bg-gray-800/80 hover:bg-gray-700/90 rounded-full transition-all shadow-lg backdrop-blur-sm hover:ring-2 hover:ring-gray-500"
-      aria-label="Scroll left"
+  <div className="flex gap-4">
+  <button
+    onClick={() => handleScroll("left")}
+    className="z-20 p-3 bg-black/70 hover:bg-black/90 rounded-full transition-all duration-300 shadow-lg backdrop-blur-sm hover:scale-110 active:scale-95 transform hover:shadow-xl group"
+    aria-label="Scroll left"
+  >
+    <svg
+      className="w-6 h-6 text-white group-hover:text-amber-400 transition-colors duration-200"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
     >
-      <svg
-        className="w-5 h-5 text-white"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M15 19l-7-7 7-7"
-        />
-      </svg>
-    </button>
-    <button
-      onClick={() => handleScroll("right")}
-      className="z-20 p-2 bg-gray-800/80 hover:bg-gray-700/90 rounded-full transition-all shadow-lg backdrop-blur-sm"
-      aria-label="Scroll right"
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2.5}
+        d="M15 19l-7-7 7-7"
+      />
+    </svg>
+  </button>
+  <button
+    onClick={() => handleScroll("right")}
+    className="z-20 p-3 bg-black/70 hover:bg-black/90 rounded-full transition-all duration-300 shadow-lg backdrop-blur-sm hover:scale-110 active:scale-95 transform hover:shadow-xl group"
+    aria-label="Scroll right"
+  >
+    <svg
+      className="w-6 h-6 text-white group-hover:text-amber-400 transition-colors duration-200"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
     >
-      <svg
-        className="w-5 h-5 text-white"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M9 5l7 7-7 7"
-        />
-      </svg>
-    </button>
-  </div>
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2.5}
+        d="M9 5l7 7-7 7"
+      />
+    </svg>
+  </button>
+</div>
 )}
       </div>
 
@@ -271,7 +271,7 @@ const HistoryTontonan = () => {
             <Link
               href={`/${media.type}/${media.id || media.contentId}/watch`}
               key={uniqueKey}
-              className="flex-shrink-0 w-48 bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 relative group"
+              className="flex-shrink-0 w-48 bg-black rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 relative group"
             >
               {/* Delete Button */}
               <button
@@ -340,7 +340,7 @@ const HistoryTontonan = () => {
               <div className="p-2">
                 <div className="w-full bg-gray-700 rounded-full h-1.5 overflow-hidden">
                   <div
-                    className="bg-blue-500 rounded-full h-full transition-all duration-300"
+                    className="bg-green-500 rounded-full h-full transition-all duration-300"
                     style={{
                       width: `${progressPercentage}%`,
                       minWidth: "2px",

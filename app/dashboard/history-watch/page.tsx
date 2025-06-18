@@ -196,7 +196,7 @@ export default function Page() {
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <div className="flex items-center gap-4">
-            <div className="p-3 rounded-full bg-blue-500/85">
+            <div className="p-3 rounded-full bg-green-500/85">
               <Clock className="w-8 h-8 text-white" />
             </div>
             <div>

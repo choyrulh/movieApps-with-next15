@@ -133,7 +133,7 @@ export const ProfileDropDown = ({ props, onCloseMenu }: any) => {
             }
           `}
         >
-          <ul className="bg-slate-900/95 backdrop-blur-sm border border-slate-700/50 rounded-lg shadow-xl overflow-hidden">
+          <ul className="bg-[#111111]/95 backdrop-blur-sm border border-slate-700/50 rounded-lg shadow-xl overflow-hidden">
             {navigation.map((item, idx) => (
               <li
                 key={idx}
@@ -151,14 +151,14 @@ export const ProfileDropDown = ({ props, onCloseMenu }: any) => {
               >
                 {item.title === "Log out" ? (
                   <button
-                    className="block px-4 py-2 text-gray-200 transition-colors duration-200 hover:bg-slate-800/80 text-left w-full"
+                    className="block px-4 py-2 text-gray-200 transition-colors duration-200 hover:bg-[#111111]/80 text-left w-full"
                     onClick={handleLogout}
                   >
                     {item.title}
                   </button>
                 ) : (
                   <Link
-                    className="block px-4 py-2 text-gray-200 transition-colors duration-200 hover:bg-slate-800/80 w-full"
+                    className="block px-4 py-2 text-gray-200 transition-colors duration-200 hover:bg-[#111111]/80 w-full"
                     href={item.path}
                     onClick={() => setState(false)}
                   >

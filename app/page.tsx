@@ -100,13 +100,13 @@ export default function Home() {
           <DropdownGenre />
           {genresId && (
             <button
-              onClick={() => {
-                setSelectedGenresId(null), setAllMovies([]);
-              }}
-              className="text-slate-400"
-            >
-              Cancel
-            </button>
+            onClick={() => {
+              setSelectedGenresId(null), setAllMovies([]);
+            }}
+            className="text-green-400"
+          >
+            Cancel
+          </button>
           )}
         </div>
         <div>
@@ -127,13 +127,13 @@ export default function Home() {
                 ))}
               </div>
               <div className="flex justify-center mt-8">
-                <Button
-                  type="button"
-                  onClick={() => {
-                    setPage((prev) => prev + 1);
-                  }}
-                  className="px-6 py-2 bg-cyan-500 hover:bg-cyan-600 rounded-lg text-white font-semibold transition-colors"
-                >
+              <Button
+                type="button"
+                onClick={() => {
+                  setPage((prev) => prev + 1);
+                }}
+                className="px-6 py-2 bg-green-600 hover:bg-green-700 rounded-lg text-white font-semibold transition-colors"
+              >
                   {isLoading ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" /> loading

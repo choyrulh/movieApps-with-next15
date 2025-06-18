@@ -80,12 +80,12 @@ export default function DashboardLayout({
   ];
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
+    <div className="min-h-screen text-white">
       {/* Sidebar */}
       <div
         className={`fixed inset-y-0 left-0 ${
           isSidebarOpen ? "w-64" : "w-16"
-        } bg-black transition-all duration-300 ease-in-out`}
+        } bg-[#070707] transition-all duration-300 ease-in-out`}
       >
         <div className="flex flex-col h-full">
           <div className="p-4 flex items-center justify-center">
@@ -112,8 +112,8 @@ export default function DashboardLayout({
                   href={item.href}
                   className={`flex items-center px-4 py-3 text-sm rounded-lg ${
                     item.current
-                      ? "bg-blue-500/85 text-white"
-                      : "text-gray-400 hover:bg-gray-800"
+                      ? "bg-green-500/85 text-white"
+                      : "text-gray-400 hover:bg-green-800"
                   }`}
                 >
                   <item.icon className="w-5 h-5" />
@@ -131,7 +131,7 @@ export default function DashboardLayout({
             {!isMobile && (
               <button
                 onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                className="flex items-center p-3 text-sm rounded-lg text-gray-400 hover:bg-gray-800 transition-colors"
+                className="flex items-center p-3 text-sm rounded-lg text-gray-400 hover:bg-green-800 transition-colors"
               >
                 {isSidebarOpen ? (
                   <ChevronLeft className="w-5 h-5" />
@@ -143,7 +143,7 @@ export default function DashboardLayout({
 
             <button
               onClick={handleLogout}
-              className="flex items-center p-3 text-sm rounded-lg text-gray-400 hover:bg-gray-800 w-full"
+              className="flex items-center p-3 text-sm rounded-lg text-gray-400 hover:bg-green-800 w-full"
             >
               <LogOut className="w-5 h-5" />
               <span className={`ml-3 ${isSidebarOpen ? "inline" : "hidden"}`}>

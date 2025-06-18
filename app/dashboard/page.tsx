@@ -24,11 +24,11 @@ export default function DashboardIntro() {
           transition={{ duration: 0.5 }}
           className="text-center space-y-6"
         >
-          <div className="inline-block bg-gradient-to-r from-blue-500 to-purple-500 p-2 rounded-full">
+          <div className="inline-block bg-green-500 p-2 rounded-full">
             <Clapperboard className="w-12 h-12 text-white" />
           </div>
           
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-green-500 to-green-600 bg-clip-text text-transparent">
             Selamat Datang di SlashVerse!
           </h1>
           

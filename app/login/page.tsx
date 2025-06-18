@@ -57,11 +57,11 @@ export default function LoginPage() {
         seoKeywords="login, movies, tv shows"
       />
 
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-950 to-black flex items-center justify-center p-4">
+      <div className="min-h-screen flex items-center justify-center p-4">
         <div className="w-full max-w-md">
           <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 shadow-2xl">
             <div className="text-center mb-8">
-              <div className="inline-block p-4 bg-indigo-600 rounded-full mb-4">
+              <div className="inline-block p-4 bg-green-600 rounded-full mb-4">
                 <LogIn className="w-8 h-8 text-white" />
               </div>
               <h2 className="text-3xl font-bold text-white mb-2">
@@ -90,7 +90,7 @@ export default function LoginPage() {
                     id="email"
                     name="email"
                     type="email"
-                    className="w-full bg-white/5 border border-gray-800 rounded-lg py-3 pl-12 pr-4 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent"
+                    className="w-full bg-white/5 border border-gray-800 rounded-lg py-3 pl-12 pr-4 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent"
                     placeholder="Enter your email"
                     required
                   />
@@ -110,7 +110,7 @@ export default function LoginPage() {
                     id="password"
                     name="password"
                     type="password"
-                    className="w-full bg-white/5 border border-gray-800 rounded-lg py-3 pl-12 pr-4 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent"
+                    className="w-full bg-white/5 border border-gray-800 rounded-lg py-3 pl-12 pr-4 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent"
                     placeholder="Enter your password"
                     required
                   />
@@ -120,7 +120,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={isPending}
-                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-200 ease-in-out transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-200 ease-in-out transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isPending ? "Signing in..." : "Sign In"}
               </button>
@@ -131,7 +131,7 @@ export default function LoginPage() {
                 Don't have an account?{" "}
                 <Link
                   href="/register"
-                  className="text-indigo-400 hover:text-indigo-300 font-medium"
+                  className="text-green-400 hover:text-green-300 font-medium"
                 >
                   Sign up
                 </Link>

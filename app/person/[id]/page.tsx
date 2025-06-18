@@ -104,8 +104,8 @@ const PersonDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
               <BiographySection biography={personData?.biography} />
 
               <div className="flex gap-4">
-                <div className="bg-purple-100 dark:bg-purple-900/30 px-4 py-2 rounded-full">
-                  <span className="text-purple-600 dark:text-purple-400 font-semibold">
+                <div className="bg-green-100 dark:bg-green-900/30 px-4 py-2 rounded-full">
+                  <span className="text-green-600 dark:text-green-400 font-semibold">
                     Popularity: {Math.round(personData?.popularity)}
                   </span>
                 </div>
@@ -137,7 +137,7 @@ const PersonDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
                   }
                   className={`px-6 py-2 text-lg font-medium ${
                     activeTab === tab
-                      ? "border-b-2 border-purple-600 text-purple-600 dark:text-purple-400"
+                      ? "border-b-2 border-green-600 text-green-600 dark:text-green-400"
                       : "text-gray-600 dark:text-gray-400 hover:text-white dark:hover:text-gray-200"
                   }`}
                 >
@@ -187,7 +187,7 @@ const PersonDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
                           as {credit.character || " - "}
                         </p>
                         <div className="mt-2 flex items-center justify-between">
-                          <span className="text-sm text-purple-600 dark:text-purple-400">
+                          <span className="text-sm text-green-600 dark:text-green-400">
                             {credit.media_type === "movie"
                               ? "🎬 Movie"
                               : "📺 TV Show"}

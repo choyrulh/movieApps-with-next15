@@ -1,16 +1,16 @@
 "use client";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+// import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import Link from "next/link";
 import { useState, useRef, useEffect, memo, useCallback } from "react";
-import { Skeleton } from "./skeleton";
+// import { Skeleton } from "./skeleton";
 import { usePathname, useRouter } from "next/navigation";
 import { BookmarkPlus, Clapperboard, ChevronDown } from "lucide-react";
 import useIsMobile from "@/hook/useIsMobile";
 import { TitleText } from "./../TitleText";
-import { logoutUser } from "@/action/Auth";
-import { useAuth } from "@/context/AuthContext";
-import { useUserProfile } from "@/hook/useUserProfile";
+// import { logoutUser } from "@/action/Auth";
+// import { useAuth } from "@/context/AuthContext";
+// import { useUserProfile } from "@/hook/useUserProfile";
 import {ProfileDropDown} from "@/components/common/ProfileDropdown"
  
 const MemoizedBookmarkIcon = memo(BookmarkPlus);
@@ -75,7 +75,7 @@ export const Navbar = () => {
           pathname === "/search" || pathname.endsWith("/watch") ? "relative" : "fixed"
         } left-0 right-0 z-[100] ${
           isScrolled
-            ? "bg-slate-900/95 backdrop-blur-sm shadow-xl"
+            ? "bg-[#111111]/60 backdrop-blur-sm shadow-xl"
             : "bg-transparent bg-opacity-50"
         } ${
           ["/login", "/register"].includes(pathname) || pathname.startsWith("/dashboard") ? "hidden" : "block"
@@ -84,7 +84,7 @@ export const Navbar = () => {
         <div className="flex items-center space-x-8 py-3 px-4 max-w-screen-xl mx-auto md:px-8">
           <div className="flex-1 flex items-center justify-between">
             <Link href={"/"} className="flex items-center gap-2">
-              <Clapperboard className="w-8 h-8 text-purple-400" />
+              <Clapperboard className="w-8 h-8 text-green-600" />
               <TitleText />
             </Link>
             <div
@@ -98,7 +98,7 @@ export const Navbar = () => {
             >
               <ul className="space-y-5 lg:flex lg:space-x-6 lg:space-y-0 lg:mt-0 items-center">
                 {navigation.map((item, idx) => (
-                  <li key={idx} className="text-gray-400 hover:text-gray-100">
+                  <li key={idx} className="text-gray-300 hover:text-white">
                     {item.children ? (
                       <div
                         className=" relative flex flex-col items-end"
@@ -162,7 +162,7 @@ export const Navbar = () => {
                                       setMenuState(false);
                                       setActiveDropdown(null);
                                     }}
-                                    className="block text-gray-400 hover:text-gray-100 py-1"
+                                    className="block text-gray-300 hover:text-white py-1"
                                   >
                                     {child.title}
                                   </Link>
@@ -183,7 +183,7 @@ export const Navbar = () => {
                             }
                           `}
                           >
-                            <ul className="bg-slate-900/95 backdrop-blur-sm border border-slate-700/50 rounded-lg p-2 shadow-xl min-w-[160px] space-y-1">
+                            <ul className="bg-black/95 backdrop-blur-sm border border-gray-800 rounded-lg p-2 shadow-xl min-w-[160px] space-y-1">
                               {item.children.map((child, childIdx) => (
                                 <li key={childIdx}>
                                   <Link
@@ -192,7 +192,7 @@ export const Navbar = () => {
                                       setMenuState(false);
                                       setActiveDropdown(null);
                                     }}
-                                    className="block px-3 py-2 text-gray-400 hover:text-gray-100 rounded-md transition-colors duration-200 hover:bg-slate-800/80 whitespace-nowrap"
+                                    className="block px-3 py-2 text-gray-300 hover:text-white rounded-md transition-colors duration-200 hover:bg-[#101010] whitespace-nowrap"
                                   >
                                     {child.title}
                                   </Link>
@@ -206,7 +206,7 @@ export const Navbar = () => {
                       <Link
                         href={item.path}
                         onClick={handleCloseMenu}
-                        className="block text-gray-400 hover:text-gray-100 py-1"
+                        className="block text-gray-300 hover:text-white py-1"
                       >
                         {item.title}
                       </Link>
@@ -215,7 +215,7 @@ export const Navbar = () => {
                 ))}
               </ul>
               <ProfileDropDown
-                props={`mt-5 pt-5 border-t lg:hidden ${
+                props={`mt-5 pt-5 border-t border-gray-800 lg:hidden ${
                   isMobile ? "justify-self-end" : "unset"
                 }`}
                 onCloseMenu={handleCloseMenu}
@@ -223,11 +223,11 @@ export const Navbar = () => {
             </div>
             <div className="flex-1 flex items-center justify-end space-x-2 sm:space-x-6">
               <Link href={"/watch-list"} prefetch={false}>
-                <MemoizedBookmarkIcon className="w-6 h-6 text-gray-400" />
+                <MemoizedBookmarkIcon className="w-6 h-6 text-gray-300 hover:text-white" />
               </Link>
               <ProfileDropDown props="hidden lg:block" />
               <button
-                className="outline-none text-gray-400 block lg:hidden"
+                className="outline-none text-gray-300 hover:text-white block lg:hidden"
                 onClick={() => setMenuState(!menuState)}
               >
                 {menuState ? (

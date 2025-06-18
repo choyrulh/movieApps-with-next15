@@ -22,7 +22,7 @@ const FavoriteCard = ({
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="relative bg-gray-900 rounded-xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 ease-out group"
+      className="relative rounded-xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 ease-out group"
     >
       <div className="relative aspect-[2/3]">
         <Image
@@ -75,7 +75,7 @@ const FavoriteCard = ({
           </Link>
           <Link
             href={`/${movie.type}/${movie.itemId}/watch`}
-            className="p-2 sm:p-2.5 bg-blue-500/85 hover:bg-blue-600 rounded-lg transition-colors flex items-center justify-center"
+            className="p-2 sm:p-2.5 bg-green-500/85 hover:bg-green-600 rounded-lg transition-colors flex items-center justify-center"
           >
             <Play className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
           </Link>

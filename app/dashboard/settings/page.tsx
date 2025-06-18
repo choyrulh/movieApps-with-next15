@@ -194,7 +194,7 @@ export default function Page() {
                   </div>
                   <button
                     onClick={handleChangeAvatar}
-                    className="absolute bottom-0 right-0 bg-blue-500 p-2 rounded-full text-white"
+                    className="absolute bottom-0 right-0 bg-green-500 p-2 rounded-full text-white"
                   >
                     <Edit size={16} />
                   </button>
@@ -219,7 +219,7 @@ export default function Page() {
                     onChange={(e) =>
                       setProfileData({ ...data?.data, name: e.target.value })
                     }
-                    className="w-full bg-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-green-500"
                   />
                 </div>
 
@@ -233,7 +233,7 @@ export default function Page() {
                     onChange={(e) =>
                       setProfileData({ ...data?.data, email: e.target.value })
                     }
-                    className="w-full bg-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-green-500"
                   />
                 </div>
 
@@ -250,7 +250,7 @@ export default function Page() {
                         bio: e.target.value,
                       })
                     }
-                    className="w-full bg-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-green-500"
                   />
                 </div>
               </div>
@@ -265,7 +265,7 @@ export default function Page() {
               </button>
               <button
                 onClick={handleProfileSave}
-                className="px-4 py-2 bg-blue-500 rounded-lg text-white hover:bg-blue-600 transition"
+                className="px-4 py-2 bg-green-500 rounded-lg text-white hover:bg-green-600 transition"
               >
                 Simpan
               </button>
@@ -317,7 +317,7 @@ export default function Page() {
                 onChange={(e) =>
                   handlePasswordChange("current", e.target.value)
                 }
-                className="w-full bg-gray-700 rounded-lg px-4 py-2 text-white pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full bg-gray-700 rounded-lg px-4 py-2 text-white pr-10 focus:outline-none focus:ring-2 focus:ring-green-500"
               />
               <button
                 type="button"
@@ -347,7 +347,7 @@ export default function Page() {
                 type={showPassword.new ? "text" : "password"}
                 value={password.new}
                 onChange={(e) => handlePasswordChange("new", e.target.value)}
-                className="w-full bg-gray-700 rounded-lg px-4 py-2 text-white pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full bg-gray-700 rounded-lg px-4 py-2 text-white pr-10 focus:outline-none focus:ring-2 focus:ring-green-500"
               />
               <button
                 type="button"
@@ -372,7 +372,7 @@ export default function Page() {
                 onChange={(e) =>
                   handlePasswordChange("confirm", e.target.value)
                 }
-                className="w-full bg-gray-700 rounded-lg px-4 py-2 text-white pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full bg-gray-700 rounded-lg px-4 py-2 text-white pr-10 focus:outline-none focus:ring-2 focus:ring-green-500"
               />
               <button
                 type="button"
@@ -396,7 +396,7 @@ export default function Page() {
           <div className="flex justify-end">
             <button
               type="submit"
-              className="px-4 py-2 bg--500 rounded-lg text-white hover:bg-blue-600 transition"
+              className="px-4 py-2 bg--500 rounded-lg text-white hover:bg-green-600 transition"
               disabled={!password.current || !password.new || !password.confirm}
             >
               Update Password
@@ -409,12 +409,12 @@ export default function Page() {
       <SectionContainer>
         <SectionHeading icon={<CreditCard size={20} />} title="Berlangganan" />
 
-        <div className="bg-gradient-to-r from-blue-900 to-blue-600 rounded-lg p-4 mb-6">
+        <div className="bg-gradient-to-r from-green-900 to-green-600 rounded-lg p-4 mb-6">
           <div className="flex justify-between items-center mb-2">
             <span className="text-lg font-semibold">
               Paket {userData.subscription.plan}
             </span>
-            <span className="bg-white text-blue-600 px-2 py-1 rounded-full text-xs font-bold">
+            <span className="bg-white text-green-600 px-2 py-1 rounded-full text-xs font-bold">
               AKTIF
             </span>
           </div>
@@ -479,7 +479,7 @@ export default function Page() {
               <select
                 value={preferences.language}
                 onChange={(e) => handleLanguageChange(e.target.value)}
-                className="bg-gray-700 rounded-lg px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="bg-gray-700 rounded-lg px-3 py-1 focus:outline-none focus:ring-2 focus:ring-green-500"
               >
                 {languages.map((lang) => (
                   <option key={lang} value={lang}>
@@ -497,7 +497,7 @@ export default function Page() {
               <select
                 value={preferences.subtitleLanguage}
                 onChange={(e) => handleSubtitleLanguageChange(e.target.value)}
-                className="bg-gray-700 rounded-lg px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="bg-gray-700 rounded-lg px-3 py-1 focus:outline-none focus:ring-2 focus:ring-green-500"
               >
                 {languages.map((lang) => (
                   <option key={lang} value={lang}>
@@ -576,7 +576,7 @@ export default function Page() {
                 onClick={() => handleGenreToggle(genre)}
                 className={`px-3 py-1 rounded-full text-sm transition ${
                   data?.data?.preferences?.favoriteGenres?.includes(genre.name)
-                    ? "bg-blue-500 text-white"
+                    ? "bg-green-500 text-white"
                     : "bg-gray-700 text-gray-300 hover:bg-gray-600"
                 }`}
               >
@@ -594,7 +594,7 @@ export default function Page() {
                 key={level}
                 className={`px-4 py-2 rounded-lg text-sm transition ${
                   data?.data?.preferences?.maturityRating === level
-                    ? "bg-blue-500 text-white"
+                    ? "bg-green-500 text-white"
                     : "bg-gray-700 text-gray-300 hover:bg-gray-600"
                 }`}
               >
@@ -672,7 +672,7 @@ const SectionHeading = ({
   title: string;
 }) => (
   <div className="flex items-center space-x-2 mb-4">
-    <div className="text-blue-500">{icon}</div>
+    <div className="text-green-500">{icon}</div>
     <h2 className="text-lg font-semibold">{title}</h2>
   </div>
 );
@@ -686,7 +686,7 @@ const ToggleSwitch = ({
 }) => (
   <div
     className={`relative w-12 h-6 rounded-full transition-colors duration-300 cursor-pointer ${
-      isChecked ? "bg-blue-500" : "bg-gray-600"
+      isChecked ? "bg-green-500" : "bg-gray-600"
     }`}
     onClick={onChange}
   >

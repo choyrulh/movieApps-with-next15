@@ -59,7 +59,7 @@ export default function page() {
         seoKeywords="statistik, histori, tontonan"
       />
 
-      <div className="min-h-screen bg-gray-900 text-white">
+      <div className="min-h-screen bg-black text-white">
         {/* Main Content */}
         <div className="px-4 md:px-8 py-6">
           <motion.div
@@ -111,7 +111,7 @@ export default function page() {
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-semibold">Baru Ditonton</h2>
                 <Link href="/dashboard/history-watch" legacyBehavior>
-                  <a className="text-sm text-blue-500/85 hover:underline">
+                  <a className="text-sm text-green-500/85 hover:underline">
                     Lihat Semua
                   </a>
                 </Link>
@@ -127,7 +127,7 @@ export default function page() {
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-semibold">Daftar Lihat</h2>
                 <Link href="/dashboard/watchlist" legacyBehavior>
-                  <a className="text-sm text-blue-500/85 hover:underline">
+                  <a className="text-sm text-green-500/85 hover:underline">
                     Lihat Semua
                   </a>
                 </Link>
@@ -143,7 +143,7 @@ export default function page() {
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-semibold">Film Favorit</h2>
                 <Link href="/dashboard/favorite" legacyBehavior>
-                  <a className="text-sm text-blue-500/85 hover:underline">
+                  <a className="text-sm text-green-500/85 hover:underline">
                     Lihat Semua
                   </a>
                 </Link>
@@ -189,7 +189,7 @@ const RecentMovieCard = ({ movie }: { movie: any }) => {
             </div>
             <div className="mt-2 bg-gray-700 h-1 rounded-full w-full">
               <div
-                className="bg-blue-500/85 h-1 rounded-full"
+                className="bg-green-500/85 h-1 rounded-full"
                 style={{ width: `${movie.progressPercentage}%` }}
               ></div>
             </div>
@@ -277,7 +277,7 @@ const StatCard = ({
     transition={{ duration: 0.2 }}
   >
     <div className="flex items-center space-x-4">
-      <div className="bg-blue-500/20 p-3 rounded-full text-blue-500">
+      <div className="bg-green-500/20 p-3 rounded-full text-green-500">
         {icon}
       </div>
       <div>

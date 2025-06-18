@@ -16,7 +16,7 @@ const TrailerModal = ({ videoKey }: TrailerModalProps) => {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="px-4 py-2 bg-cyan-500 hover:bg-cyan-600 rounded-lg text-white font-semibold flex items-center gap-2"
+        className="px-4 py-2 bg-green-800 hover:bg-green-700 rounded-lg text-white font-semibold flex items-center gap-2"
       >
         <TvMinimalPlay /> Trailer
       </button>

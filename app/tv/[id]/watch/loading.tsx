@@ -3,7 +3,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Loading() {
   return (
-    <div className="min-h-screen bg-gray-900 text-white pb-20">
+    <div className="min-h-screen bg-black text-white pb-20">
       <div className="mx-auto px-4 pt-8">
         {/* Header Skeleton */}
         <div className="flex flex-col lg:flex-row gap-8 mb-8">

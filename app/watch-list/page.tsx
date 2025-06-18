@@ -65,7 +65,7 @@ const WatchlistPage = () => {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-3 rounded-xl font-semibold shadow-lg"
+                  className="bg-gradient-to-r from-green-600 to-green-600 text-white px-8 py-3 rounded-xl font-semibold shadow-lg"
                 >
                   Explore Content
                 </motion.button>
@@ -80,7 +80,7 @@ const WatchlistPage = () => {
                       animate={{ x: 0 }}
                       className="text-2xl font-bold text-slate-300 dark:text-white flex items-center gap-2"
                     >
-                      <span className="bg-purple-600 w-2 h-8 rounded"></span>
+                      <span className="bg-green-600 w-2 h-8 rounded"></span>
                       Movies ({movies.length})
                     </motion.h2>
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
@@ -106,7 +106,7 @@ const WatchlistPage = () => {
                       animate={{ x: 0 }}
                       className="text-2xl font-bold text-slate-300 dark:text-white flex items-center gap-2"
                     >
-                      <span className="bg-teal-600 w-2 h-8 rounded"></span>
+                      <span className="bg-green-600 w-2 h-8 rounded"></span>
                       TV Shows ({tvShows.length})
                     </motion.h2>
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
@@ -132,7 +132,7 @@ const WatchlistPage = () => {
                       animate={{ x: 0 }}
                       className="text-2xl font-bold text-slate-300 dark:text-white flex items-center gap-2"
                     >
-                      <span className="bg-pink-500 w-2 h-8 rounded"></span>
+                      <span className="bg-green-600 w-2 h-8 rounded"></span>
                       Favorite Stars ({people.length})
                     </motion.h2>
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 gap-4">
@@ -220,12 +220,12 @@ const PersonCard = ({ person, remove }: any) => (
         {/* Content section */}
         <div className="relative p-6 pt-5">
           {/* Name with gradient effect */}
-          <h3 className="text-2xl font-bold mb-3 bg-clip-text text-transparent bg-gradient-to-r from-white via-pink-200 to-purple-200">
+          <h3 className="text-2xl font-bold mb-3 bg-clip-text text-transparent bg-gradient-to-r from-white via-pink-200 to-green-200">
             {person.name}
           </h3>
 
           {/* Role badge */}
-          <div className="inline-flex items-center px-3 py-1 mb-4 bg-purple-600/80 border border-purple-600/20 rounded-full">
+          <div className="inline-flex items-center px-3 py-1 mb-4 bg-green-600/80 border border-green-600/20 rounded-full">
             <Award className="w-4 h-4 mr-2 text-pink-400" />
             <span className="text-sm font-medium text-pink-200">
               {person.known_for_department}
@@ -270,7 +270,7 @@ const MediaCard = ({ item, remove, type }: any) => (
           {item.title || item.name}
         </h3>
         <div className="flex justify-between items-center mt-2 text-sm">
-          <span className="bg-purple-600/80 px-2 py-1 rounded-md">
+          <span className="bg-green-600/80 px-2 py-1 rounded-md">
             {type === "movie" ? "🎬 Movie" : "📺 TV Show"}
           </span>
           <span className="text-gray-300">

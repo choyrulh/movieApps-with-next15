@@ -93,7 +93,7 @@ const HighlightPerson = ({ person }: { person: Person }) => {
             <StatBox
               label="Popularity"
               value={person.popularity.toFixed(0)}
-              color="purple"
+              color="green"
             />
             <StatBox
               label="Department"
@@ -124,7 +124,7 @@ const PersonCard = memo(
       <motion.div
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="bg-gray-800 rounded-lg border border-gray-700 hover:border-purple-500/40 transition-all"
+        className="bg-gray-800 rounded-lg border border-gray-700 hover:border-green-500/40 transition-all"
       >
         <div className="p-3 space-y-3">
           <div className="flex items-center gap-3">
@@ -149,7 +149,7 @@ const PersonCard = memo(
               <h3 className="font-semibold text-gray-100">{person.name}</h3>
               <div className="w-full h-1 bg-gray-700 rounded-full mt-1">
                 <div
-                  className="h-full bg-gradient-to-r from-purple-500 to-blue-500 rounded-full transition-all duration-500"
+                  className="h-full bg-gradient-to-r from-green-500 to-blue-500 rounded-full transition-all duration-500"
                   style={{ width: `${Math.min(person.popularity, 100)}%` }}
                 />
               </div>
@@ -158,7 +158,7 @@ const PersonCard = memo(
 
           {viewMode === "detailed" && (
             <div className="space-y-2">
-              <div className="flex items-center gap-2 text-sm text-purple-400">
+              <div className="flex items-center gap-2 text-sm text-green-400">
                 <span>Top {Math.ceil(person.popularity / 10)}%</span>
               </div>
 
@@ -172,7 +172,7 @@ const PersonCard = memo(
 
           <Link
             href={`/person/${person.id}`}
-            className="flex items-center justify-center gap-1 text-sm text-purple-400 hover:text-purple-300 transition-colors group"
+            className="flex items-center justify-center gap-1 text-sm text-green-400 hover:text-green-300 transition-colors group"
           >
             View Profile
             <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
@@ -202,7 +202,7 @@ const DepartmentButton = memo(
         onClick={() => onClick(dept)}
         className={`px-4 py-2 rounded-full flex items-center gap-2 transition-all border ${
           isSelected
-            ? "bg-gradient-to-r from-purple-500 to-blue-500 text-white border-transparent shadow-lg"
+            ? "bg-gradient-to-r from-green-500 to-blue-500 text-white border-transparent shadow-lg"
             : "bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600"
         }`}
       >
@@ -233,7 +233,7 @@ const DepartmentFilter = ({
             onClick={() => setSelected(dept === selected ? "" : dept)}
             className={`px-3 py-1.5 text-sm rounded-full transition-colors ${
               selected === dept
-                ? "bg-purple-600/90 text-white"
+                ? "bg-green-600/90 text-white"
                 : "bg-gray-700/50 text-gray-300 hover:bg-gray-700"
             }`}
           >
@@ -260,7 +260,7 @@ const ViewToggle = memo(
         onClick={() => setViewMode("simple")}
         className={`px-4 py-2 rounded-full flex items-center gap-2 text-sm transition-colors ${
           viewMode === "simple"
-            ? "bg-gray-700 text-purple-400"
+            ? "bg-gray-700 text-green-400"
             : "text-gray-400 hover:bg-gray-700/50"
         }`}
       >
@@ -331,7 +331,7 @@ export default function PopularPeoplePage() {
         seoKeywords="popular actors, famous movie stars, best Hollywood actors, trending film stars, award-winning actors, top movie stars, rising actors in film"
       />
 
-      <div className="min-h-screen bg-gray-900 p-4 md:p-6 ">
+      <div className="min-h-screen p-4 md:p-6 ">
         <div className="max-w-7xl mx-auto space-y-6 md:space-y-8 pt-[5rem]">
           {allPeople.length > 0 && <HighlightPerson person={allPeople[0]} />}
 
@@ -349,7 +349,7 @@ export default function PopularPeoplePage() {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
               <h2 className="text-lg md:text-xl font-bold text-gray-100">
                 {selectedDepartment || "All"} Stars
-                <span className="text-purple-400 ml-2">
+                <span className="text-green-400 ml-2">
                   ({filteredPeople.length})
                 </span>
               </h2>
@@ -372,7 +372,7 @@ export default function PopularPeoplePage() {
               <button
                 onClick={() => fetchNextPage()}
                 disabled={!hasNextPage || isFetchingNextPage}
-                className="px-5 py-2 bg-purple-600 hover:bg-purple-700 text-gray-100 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                className="px-5 py-2 bg-green-600 hover:bg-green-700 text-gray-100 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
               >
                 {isFetchingNextPage ? (
                   <>
@@ -397,7 +397,7 @@ export default function PopularPeoplePage() {
 const LoadingSkeleton = () => (
   <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-8">
     <div className="max-w-7xl mx-auto space-y-8">
-      <div className="h-96 bg-gradient-to-r from-purple-500/10 to-blue-500/10 rounded-2xl animate-pulse border border-dashed border-gray-300 dark:border-gray-700" />
+      <div className="h-96 bg-gradient-to-r from-green-500/10 to-blue-500/10 rounded-2xl animate-pulse border border-dashed border-gray-300 dark:border-gray-700" />
       <div className="h-12 bg-gray-200 dark:bg-gray-800 rounded-full w-1/3 animate-pulse" />
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {[...Array(6)].map((_, i) => (

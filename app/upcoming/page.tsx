@@ -90,7 +90,7 @@ const Upcoming = () => {
         seoKeywords="upcoming, movies, tv shows"
       />
 
-      <section className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
+      <section className="min-h-screen ">
         <div className="container mx-auto px-4 py-6">
           <div className="flex flex-col md:flex-col justify-between items-center mb-12 gap-4 pt-16 px-4">
             <h1 className="text-center font-bold text-4xl text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">

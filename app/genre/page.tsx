@@ -55,7 +55,7 @@ const GenrePage = () => {
         seoDescription="Explore movies by genre"
         seoKeywords="movies, genres, action, comedy, horror, thriller"
       />
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900/20 to-slate-900">
+      <div className="min-h-screen">
         <div className="container mx-auto px-4 py-12">
           <div className="mb-12 space-y-4 mt-16">
             <h1 className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">

@@ -247,7 +247,7 @@ function Watch() {
         seoKeywords={movie?.genres?.map((genre) => genre.name).join(", ")}
       />
 
-      <div className="min-h-screen bg-gray-900 text-white pb-20">
+      <div className="min-h-screen text-white pb-20">
         <main
           className={`mx-auto transition-all duration-300 ${
             isFullScreen ? "max-w-full" : "max-w-7xl px-4"

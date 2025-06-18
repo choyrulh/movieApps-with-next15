@@ -253,7 +253,7 @@ function page() {
 
   if (isError) {
     return (
-      <div className="min-h-screen bg-gray-900 text-white p-4">
+      <div className="min-h-screen bg-[#151515] text-white p-4">
         Error loading data
       </div>
     );
@@ -332,7 +332,7 @@ function page() {
         seoKeywords={show?.genres?.map((genre: any) => genre.name).join(", ")}
       />
 
-      <div className="min-h-screen bg-gray-900 text-white pb-20">
+      <div className="min-h-screen text-white pb-20">
         <main
           className={`mx-auto transition-all duration-300 ${
             isFullScreen ? "max-w-full" : "px-4"
@@ -353,7 +353,7 @@ function page() {
 
                 {/* Show Info */}
                 <div className="flex-1 space-y-4">
-                  <h1 className="text-4xl font-bold text-gradient bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+                  <h1 className="text-4xl font-bold text-gradient bg-gradient-to-r from-green-400 to-purple-500 bg-clip-text text-transparent">
                     {show?.name}
                   </h1>
 
@@ -413,7 +413,7 @@ function page() {
                 <div className="absolute top-4 right-4 flex gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
                   <button
                     onClick={() => setIsFullScreen(!isFullScreen)}
-                    className="p-2 bg-gray-800/50 rounded-lg hover:bg-gray-700/70 transition-colors"
+                    className="p-2 bg-[#151515]/50 rounded-lg hover:bg-[#151515]/70 transition-colors"
                   >
                     {isFullScreen ? (
                       <Shrink className="w-5 h-5 text-white" />
@@ -425,14 +425,14 @@ function page() {
                   <div className="relative">
                     <button
                       onClick={() => setShowServerDropdown(!showServerDropdown)}
-                      className="p-2 bg-gray-800/50 rounded-lg hover:bg-gray-700/70 transition-colors flex items-center gap-2"
+                      className="p-2 bg-[#151515]/50 rounded-lg hover:bg-[#151515]/70 transition-colors flex items-center gap-2"
                     >
                       <Monitor className="w-5 h-5" />
                       <span className="text-sm">{selectedServer}</span>
                     </button>
 
                     {showServerDropdown && (
-                      <div className="absolute right-0 mt-2 w-48 bg-gray-800/95 backdrop-blur-xl rounded-xl shadow-lg border border-gray-700">
+                      <div className="absolute right-0 mt-2 w-48 bg-[#151515]/95 backdrop-blur-xl rounded-xl shadow-lg border border-gray-700">
                         {[1, 2, 3, 4].map((num) => (
                           <button
                             key={num}
@@ -444,13 +444,13 @@ function page() {
                               );
                               setShowServerDropdown(false);
                             }}
-                            className="w-full px-4 py-3 text-sm flex items-center gap-3 hover:bg-gray-700/30 transition-colors"
+                            className="w-full px-4 py-3 text-sm flex items-center gap-3 hover:bg-[#151515]/30 transition-colors"
                           >
                             <div
                               className={`w-2 h-2 rounded-full ${
                                 selectedServer === `Media ${num}`
-                                  ? "bg-blue-500"
-                                  : "bg-gray-500"
+                                  ? "bg-green-500"
+                                  : "bg-[#151515]"
                               }`}
                             />
                             <span>Media {num}</span>
@@ -472,8 +472,8 @@ function page() {
                     flex items-center gap-2 px-4 py-2 rounded-lg transition-all
                     ${
                       hasPreviousEpisode
-                        ? "bg-blue-600/30 hover:bg-blue-600/50 text-blue-400"
-                        : "bg-gray-800/30 cursor-not-allowed text-gray-500"
+                        ? "bg-green-600/30 hover:bg-green-600/50 text-green-400"
+                        : "bg-[#151515]/30 cursor-not-allowed text-gray-500"
                     }
                     `}
                   >
@@ -494,8 +494,8 @@ function page() {
                     flex items-center gap-2 px-4 py-2 rounded-lg transition-all
                     ${
                       hasNextEpisode
-                        ? "bg-blue-600/30 hover:bg-blue-600/50 text-blue-400"
-                        : "bg-gray-800/30 cursor-not-allowed text-gray-500"
+                        ? "bg-green-600/30 hover:bg-green-600/50 text-green-400"
+                        : "bg-[#151515]/30 cursor-not-allowed text-gray-500"
                     }
                     `}
                   >
@@ -512,7 +512,7 @@ function page() {
 
               {/* Current Episode Info */}
               {currentEpisodeData && (
-                <div className="mt-6 bg-gray-800/50 rounded-xl p-4">
+                <div className="mt-6 bg-[#151515]/50 rounded-xl p-4">
                   <h3 className="text-xl font-semibold mb-2">
                     {currentEpisodeData.name || `Episode ${episode}`}
                   </h3>
@@ -538,14 +538,14 @@ function page() {
             </div>
 
             {/* Right Column - Episode/Cast Selector */}
-            <div className={`bg-gray-800/50 rounded-xl p-4 ${isFullScreen ? 'lg:w-auto' : 'lg:w-1/3'}`}>
+            <div className={`bg-[#151515]/50 rounded-xl p-4 ${isFullScreen ? 'lg:w-auto' : 'lg:w-1/3'}`}>
               {/* Toggle Buttons */}
               <div className="flex mb-4 border-b border-gray-700">
                 <button
                   onClick={() => setShowContent("episodes")}
                   className={`flex-1 py-2 px-4 flex items-center justify-center gap-2 ${
                     showContent === "episodes"
-                      ? "text-blue-400 border-b-2 border-blue-400"
+                      ? "text-green-400 border-b-2 border-green-400"
                       : "text-gray-400 hover:text-gray-300"
                   }`}
                 >
@@ -556,7 +556,7 @@ function page() {
                   onClick={() => setShowContent("cast")}
                   className={`flex-1 py-2 px-4 flex items-center justify-center gap-2 ${
                     showContent === "cast"
-                      ? "text-blue-400 border-b-2 border-blue-400"
+                      ? "text-green-400 border-b-2 border-green-400"
                       : "text-gray-400 hover:text-gray-300"
                   }`}
                 >
@@ -577,7 +577,7 @@ function page() {
                           setSeason(e.target.value);
                           setEpisode("1");
                         }}
-                        className="w-auto bg-gray-700/50 border border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-auto bg-[#151515]/50 border border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
                       >
                         {show?.seasons?.map((s: any) => (
                           <option
@@ -615,8 +615,8 @@ function page() {
                             onClick={() => handleEpisodeChange(ep.episode_number.toString())}
                             className={`group p-3 rounded-lg cursor-pointer transition-all ${
                               isCurrentEpisode
-                                ? "bg-blue-600/20 border border-blue-500/50"
-                                : "bg-gray-700/30 hover:bg-gray-600/50"
+                                ? "bg-green-600/20 border border-green-500/50"
+                                : "bg-[#151515]/30 hover:bg-[#151515]/50"
                             }`}
                           >
                             <div className="flex items-start gap-3">
@@ -642,9 +642,9 @@ function page() {
                                     {ep.name || `Episode ${ep.episode_number}`}
                                   </h4>
                                   {hasProgress && (
-                                    <div className="w-16 h-1.5 bg-gray-700 rounded-full ml-2 mt-1">
+                                    <div className="w-16 h-1.5 bg-[#151515] rounded-full ml-2 mt-1">
                                       <div
-                                        className="h-full bg-blue-500 rounded-full"
+                                        className="h-full bg-green-500 rounded-full"
                                         style={{ width: `${epProgress}%` }}
                                       />
                                     </div>
@@ -689,7 +689,7 @@ function page() {
     {show?.credits?.cast.length > 6 && (
       <button
         onClick={() => setIsCastExpanded(!isCastExpanded)}
-        className="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1"
+        className="text-xs text-green-400 hover:text-green-300 flex items-center gap-1"
       >
         {isCastExpanded ? (
           <>
@@ -713,7 +713,7 @@ function page() {
       .map((actor: any) => (
         <div
           key={actor.id}
-          className="flex items-center gap-3 p-2 rounded-lg bg-gray-800/30 hover:bg-gray-700/50 transition-colors"
+          className="flex items-center gap-3 p-2 rounded-lg bg-[#151515]/30 hover:bg-[#151515]/50 transition-colors"
         >
           {/* Actor Avatar - Larger and Clearer */}
           <div className="relative w-16 h-16 min-w-[4rem] rounded-full overflow-hidden border border-gray-600">

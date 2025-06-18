@@ -130,7 +130,7 @@ const MovieCard = ({ movie }: { movie: Movie }) => {
   const badgeStyle = getBadgeStyle(label);
   return (
     <motion.div
-      className="group relative bg-slate-800 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow"
+      className="group relative bg-black rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow"
       whileHover={{ scale: 1.05 }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -148,7 +148,7 @@ const MovieCard = ({ movie }: { movie: Movie }) => {
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
           ) : (
-            <div className="w-auto h-full bg-slate-800 flex items-center justify-center">
+            <div className="w-auto h-full bg-black flex items-center justify-center">
               <span className="text-sm text-white/60">No poster available</span>
             </div>
           )}
@@ -191,7 +191,7 @@ const MovieCard = ({ movie }: { movie: Movie }) => {
             </div>
           )}
         </div>
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
         <div className="absolute bottom-0 left-0 right-0 p-4">
           <h3 className="text-white text-lg font-semibold truncate">
             {movie.title ?? movie.name ?? ""}

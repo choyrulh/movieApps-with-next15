@@ -36,8 +36,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-slate-900 text-gray-100 tracking-tight`}
-      >
+  className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black text-green-100 tracking-tight`}
+>
         <AuthProvider>
           <ReactQueryProvider>
             <Navbar />

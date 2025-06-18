@@ -42,7 +42,7 @@ const BiographySection = ({ biography }: {biography: string}) => {
       {shouldShowButton && (
         <button
           onClick={() => setIsExpanded(!isExpanded)}
-          className="text-purple-400 hover:text-purple-300 transition-colors duration-200 text-sm font-medium flex items-center gap-1"
+          className="text-green-400 hover:text-green-300 transition-colors duration-200 text-sm font-medium flex items-center gap-1"
         >
           {isExpanded ? (
             <>
