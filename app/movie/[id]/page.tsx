@@ -87,7 +87,7 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
   if (isLoading) {
     return (
       <>
-        <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+        <div className="min-h-screen flex items-center justify-center">
           <Loader />
         </div>
       </>
@@ -130,12 +130,12 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
         <button
           onClick={() => onClick(tab.toLowerCase())}
           className={`relative px-4 py-2 text-sm font-medium transition-all duration-300 ${
-            isActive ? "text-cyan-400" : "text-slate-400 hover:text-slate-300"
+            isActive ? "text-green-400" : "text-slate-400 hover:text-slate-300"
           }`}
         >
           {tab}
           {isActive && (
-            <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-cyan-400 animate-underline" />
+            <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-green-400 animate-underline" />
           )}
         </button>
       );
@@ -286,9 +286,9 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="gradient-card group">
                       <div className="flex items-center justify-between">
-                        <BanknotesIcon className="w-8 h-8 text-cyan-400" />
+                        <BanknotesIcon className="w-8 h-8 text-green-400" />
                         <div className="text-right">
-                          <p className="text-sm text-cyan-300 mb-1">Budget</p>
+                          <p className="text-sm text-green-300 mb-1">Budget</p>
                           <p className="text-2xl font-bold text-white">
                             {movie.budget
                               ? `$${movie.budget.toLocaleString()}`
@@ -298,7 +298,7 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
                       </div>
                       <div className="mt-4 h-1 bg-white/10 rounded-full overflow-hidden">
                         <div
-                          className="h-full bg-cyan-500 transition-all duration-1000"
+                          className="h-full bg-green-500 transition-all duration-1000"
                           style={{
                             width: `${Math.min(
                               ((movie?.budget ?? 0) /
@@ -392,7 +392,7 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
                           )}
                         </div>
                         <div className="space-y-1">
-                          <p className="text-sm text-cyan-400">{lang.name}</p>
+                          <p className="text-sm text-green-400">{lang.name}</p>
                           <p className="text-xs text-slate-300 font-mono">
                             {lang.iso_639_1.toUpperCase()}
                           </p>
@@ -408,12 +408,12 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
                     <div className="gradient-card p-6">
                       <div className="flex items-center space-x-4">
                         <div className="flex-shrink-0">
-                          <div className="w-12 h-12 rounded-full bg-cyan-500/20 flex items-center justify-center">
-                            <CalendarIcon className="w-6 h-6 text-cyan-400" />
+                          <div className="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center">
+                            <CalendarIcon className="w-6 h-6 text-green-400" />
                           </div>
                         </div>
                         <div>
-                          <h3 className="text-sm text-cyan-300 mb-1">
+                          <h3 className="text-sm text-green-300 mb-1">
                             Release Status
                           </h3>
                           <p className="text-xl font-semibold text-white">
@@ -483,7 +483,7 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
                                     sizes="(max-width: 768px) 50vw, 33vw"
                                   />
                                 ) : (
-                                  <div className="w-full h-full bg-gradient-to-br from-cyan-500 to-purple-600 flex items-center justify-center">
+                                  <div className="w-full h-full bg-gradient-to-br from-green-500 to-purple-600 flex items-center justify-center">
                                     <span className="text-2xl font-bold text-white uppercase">
                                       {member.name
                                         .split(" ")
@@ -493,7 +493,7 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
                                   </div>
                                 )}
                                 {/* Gradient Overlay */}
-                                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-transparent to-transparent" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-[#111111] via-transparent to-transparent" />
                               </div>
 
                               {/* Text Content */}
@@ -501,10 +501,10 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
                                 <h3 className="text-white font-semibold truncate drop-shadow-lg">
                                   {member.name}
                                 </h3>
-                                <p className="text-sm text-cyan-300 truncate font-medium opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                                <p className="text-sm text-green-300 truncate font-medium opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                                   {member.character}
                                 </p>
-                                <div className="absolute right-3 top-3 flex items-center justify-center w-8 h-8 rounded-full bg-cyan-500/20 backdrop-blur-sm text-cyan-400 text-sm font-bold transition-opacity opacity-0 group-hover:opacity-100">
+                                <div className="absolute right-3 top-3 flex items-center justify-center w-8 h-8 rounded-full bg-green-500/20 backdrop-blur-sm text-green-400 text-sm font-bold transition-opacity opacity-0 group-hover:opacity-100">
                                   {member.order + 1}
                                 </div>
                               </div>
@@ -513,14 +513,14 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
                               <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                 <Link
                                   href={`/person/${member.id}`}
-                                  className="px-4 py-2 bg-cyan-500/90 text-white rounded-lg hover:bg-cyan-600 backdrop-blur-sm transition-colors duration-300 shadow-lg transform hover:scale-105"
+                                  className="px-4 py-2 bg-green-500/90 text-white rounded-lg hover:bg-green-600 backdrop-blur-sm transition-colors duration-300 shadow-lg transform hover:scale-105"
                                 >
                                   View Details
                                 </Link>
                               </div>
 
                               {/* Hover Border Effect */}
-                              <div className="absolute inset-0 rounded-2xl border-2 border-transparent transition-all duration-300 group-hover:border-cyan-400/30 pointer-events-none" />
+                              <div className="absolute inset-0 rounded-2xl border-2 border-transparent transition-all duration-300 group-hover:border-green-400/30 pointer-events-none" />
                             </div>
                           ))}
                         {casts?.cast?.length > visibleCasts && (
@@ -529,8 +529,8 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
                               onClick={() =>
                                 setVisibleCasts((prev) => prev + 6)
                               }
-                              className="w-full sm:w-auto px-6 sm:px-8 py-2 sm:py-3 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full font-semibold text-white 
-      transform transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-cyan-500/30
+                              className="w-full sm:w-auto px-6 sm:px-8 py-2 sm:py-3 bg-gradient-to-r from-green-500 to-[#1e1e1e] rounded-full font-semibold text-white 
+      transform transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-green-500/30
       flex items-center justify-center gap-2 group text-sm sm:text-base"
                             >
                               <span>Load More</span>

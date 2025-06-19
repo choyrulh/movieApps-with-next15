@@ -17,7 +17,7 @@ export const PopularityChart = ({ people }: { people: Person[] }) => {
   const maxBarsVisible = isMobile ? 8 : 12;
 
   return (
-    <div className="bg-gray-800 rounded-xl p-4 border border-gray-700">
+    <div className="bg-[#222222] rounded-xl p-4">
       <h3 className="text-lg font-semibold text-gray-100 mb-4">
         Popularity Distribution
       </h3>

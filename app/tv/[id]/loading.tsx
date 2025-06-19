@@ -1,6 +1,6 @@
 function loading() {
   return (
-    <div className="min-h-screen bg-slate-900 animate-pulse">
+    <div className="min-h-screen animate-pulse">
       <div className="relative h-[31rem] md:h-[35rem] lg:h-[45rem] bg-slate-700"></div>
 
       <div className="container mx-auto px-4 lg:-mt-[26rem] sm:-mt-[14rem] md:-mt-[16rem] relative z-10">

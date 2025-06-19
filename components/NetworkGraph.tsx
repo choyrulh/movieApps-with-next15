@@ -7,7 +7,7 @@ import { Person } from "@/app/person/page";
 import Image from "next/image"
 
 const StatBox = ({ icon, value, label }: { icon: React.ReactNode; value: any; label: string }) => (
-  <div className="bg-gray-800 p-2 rounded-md text-center">
+  <div className="bg-[#333333]/50 p-2 rounded-md text-center">
     <div className="flex justify-center">{icon}</div>
     <div className="text-lg font-semibold text-gray-100 mt-1">{value}</div>
     <div className="text-xs text-gray-400">{label}</div>
@@ -32,7 +32,7 @@ export const NetworkGraph = ({ people }: { people: Person[] }) => {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="bg-gray-800 rounded-xl p-4 md:p-6 border border-gray-700 shadow-sm"
+      className="bg-[#222222] rounded-xl p-4 md:p-6 shadow-sm"
     >
       <h2 className="text-xl font-semibold text-gray-100 mb-4">Featured Cast</h2>
 
@@ -47,8 +47,8 @@ export const NetworkGraph = ({ people }: { people: Person[] }) => {
               transition={{ delay: index * 0.1 }}
               className={`p-3 rounded-lg cursor-pointer transition-colors ${
                 selectedActor === index
-                  ? "bg-gray-700 border border-purple-500/30"
-                  : "bg-gray-900 hover:bg-gray-700/50 border border-transparent"
+                  ? "bg-[#333333] border border-green-500/30"
+                  : "bg-[#333333] hover:bg-[#333333]/50 border border-transparent"
               }`}
               onClick={() => setSelectedActor(index)}
             >
@@ -83,7 +83,7 @@ export const NetworkGraph = ({ people }: { people: Person[] }) => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="bg-gray-900 rounded-lg p-4 space-y-4 border border-gray-700"
+            className="bg-[#333333] rounded-lg p-4 space-y-4"
           >
             <div className="relative aspect-video rounded-md overflow-hidden">
               <Image
@@ -128,7 +128,7 @@ export const NetworkGraph = ({ people }: { people: Person[] }) => {
                   (genre: string, index: number) => (
                     <span
                       key={index}
-                      className="px-2.5 py-1 bg-gray-800 rounded-full text-sm text-gray-300"
+                      className="px-2.5 py-1 bg-[#333333]/50 rounded-full text-sm text-gray-300"
                     >
                       {genre}
                     </span>

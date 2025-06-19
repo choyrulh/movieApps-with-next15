@@ -34,7 +34,7 @@ const FavoriteCard = ({
           loading="lazy"
         />
 
-        <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-20% via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#333333] via-20% via-[#333333]/20 to-transparent" />
 
         {/* Top Right Actions - Adjusted for mobile */}
         <div className="absolute top-2 right-2 flex items-center gap-1.5">

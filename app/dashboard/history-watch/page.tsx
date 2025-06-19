@@ -59,7 +59,7 @@ const MovieHistoryCard = ({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex flex-col sm:flex-row items-start gap-4 p-4 rounded-xl bg-gray-800 hover:bg-gray-750 transition-colors relative group"
+      className="flex flex-col sm:flex-row items-start gap-4 p-4 rounded-xl bg-[#111111] hover:bg-[#111111]/80 transition-colors relative group"
     >
       {/* Delete Button */}
       <button

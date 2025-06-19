@@ -3,18 +3,18 @@ import { motion } from "framer-motion";
 const MovieCardSkeleton = () => {
   return (
     <motion.div
-      className="group relative bg-slate-800 rounded-xl overflow-hidden"
+      className="group relative bg-gray-800 rounded-xl overflow-hidden"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
     >
-      <div className="relative aspect-[2/3] bg-slate-700 animate-pulse" />
+      <div className="relative aspect-[2/3] bg-gray-700 animate-pulse" />
 
-      <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent" />
 
       <div className="absolute bottom-0 left-0 right-0 p-4 space-y-3">
-        <div className="h-5 bg-slate-600 rounded w-3/4 animate-pulse" />
+        <div className="h-5 bg-gray-600 rounded w-3/4 animate-pulse" />
         <div className="flex items-center justify-between">
-          <div className="h-4 bg-slate-600 rounded w-12 animate-pulse" />
+          <div className="h-4 bg-gray-600 rounded w-12 animate-pulse" />
           <div className="flex gap-1">
             {[...Array(5)].map((_, i) => (
               <div

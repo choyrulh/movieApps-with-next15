@@ -37,7 +37,7 @@ const StatBox = ({
   color: string;
 }) => (
   <div
-    className={`p-2 md:p-3 rounded-lg bg-gray-700 border border-${color}-500/20`}
+    className={`p-2 md:p-3 rounded-lg bg-[#222222] shadow-lg`}
   >
     <div className="text-xs md:text-sm text-gray-400">{label}</div>
     <div className={`text-base md:text-lg font-semibold text-${color}-400`}>
@@ -68,7 +68,7 @@ const HighlightPerson = ({ person }: { person: Person }) => {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="relative rounded-xl bg-gradient-to-br from-gray-800 to-gray-900 overflow-hidden"
+      className="relative rounded-xl bg-gradient-to-br from-[#222222] to-[#333333] overflow-hidden"
     >
       <div className="flex flex-col md:flex-row items-center p-4 md:p-6 gap-4 md:gap-6">
         <Link
@@ -124,7 +124,7 @@ const PersonCard = memo(
       <motion.div
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="bg-gray-800 rounded-lg border border-gray-700 hover:border-green-500/40 transition-all"
+        className="bg-[#111111] rounded-lg hover:border-green-500/40 transition-all"
       >
         <div className="p-3 space-y-3">
           <div className="flex items-center gap-3">
@@ -223,7 +223,7 @@ const DepartmentFilter = ({
   const departments = ["Acting", "Directing", "Production", "Writing", "Sound"];
 
   return (
-    <div className="bg-gray-800 p-3 rounded-lg border border-gray-700">
+    <div className="bg-[#222222] p-3 rounded-lg border border-gray-700">
       <div className="flex flex-wrap gap-2">
         {departments.map((dept) => (
           <motion.button
@@ -234,7 +234,7 @@ const DepartmentFilter = ({
             className={`px-3 py-1.5 text-sm rounded-full transition-colors ${
               selected === dept
                 ? "bg-green-600/90 text-white"
-                : "bg-gray-700/50 text-gray-300 hover:bg-gray-700"
+                : "bg-[#222222] text-gray-300 hover:bg-green-600/30"
             }`}
           >
             {dept}
@@ -253,7 +253,7 @@ const ViewToggle = memo(
     viewMode: ViewMode;
     setViewMode: (mode: ViewMode) => void;
   }) => (
-    <div className="flex gap-1 bg-gray-800 p-1 rounded-full border border-gray-700">
+    <div className="flex gap-1 bg-[#222222] p-1 rounded-full border border-gray-700">
       <motion.button
         whileHover={{ scale: 1.03 }}
         whileTap={{ scale: 0.97 }}
@@ -340,7 +340,7 @@ export default function PopularPeoplePage() {
             setSelected={setSelectedDepartment}
           />
 
-          <div className="bg-gray-800 rounded-xl p-4 grid lg:grid-cols-2 gap-6">
+          <div className="bg-[#111111] rounded-xl p-4 grid lg:grid-cols-2 gap-6">
             <PopularityChart people={filteredPeople} />
             <NetworkGraph people={filteredPeople} />
           </div>
