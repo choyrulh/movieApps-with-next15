@@ -6,12 +6,14 @@ import { useState, useRef, useEffect, memo, useCallback } from "react";
 // import { Skeleton } from "./skeleton";
 import { usePathname, useRouter } from "next/navigation";
 import { BookmarkPlus, Clapperboard, ChevronDown } from "lucide-react";
+import brandLogo from "@/assets/SlashVerseLogo.webp"
 import useIsMobile from "@/hook/useIsMobile";
 import { TitleText } from "./../TitleText";
 // import { logoutUser } from "@/action/Auth";
 // import { useAuth } from "@/context/AuthContext";
 // import { useUserProfile } from "@/hook/useUserProfile";
 import {ProfileDropDown} from "@/components/common/ProfileDropdown"
+import Image from "next/image"
  
 const MemoizedBookmarkIcon = memo(BookmarkPlus);
 
@@ -81,14 +83,20 @@ export const Navbar = () => {
           ["/login", "/register"].includes(pathname) || pathname.startsWith("/dashboard") ? "hidden" : "block"
         } transition-all duration-300`}
       >
-        <div className="flex items-center space-x-8 py-3 px-4 max-w-screen-xl mx-auto md:px-8">
+        <div className="flex items-center space-x-8 py-3 px-4 max-w-screen-2xl mx-auto md:px-8">
           <div className="flex-1 flex items-center justify-between">
-            <Link href={"/"} className="flex items-center gap-2">
-              <Clapperboard className="w-8 h-8 text-green-600" />
-              <TitleText />
-            </Link>
+          <Link href={"/"} className="flex items-center gap-2">
+            <Image 
+              src={brandLogo}
+              alt="SlashVerse Logo"
+              width={300}
+              height={200}
+              priority
+              className="object-contain"
+            />
+          </Link>
             <div
-              className={`bg-slate-900/95 lg:bg-inherit absolute z-20 w-full top-16 left-0 p-4 border-b lg:static lg:block lg:border-none transition-all duration-300 ease-in-out ${
+              className={`bg-black/95 lg:bg-inherit absolute z-20 w-full top-16 left-0 p-4 border-b lg:static lg:block lg:border-none transition-all duration-300 ease-in-out ${
                 isMobile ? "text-end" : "unset"
               } ${
                 menuState

@@ -19,6 +19,8 @@ import Link from "next/link";
 import { useState } from "react";
 import Marquee from "./common/Marquee";
 import { TitleText } from "./TitleText";
+import brandLogo from "@/assets/SlashVerseLogo.webp"  
+import Image from "next/image";
 
 const Footer = () => {
   const pathname = usePathname();
@@ -101,8 +103,14 @@ const Footer = () => {
               whileInView={{ opacity: 1, x: 0 }}
               className="flex items-center gap-2"
             >
-              <Clapperboard className="w-8 h-8 text-green-400" />
-              <TitleText />
+              <Image 
+                src={brandLogo}
+                alt="SlashVerse Logo"
+                width={300}
+                height={200}
+                priority
+                className="object-contain"
+              />  
             </motion.div>
             <p className="text-sm text-gray-400">
               Your gateway to the cinematic universe. Explore, discover, and
