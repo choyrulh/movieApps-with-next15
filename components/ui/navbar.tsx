@@ -85,16 +85,18 @@ export const Navbar = () => {
       >
         <div className="flex items-center space-x-8 py-3 px-4 max-w-screen-2xl mx-auto md:px-8">
           <div className="flex-1 flex items-center justify-between">
-          <Link href={"/"} className="flex items-center gap-2">
-            <Image 
-              src={brandLogo}
-              alt="SlashVerse Logo"
-              width={300}
-              height={200}
-              priority
-              className="object-contain"
-            />
-          </Link>
+            <Link href={"/"} className="flex items-center gap-2">
+              <Image 
+                src={brandLogo}
+                alt="SlashVerse Logo"
+                width={300}
+                height={200}
+                priority
+                className="object-contain w-40 md:w-48 lg:w-56 xl:w-64 2xl:w-[300px]"
+              />
+            </Link>
+            
+            {/* Bagian menu dan dropdown tetap sama */}
             <div
               className={`bg-black/95 lg:bg-inherit absolute z-20 w-full top-16 left-0 p-4 border-b lg:static lg:block lg:border-none transition-all duration-300 ease-in-out ${
                 isMobile ? "text-end" : "unset"
