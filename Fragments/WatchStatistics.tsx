@@ -54,7 +54,7 @@ const WatchStatistics = ({
             className={`px-4 py-2 rounded-lg transition-colors flex items-center gap-2 ${
               statsType === "month"
                 ? "bg-green-500 text-white"
-                : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                : "bg-[#222222] text-gray-300 hover:bg-[#333333]"
             }`}
           >
             <Calendar size={18} />
@@ -65,7 +65,7 @@ const WatchStatistics = ({
             className={`px-4 py-2 rounded-lg transition-colors flex items-center gap-2 ${
               statsType === "week"
                 ? "bg-green-500 text-white"
-                : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                : "bg-[#222222] text-gray-300 hover:bg-[#333333]"
             }`}
           >
             <Zap size={18} />
@@ -74,7 +74,7 @@ const WatchStatistics = ({
         </div>
       </div>
 
-      <div className="bg-gray-800 rounded-lg p-6">
+      <div className="bg-[#111111] rounded-lg p-6">
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-6">
           <StatBox
             icon={<Clock size={20} />}
@@ -133,7 +133,7 @@ const WatchStatistics = ({
           </div>
           
           {/* Container grafik */}
-          <div className="h-64 bg-gray-700/30 rounded-lg p-4">
+          <div className="h-64 bg-[#111111] rounded-lg p-4">
             {periodData?.length > 0 ? (
               <div className="flex items-end justify-between h-full gap-1">
                 {periodData.map((entry: any, index: number) => {
@@ -160,7 +160,7 @@ const WatchStatistics = ({
                       </div>
                       
                       {/* Tooltip hover */}
-                      <div className="hidden group-hover:block absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-1 bg-gray-800 rounded text-xs">
+                      <div className="hidden group-hover:block absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-1 bg-[#111111] rounded text-xs">
                         {statsType === 'month' ? entry.label : entry.dayOfWeek}
                       </div>
                     </motion.div>
@@ -211,7 +211,7 @@ const WatchStatistics = ({
                   .map((genre: any, i: number) => (
                     <span
                       key={i}
-                      className="px-2 py-1 bg-gray-700 rounded-full text-xs"
+                      className="px-2 py-1 bg-[#111111] rounded-full text-xs"
                     >
                       {genre.genre}
                     </span>
@@ -239,7 +239,7 @@ const WatchStatistics = ({
           </div>
 
           {/* Recent Activity */}
-          <div className="bg-gray-800/50 rounded-xl pt-2 backdrop-blur-sm">
+          <div className="bg-[#111111] rounded-xl pt-2 backdrop-blur-sm">
             <h3 className="text-lg font-semibold text-gray-200 flex items-center gap-2 mb-4">
               <Activity className="w-5 h-5 text-purple-400" />
               Aktivitas Terakhir
@@ -250,7 +250,7 @@ const WatchStatistics = ({
                 .map((activity: any, index: number) => (
                   <div
                     key={index}
-                    className="flex items-center gap-4 p-3 rounded-lg bg-gray-700/30"
+                    className="flex items-center gap-4 p-3 rounded-lg bg-[#111111]"
                   >
                     <div className="w-12 h-12 rounded-lg overflow-hidden relative flex-shrink-0">
                       <img
@@ -307,7 +307,7 @@ const WatchStatistics = ({
             </div>
           </div>
 
-          <div className="bg-gray-800/50 pt-2 rounded-xl">
+          <div className="bg-[#111111] pt-2 rounded-xl">
             <div className="flex items-center gap-3 mb-4">
               <Activity size={20} className="text-cyan-400" />
               <h4 className="font-semibold">Konsistensi Nonton</h4>
@@ -359,21 +359,21 @@ const WatchStatistics = ({
                 <div className="flex mb-2 items-center justify-between">
                   <div className="flex gap-2">
                     <span className="text-md font-semibold text-green-400">
-                      {summaryData.completionRate || 0}% Tuntas
+                      {Math.floor(summaryData.completionRate || 0)}% Tuntas
                     </span>
                     <span className="text-md font-semibold text-green-400">
-                      {100 - (summaryData.completionRate || 0)}% Progress
+                      {Math.floor(100 - (summaryData.completionRate || 0))}% Progress
                     </span>
                   </div>
                 </div>
                 <div className="overflow-hidden h-2 mb-4 text-xs flex rounded-full bg-gray-700">
                   <div
-                    style={{ width: `${summaryData.completionRate || 0}%` }}
-                    className="bg-green-500 shadow-none flex flex-col justify-center"
+                    style={{ width: `${Math.floor(summaryData.completionRate || 0)}%` }}
+                    className="bg-green-500/85 shadow-none flex flex-col justify-center"
                   />
                   <div
                     style={{
-                      width: `${100 - (summaryData.completionRate || 0)}%`,
+                      width: `${Math.floor(100 - (summaryData.completionRate || 0))}%`,
                     }}
                     className="bg-green-500 shadow-none flex flex-col justify-center"
                   />
@@ -399,20 +399,20 @@ const WatchStatistics = ({
                 <div className="flex mb-2 items-center justify-between">
                   <div className="flex gap-2">
                     <span className="text-xs font-semibold text-green-400">
-                      {summaryData.completionRate || 0}% Tuntas
+                      {Math.floor(summaryData.completionRate || 0)}% Tuntas
                     </span>
                     <span className="text-xs font-semibold text-green-400">
-                      {100 - (summaryData.completionRate || 0)}% Progress
+                      {Math.floor(100 - (summaryData.completionRate || 0))}% Progress
                     </span>
                   </div>
                 </div>
                 <div className="overflow-hidden h-2 mb-4 text-xs flex rounded-full bg-gray-700">
                   <div
-                    style={{ width: `${summaryData.completionRate || 0}%` }}
+                    style={{ width: `${Math.floor(summaryData.completionRate || 0)}%` }}
                     className="bg-green-500 shadow-none flex flex-col justify-center"
                   />
                   <div
-                    style={{ width: `${100 - (summaryData.completionRate || 0)}%` }}
+                    style={{ width: `${Math.floor(100 - (summaryData.completionRate || 0))}%` }}
                     className="bg-green-500 shadow-none flex flex-col justify-center"
                   />
                 </div>
@@ -461,7 +461,7 @@ const WatchStatistics = ({
 // Komponen StatBox dengan error handling
 const StatBox = ({ icon, title, value, color }: any) => (
   <motion.div 
-    className="bg-gray-800/50 p-4 rounded-xl"
+    className="bg-[#222222] p-4 rounded-xl"
     whileHover={{ scale: 1.02 }}
   >
     <div className="flex items-center gap-3">

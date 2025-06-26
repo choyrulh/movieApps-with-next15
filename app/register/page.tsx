@@ -57,13 +57,19 @@ export default function RegisterPage() {
         seoKeywords="register account for watch movies and tv shows"
       />
 
-      <div className="min-h-screen flex items-center justify-center p-4">
+      <div 
+        className="min-h-screen flex items-center justify-center p-4"
+        style={{
+          backgroundImage: "url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundAttachment: "fixed",
+        }}
+      >
+        <div className="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
         <div className="w-full max-w-md">
-          <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 shadow-2xl">
+          <div className="bg-transparent backdrop-blur-md rounded-xl p-8 shadow-lg border border-gray-800">
             <div className="text-center mb-8">
-              <div className="inline-block p-4 bg-green-600 rounded-full mb-4">
-                <UserPlus className="w-8 h-8 text-white" />
-              </div>
               <h2 className="text-3xl font-bold text-white mb-2">
                 Create Account
               </h2>
@@ -91,7 +97,7 @@ export default function RegisterPage() {
                     name="name"
                     type="text"
                     required
-                    className="w-full bg-white/5 border border-gray-800 rounded-lg py-3 pl-12 pr-4 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent"
+                    className="w-full bg-transparent border border-gray-800 rounded-lg py-3 pl-12 pr-4 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent"
                     placeholder="Enter your full name"
                   />
                 </div>
@@ -111,7 +117,7 @@ export default function RegisterPage() {
                     name="email"
                     type="email"
                     required
-                    className="w-full bg-white/5 border border-gray-800 rounded-lg py-3 pl-12 pr-4 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent"
+                    className="w-full bg-transparent border border-gray-800 rounded-lg py-3 pl-12 pr-4 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent"
                     placeholder="Enter your email"
                   />
                 </div>
@@ -131,7 +137,7 @@ export default function RegisterPage() {
                     name="password"
                     type="password"
                     required
-                    className="w-full bg-white/5 border border-gray-800 rounded-lg py-3 pl-12 pr-4 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent"
+                    className="w-full bg-transparent border border-gray-800 rounded-lg py-3 pl-12 pr-4 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent"
                     placeholder="Create a password"
                   />
                 </div>
@@ -142,7 +148,15 @@ export default function RegisterPage() {
                 disabled={isPending}
                 className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-200 ease-in-out transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isPending ? "Creating account..." : "Create Account"}
+                {isPending ? (
+                  <>
+                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Creating account...
+                  </>
+                ) : "Create Account"}
               </button>
             </form>
 

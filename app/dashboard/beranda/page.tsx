@@ -174,7 +174,7 @@ const RecentMovieCard = ({ movie }: { movie: any }) => {
 
   return (
     <motion.div
-      className="bg-gray-800 rounded-lg overflow-hidden shadow-lg"
+      className="bg-[#222222] rounded-lg overflow-hidden shadow-lg"
       whileHover={{ scale: 1.03 }}
       transition={{ duration: 0.2 }}
     >
@@ -183,11 +183,11 @@ const RecentMovieCard = ({ movie }: { movie: any }) => {
           <div className="p-3 w-full">
             <div className="flex justify-between items-center">
               <h3 className="text-white font-medium truncate">{movie.title}</h3>
-              <span className="text-xs text-gray-300 bg-gray-700 px-2 py-1 rounded">
+              <span className="text-xs text-gray-300 bg-[#111111] px-2 py-1 rounded">
                 {movie.genres[1]}
               </span>
             </div>
-            <div className="mt-2 bg-gray-700 h-1 rounded-full w-full">
+            <div className="mt-2 bg-[#111111] h-1 rounded-full w-full">
               <div
                 className="bg-green-500/85 h-1 rounded-full"
                 style={{ width: `${movie.progressPercentage}%` }}
@@ -223,7 +223,7 @@ const RecommendedMovieCard = ({ movie }: { movie: any }) => {
   const isMobile = useIsMobile();
   return (
     <motion.div
-      className="bg-gray-800 rounded-lg overflow-hidden shadow-lg"
+      className="bg-[#222222] rounded-lg overflow-hidden shadow-lg"
       whileHover={{ scale: 1.03 }}
       transition={{ duration: 0.2 }}
     >
@@ -272,7 +272,7 @@ const StatCard = ({
   value: string | number;
 }) => (
   <motion.div
-    className="bg-gray-800 p-4 rounded-lg"
+    className="bg-[#222222] p-4 rounded-lg"
     whileHover={{ scale: 1.05 }}
     transition={{ duration: 0.2 }}
   >
