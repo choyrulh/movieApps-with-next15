@@ -57,7 +57,7 @@ export const FilterSection = ({
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
           "flex items-center justify-between w-full px-4 py-2 text-sm",
-          "bg-gray-700/80 dark:bg-gray-800  rounded-xl",
+          "bg-[#222222]/80 dark:bg-gray-800  rounded-xl",
           "transition-all",
           "focus:outline-none focus:ring-2 focus:ring-primary-500/30",
           "group relative duration-200 ease-out",
@@ -91,7 +91,7 @@ export const FilterSection = ({
 
       <div
         className={cn(
-          "absolute z-50 w-full mt-2 bg-gray-700/80 dark:bg-gray-800 rounded-xl shadow-lg",
+          "absolute z-50 w-full mt-2 bg-[#222222]/80 dark:bg-gray-800 rounded-xl shadow-lg",
           "transform origin-top transition-all duration-200 ease-out",
           isOpen ? "scale-y-100 opacity-100" : "scale-y-95 opacity-0 pointer-events-none",
           "max-h-60 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"

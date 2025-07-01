@@ -296,7 +296,7 @@ function Banner({ type }: { type: "movie" | "tv" }) {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="flex items-center gap-2 px-6 py-2 bg-slate-500/50 text-white rounded-lg font-semibold hover:bg-slate-500/70 transition-colors hover:cursor-pointer"
+                className="flex items-center gap-2 px-6 py-2 bg-[#333333]/95 text-white rounded-lg font-semibold hover:bg-[#333333]/70 transition-colors hover:cursor-pointer"
               >
                 <Info className="w-5 h-5" />
                 More Info
@@ -311,7 +311,7 @@ function Banner({ type }: { type: "movie" | "tv" }) {
         <motion.button
           onClick={handlePrev}
           whileHover={{ scale: 1.1 }}
-          className="p-2 rounded-full bg-slate-800/50 hover:bg-slate-700/50 transition-colors"
+          className="p-2 rounded-full bg-[#333333]/95 hover:bg-[#333333]/70 transition-colors"
         >
           <ChevronLeft className="w-6 h-6 text-white" />
         </motion.button>
@@ -319,7 +319,7 @@ function Banner({ type }: { type: "movie" | "tv" }) {
         <motion.button
           onClick={handleNext}
           whileHover={{ scale: 1.1 }}
-          className="p-2 rounded-full bg-slate-800/50 hover:bg-slate-700/50 transition-colors"
+          className="p-2 rounded-full bg-[#333333]/95 hover:bg-[#333333]/70 transition-colors"
         >
           <ChevronRight className="w-6 h-6 text-white" />
         </motion.button>

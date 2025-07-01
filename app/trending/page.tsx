@@ -29,7 +29,7 @@ const TrendingPage = () => {
         <div className="container mx-auto px-4 py-12">
           <div className="flex flex-col md:flex-row justify-between items-start mb-12 gap-6 mt-16">
             <div className="space-y-2">
-              <h1 className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">
+              <h1 className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-purple-500">
                 Trending Now
               </h1>
               <p className="text-slate-300 font-light">
@@ -37,14 +37,14 @@ const TrendingPage = () => {
               </p>
             </div>
 
-            <div className="flex gap-2 p-1 rounded-full bg-slate-800">
+            <div className="flex gap-2 p-1 rounded-full bg-[#111111]/95">
               <button
                 onClick={() => setTimeWindow("day")}
                 className={cn(
                   "px-6 py-2 rounded-full transition-colors",
                   timeWindow === "day"
-                    ? "bg-cyan-500 text-white"
-                    : "hover:bg-slate-700 text-slate-300"
+                    ? "bg-green-500 text-white"
+                    : "hover:bg-green-700 text-green-300"
                 )}
               >
                 Today
@@ -54,8 +54,8 @@ const TrendingPage = () => {
                 className={cn(
                   "px-6 py-2 rounded-full transition-colors",
                   timeWindow === "week"
-                    ? "bg-cyan-500 text-white"
-                    : "hover:bg-slate-700 text-slate-300"
+                    ? "bg-purple-500 text-white"
+                    : "hover:bg-purple-700 text-purple-300"
                 )}
               >
                 This Week
@@ -68,7 +68,7 @@ const TrendingPage = () => {
               {[...Array(10)].map((_, i) => (
                 <Skeleton
                   key={i}
-                  className="aspect-[2/3] rounded-xl bg-slate-800"
+                  className="aspect-[2/3] rounded-xl bg-[#333333]/95"
                 />
               ))}
             </div>

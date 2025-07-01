@@ -94,7 +94,7 @@ export default function Home() {
       <Suspense fallback={<BannerSkeleton />}>
         <Banner type={pathname === "/" ? "movie" : "tv"} />
       </Suspense>
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 md:px-6 lg:px-8 max-w-[95.625vw]">
         <HistoryTontonan />
         <div className="flex items-center gap-4 mb-4">
           <DropdownGenre />

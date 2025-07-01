@@ -17,6 +17,7 @@ import {
 import { addRecentlyWatched, WatchHistory } from "@/Service/actionUser";
 import { Metadata } from "@/app/Metadata";
 import Image from "next/image";
+import Link from "next/link";
 
 function Watch() {
   const pathname = usePathname();
@@ -270,9 +271,11 @@ function Watch() {
 
                 {/* Movie Info */}
                 <div className="flex-1 space-y-4">
-                  <h1 className="text-4xl font-bold text-gradient bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
-                    {movie.title}
-                  </h1>
+                  <Link href={`/movie/${id}`}>
+                    <h1 className="text-4xl font-bold text-gradient bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+                      {movie.title}
+                    </h1>
+                  </Link>
 
                   <div className="flex flex-wrap gap-4 text-sm">
                     <div className="badge badge-info">

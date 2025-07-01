@@ -93,18 +93,18 @@ const Upcoming = () => {
       <section className="min-h-screen ">
         <div className="container mx-auto px-4 py-6">
           <div className="flex flex-col md:flex-col justify-between items-center mb-12 gap-4 pt-16 px-4">
-            <h1 className="text-center font-bold text-4xl text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">
+            <h1 className="text-center font-bold text-4xl text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-green-600">
               Upcoming {type === "movie" ? "Movies" : "TV Shows"}
             </h1>
             <div className="flex flex-row gap-4 items-end">
-              <div className="flex gap-2 p-1 rounded-full bg-slate-800">
+              <div className="flex gap-2 p-1 rounded-full bg-[#222222]">
                 <button
                   onClick={() => handleTypeChange("movie")}
                   className={cn(
                     "px-6 py-2 rounded-full transition-colors",
                     type === "movie"
-                      ? "bg-cyan-500 text-white"
-                      : "hover:bg-slate-700 text-slate-300"
+                      ? "bg-green-500 text-white"
+                      : "hover:bg-green-700 text-green-300"
                   )}
                 >
                   Movie
@@ -114,22 +114,22 @@ const Upcoming = () => {
                   className={cn(
                     "px-6 py-2 rounded-full transition-colors",
                     type === "tv"
-                      ? "bg-cyan-500 text-white"
-                      : "hover:bg-slate-700 text-slate-300"
+                      ? "bg-green-500 text-white"
+                      : "hover:bg-green-700 text-green-300"
                   )}
                 >
                   TV/Show
                 </button>
               </div>
               {type === "movie" && (
-                <div className="flex gap-2 p-1 rounded-full bg-slate-800">
+                <div className="flex gap-2 p-1 rounded-full bg-[#222222]">
                   <button
                     onClick={() => handleFilterChange("all")}
                     className={cn(
                       "px-6 py-2 rounded-full transition-colors",
                       releaseFilter === "all"
-                        ? "bg-cyan-500 text-white"
-                        : "hover:bg-slate-700 text-slate-300"
+                        ? "bg-green-500 text-white"
+                        : "hover:bg-green-700 text-green-300"
                     )}
                   >
                     All
@@ -139,8 +139,8 @@ const Upcoming = () => {
                     className={cn(
                       "px-6 py-2 rounded-full transition-colors",
                       releaseFilter === "month"
-                        ? "bg-cyan-500 text-white"
-                        : "hover:bg-slate-700 text-slate-300"
+                        ? "bg-green-500 text-white"
+                        : "hover:bg-green-700 text-green-300"
                     )}
                   >
                     Month
@@ -155,7 +155,7 @@ const Upcoming = () => {
               {[...Array(8)].map((_, i) => (
                 <Skeleton
                   key={i}
-                  className="aspect-[2/3] rounded-xl bg-slate-800"
+                  className="aspect-[2/3] rounded-xl bg-[#222222]"
                 />
               ))}
             </div>
@@ -171,7 +171,7 @@ const Upcoming = () => {
                 <button
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1 || isLoading}
-                  className="p-2 rounded-lg bg-slate-800 text-slate-400 hover:text-cyan-400 
+                  className="p-2 rounded-lg bg-[#111111] text-slate-400 hover:text-white 
                 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <ChevronLeft className="h-5 w-5" />
@@ -185,8 +185,8 @@ const Upcoming = () => {
                     className={`min-w-[2.5rem] h-10 rounded-lg transition-colors
                   ${
                     pageNum === currentPage
-                      ? "bg-cyan-500/20 text-cyan-400"
-                      : "bg-slate-800 text-slate-400 hover:text-cyan-400"
+                      ? "bg-[#333333]/20 text-white"
+                      : "bg-[#111111] text-slate-400 hover:text-white"
                   }
                   disabled:opacity-50 disabled:cursor-not-allowed`}
                   >
@@ -197,7 +197,7 @@ const Upcoming = () => {
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages || isLoading}
-                  className="p-2 rounded-lg bg-slate-800 text-slate-400 hover:text-cyan-400 
+                  className="p-2 rounded-lg bg-[#111111] text-slate-400 hover:text-white 
                 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <ChevronRight className="h-5 w-5" />

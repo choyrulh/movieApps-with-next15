@@ -353,9 +353,11 @@ function page() {
 
                 {/* Show Info */}
                 <div className="flex-1 space-y-4">
-                  <h1 className="text-4xl font-bold text-gradient bg-gradient-to-r from-green-400 to-purple-500 bg-clip-text text-transparent">
-                    {show?.name}
-                  </h1>
+                  <Link href={`/tv/${id}`}>
+                    <h1 className="text-4xl font-bold text-gradient bg-gradient-to-r from-green-400 to-purple-500 bg-clip-text text-transparent">
+                      {show?.name}
+                    </h1>
+                  </Link>
 
                   <div className="flex flex-wrap gap-4 text-sm">
                     <div className="badge badge-info">

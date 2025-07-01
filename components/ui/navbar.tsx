@@ -83,7 +83,7 @@ export const Navbar = () => {
           ["/login", "/register"].includes(pathname) || pathname.startsWith("/dashboard") ? "hidden" : "block"
         } transition-all duration-300`}
       >
-        <div className="flex items-center space-x-8 py-3 px-4 max-w-screen-2xl mx-auto md:px-8">
+        <div className="flex items-center space-x-8 py-3 px-4 max-w-[95.625vw] mx-auto md:px-8">
           <div className="flex-1 flex items-center justify-between">
             <Link href={"/"} className="flex items-center gap-2">
               <Image 

@@ -58,7 +58,7 @@ const GenrePage = () => {
       <div className="min-h-screen">
         <div className="container mx-auto px-4 py-12">
           <div className="mb-12 space-y-4 mt-16">
-            <h1 className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">
+            <h1 className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-500">
               Explore Genres
             </h1>
 
@@ -74,8 +74,8 @@ const GenrePage = () => {
                     className={cn(
                       "px-4 py-2 rounded-full border transition-all",
                       selectedGenre === genre.id
-                        ? "border-cyan-400 bg-cyan-400/10 text-cyan-400"
-                        : "border-slate-600 hover:border-cyan-400/40 text-slate-300 hover:text-cyan-300"
+                        ? "border-green-400 bg-green-400/10 text-green-400"
+                        : "border-slate-600 hover:border-green-400/40 text-slate-300 hover:text-green-300"
                     )}
                   >
                     {genre.name}
@@ -86,7 +86,7 @@ const GenrePage = () => {
                   {[...Array(10)].map((_, i) => (
                     <Skeleton
                       key={i}
-                      className="h-10 w-24 rounded-full bg-slate-800"
+                      className="h-10 w-24 rounded-full bg-[#333333]"
                     />
                   ))}
                 </div>
@@ -101,7 +101,7 @@ const GenrePage = () => {
                   {[...Array(10)].map((_, i) => (
                     <Skeleton
                       key={i}
-                      className="aspect-[2/3] rounded-xl bg-slate-800"
+                      className="aspect-[2/3] rounded-xl bg-[#333333]"
                     />
                   ))}
                 </div>
@@ -121,7 +121,7 @@ const GenrePage = () => {
                 <button
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1 || isLoading}
-                  className="p-2 rounded-lg bg-slate-800 text-slate-400 hover:text-cyan-400 
+                  className="p-2 rounded-lg bg-[#111111] text-slate-400 hover:text-white 
                 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <ChevronLeft className="h-5 w-5" />
@@ -135,8 +135,8 @@ const GenrePage = () => {
                     className={`min-w-[2.5rem] h-10 rounded-lg transition-colors
                   ${
                     pageNum === currentPage
-                      ? "bg-cyan-500/20 text-cyan-400"
-                      : "bg-slate-800 text-slate-400 hover:text-cyan-400"
+                      ? "bg-[#333333]/20 text-white"
+                      : "bg-[#111111] text-slate-400 hover:text-white"
                   }
                   disabled:opacity-50 disabled:cursor-not-allowed`}
                   >
@@ -147,7 +147,7 @@ const GenrePage = () => {
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages || isLoading}
-                  className="p-2 rounded-lg bg-slate-800 text-slate-400 hover:text-cyan-400 
+                  className="p-2 rounded-lg bg-[#111111] text-slate-400 hover:text-white 
                 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <ChevronRight className="h-5 w-5" />

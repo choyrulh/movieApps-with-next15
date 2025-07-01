@@ -1,12 +1,10 @@
 'use client'
 
-import { useState, useRef, useEffect, memo, useCallback } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { BookmarkPlus, Clapperboard, ChevronDown } from "lucide-react";
+import { useRouter } from "next/navigation";
 import useIsMobile from "@/hook/useIsMobile";
-import { logoutUser } from "@/action/Auth";
 import { useAuth } from "@/context/AuthContext";
 import { useUserProfile } from "@/hook/useUserProfile";
 import { Skeleton } from "@/components/ui/skeleton"
@@ -39,6 +37,17 @@ export const ProfileDropDown = ({ props, onCloseMenu }: any) => {
     { title: `${isAuthenticated ? "Log out" : "Log in"}`, path: "/login" },
   ];
 
+  // Function to get initials from name
+  const getInitials = (name: string) => {
+    if (!name) return "U";
+    const names = name.split(' ');
+    let initials = names[0].substring(0, 1).toUpperCase();
+    if (names.length > 1) {
+      initials += names[names.length - 1].substring(0, 1).toUpperCase();
+    }
+    return initials;
+  };
+
   return (
     <div className={`relative ${props}`}>
       <Avatar
@@ -51,13 +60,22 @@ export const ProfileDropDown = ({ props, onCloseMenu }: any) => {
           className="w-10 h-10 outline-none rounded-full ring-offset-2 ring-gray-200 ring-2 lg:focus:ring-indigo-600"
           onClick={() => setState(!state)}
         >
-          <AvatarImage
-            alt="profile picture"
-            src="https://github.com/shadcn.png"
-            width={40}
-            height={40}
-            className="w-full h-full rounded-full"
-          />
+         {isAuthenticated ? (
+            data?.data?.avatar ? (
+              <AvatarImage
+                src={data?.data?.avatar}
+                alt="Profile Picture"
+                className="w-full h-full object-cover rounded-full"
+              />
+            ) : (
+              <span className="font-medium text-sm">
+                {getInitials(data?.data?.name)}
+              </span>
+            )
+          ) : (
+            <span className="font-medium text-sm">U</span>
+          )}
+
           <AvatarFallback>
             <Skeleton />
           </AvatarFallback>

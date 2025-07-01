@@ -185,7 +185,7 @@ const paginationRange = useMemo(() => {
         {isLoading ? (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
             {[...Array(10)].map((_, i) => (
-              <Skeleton key={i} className="h-64 w-full rounded-lg" />
+              <Skeleton key={i} className="h-64 w-full rounded-lg bg-[#222222]" />
             ))}
           </div>
         ) : data?.results?.length === 0 ? (
@@ -203,7 +203,8 @@ const paginationRange = useMemo(() => {
               <button
                 onClick={() => setPage((old) => Math.max(old - 1, 1))}
                 disabled={page === 1 || isFetching}
-                className="p-2 rounded-lg bg-slate-800 text-slate-400 hover:text-cyan-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-2 rounded-lg bg-[#111111] text-slate-400 hover:text-white 
+                transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <ChevronLeft className="h-5 w-5" />
               </button>
@@ -215,9 +216,10 @@ const paginationRange = useMemo(() => {
                   disabled={isFetching}
                   className={`min-w-[2.5rem] h-10 rounded-lg transition-colors ${
                     pageNum === page
-                      ? "bg-cyan-500/20 text-cyan-400"
-                      : "bg-slate-800 text-slate-400 hover:text-cyan-400"
-                  } disabled:opacity-50 disabled:cursor-not-allowed`}
+                    ? "bg-[#333333]/20 text-white"
+                    : "bg-[#111111] text-slate-400 hover:text-white"
+                }
+                disabled:opacity-50 disabled:cursor-not-allowed`}
                 >
                   {pageNum}
                 </button>
@@ -226,7 +228,8 @@ const paginationRange = useMemo(() => {
               <button
                 onClick={() => setPage((old) => old + 1)}
                 disabled={isFetching || page >= data?.total_pages}
-                className="p-2 rounded-lg bg-slate-800 text-slate-400 hover:text-cyan-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-2 rounded-lg bg-[#111111] text-slate-400 hover:text-white 
+                transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <ChevronRight className="h-5 w-5" />
               </button>
