@@ -274,9 +274,9 @@ function DetailShow({ params }: { params: Promise<{ id: string }> }) {
                         media_type: "tv",
                       }}
                     />
-                    <GoWatchButton params={id} typeData={"tv"}>
+                    {/* <GoWatchButton params={id} typeData={"tv"}>
                       <Play /> Play
-                    </GoWatchButton>
+                    </GoWatchButton> */}
                   </div>
                 </div>
               </div>
