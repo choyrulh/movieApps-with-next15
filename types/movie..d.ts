@@ -27,6 +27,8 @@ export interface Movie {
     vote_average: number;
     vote_count: number;
   };
+  profile_path?: string;
+  known_for_department?: string;
   networks?: {
     name: string;
     id: number;
@@ -50,6 +52,7 @@ export interface Movie {
   videos?: {
     results: Video[];
   };
+  popularity?: number;
 }
 
 interface Genre {
@@ -67,7 +70,7 @@ export type Cast = {
   id: number;
   name: string;
   character: string;
-  profile_path: string | null;
-  known_for_department: string;
+  profile_path?: string | null;
+  known_for_department?: string;
   order: number;
 }

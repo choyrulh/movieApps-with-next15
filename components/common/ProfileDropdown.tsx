@@ -9,8 +9,6 @@ import { useAuth } from "@/context/AuthContext";
 import { useUserProfile } from "@/hook/useUserProfile";
 import { Skeleton } from "@/components/ui/skeleton"
 
-
-
 export const ProfileDropDown = ({ props, onCloseMenu }: any) => {
   const [state, setState] = useState(false);
   const isMobile = useIsMobile();
@@ -50,45 +48,68 @@ export const ProfileDropDown = ({ props, onCloseMenu }: any) => {
 
   return (
     <div className={`relative ${props}`}>
-      <Avatar
-        className={`flex items-center space-x-4 ${
-          isMobile ? "flex-row-reverse gap-4" : "flex-row"
-        }`}
-      >
-        <button
-          ref={profileRef}
-          className="w-10 h-10 outline-none rounded-full ring-offset-2 ring-gray-200 ring-2 lg:focus:ring-indigo-600"
-          onClick={() => setState(!state)}
-        >
-         {isAuthenticated ? (
-            data?.data?.avatar ? (
-              <AvatarImage
-                src={data?.data?.avatar}
-                alt="Profile Picture"
-                className="w-full h-full object-cover rounded-full"
-              />
+      <div className="flex items-center gap-3">
+        {/* Tambahkan elemen untuk menampilkan "Hello, (nama user)" di desktop */}
+        {!isMobile && isAuthenticated && (
+          <div className="hidden lg:block text-right">
+            {isLoading ? (
+              <Skeleton className="h-4 w-24 mb-1" />
             ) : (
-              <span className="font-medium text-sm">
-                {getInitials(data?.data?.name)}
-              </span>
-            )
-          ) : (
-            <span className="font-medium text-sm">U</span>
-          )}
+              <p className="text-sm font-medium text-gray-200">
+                Hello, {data?.data?.name || "User"}
+              </p>
+            )}
+            <p className="text-xs text-gray-400">
+              {isLoading ? (
+                <Skeleton className="h-3 w-32" />
+              ) : (
+                data?.data?.email || "Welcome back!"
+              )}
+            </p>
+          </div>
+        )}
+        
+        <Avatar
+          className={`flex items-center space-x-4 ${
+            isMobile ? "flex-row-reverse gap-4" : "flex-row"
+          }`}
+        >
+          <button
+            ref={profileRef}
+            className="w-10 h-10 outline-none rounded-full ring-offset-2 ring-gray-200 ring-2 lg:focus:ring-indigo-600"
+            onClick={() => setState(!state)}
+          >
+            {isAuthenticated ? (
+              data?.data?.avatar ? (
+                <AvatarImage
+                  src={data?.data?.avatar}
+                  alt="Profile Picture"
+                  className="w-full h-full object-cover rounded-full"
+                />
+              ) : (
+                <span className="font-medium text-sm">
+                  {getInitials(data?.data?.name)}
+                </span>
+              )
+            ) : (
+              <span className="font-medium text-sm">U</span>
+            )}
 
-          <AvatarFallback>
-            <Skeleton />
-          </AvatarFallback>
-        </button>
-        <div className="lg:hidden">
-          <span className="block">
-            {isAuthenticated ? data?.data?.name : "user"}
-          </span>
-          <span className="block text-sm text-gray-500">
-            {isAuthenticated ? data?.data?.email : "user@example.com"}
-          </span>
-        </div>
-      </Avatar>
+            <AvatarFallback>
+              <Skeleton />
+            </AvatarFallback>
+          </button>
+          <div className="lg:hidden">
+            <span className="block">
+              {isAuthenticated ? data?.data?.name : "user"}
+            </span>
+            <span className="block text-sm text-gray-500">
+              {isAuthenticated ? data?.data?.email : "user@example.com"}
+            </span>
+          </div>
+        </Avatar>
+      </div>
+      
       {/* Profile Dropdown Content */}
       {isMobile ? (
         <div

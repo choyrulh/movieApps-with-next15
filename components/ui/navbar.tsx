@@ -171,6 +171,7 @@ export const Navbar = () => {
                                     onClick={() => {
                                       setMenuState(false);
                                       setActiveDropdown(null);
+                                      window.scrollTo(0, 0);
                                     }}
                                     className="block text-gray-300 hover:text-white py-1"
                                   >
@@ -201,6 +202,7 @@ export const Navbar = () => {
                                     onClick={() => {
                                       setMenuState(false);
                                       setActiveDropdown(null);
+                                      window.scrollTo(0, 0);
                                     }}
                                     className="block px-3 py-2 text-gray-300 hover:text-white rounded-md transition-colors duration-200 hover:bg-[#101010] whitespace-nowrap"
                                   >
@@ -215,8 +217,12 @@ export const Navbar = () => {
                     ) : (
                       <Link
                         href={item.path}
-                        onClick={handleCloseMenu}
+                        onClick={() => {
+                          handleCloseMenu();
+                          window.scrollTo(0, 0);
+                        }}
                         className="block text-gray-300 hover:text-white py-1"
+                        scroll={false}
                       >
                         {item.title}
                       </Link>

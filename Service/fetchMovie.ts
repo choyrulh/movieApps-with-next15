@@ -434,3 +434,45 @@ export const getReleaseMovieCurrentMonth = async (
     return error;
   }
 };
+
+export const getAiringTodayShow = async () => {
+  try {
+    const response = await axios.get(
+      `${url}/tv/airing_today?api_key=${api_key}`
+    );
+    const data = await response.data;
+    return data;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const getOnTheAirShow = async () => {
+  try {
+    const response = await axios.get(`${url}/tv/on_the_air?api_key=${api_key}`);
+    const data = await response.data;
+    return data;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const getPopularShow = async () => {
+  try {
+    const response = await axios.get(`${url}/tv/popular?api_key=${api_key}`);
+    const data = await response.data;
+    return data;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const getTopRatedShow = async () => {
+  try {
+    const response = await axios.get(`${url}/tv/top_rated?api_key=${api_key}`);
+    const data = await response.data;
+    return data;
+  } catch (error) {
+    return error;
+  }
+};
