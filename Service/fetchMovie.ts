@@ -193,6 +193,32 @@ export const getCastsDetailShow = async (id: string) => {
   }
 };
 
+export const getTVEpisodes = async (id: string, seasonNumber: number) => {
+  try {
+    const response = await axios.get(
+      `${url}/tv/${id}/season/${seasonNumber}?api_key=${api_key}&language=en-US`
+    );
+
+    const data = await response.data;
+    return data;
+  } catch (error) {
+    return error;
+  }
+}
+
+export const getTVImages = async (id: string) => {
+  try {
+    const response = await axios.get(
+      `${url}/tv/${id}/images?api_key=${api_key}`
+    );
+
+    const data = await response.data;
+    return data;
+  } catch (error) {
+    return error;
+  }
+}
+
 const getUpcoming = async () => {
   try {
     const response = await fetch(
