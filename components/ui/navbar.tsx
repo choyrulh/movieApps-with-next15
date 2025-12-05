@@ -30,18 +30,22 @@ export const Navbar = () => {
   const timeoutRef = useRef<NodeJS.Timeout>();
 
   const pathname = usePathname();
+  const { watchlist, syncWithServer } = useWatchlistStore();
 
   useEffect(() => {
+    // Sinkronisasi watchlist saat komponen navbar dimount
+    syncWithServer();
+    
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 0);
     };
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [syncWithServer]); // <-- Tambahkan syncWithServer sebagai dependency
 
   // --- Logic Watchlist Baru ---
-  const { watchlist } = useWatchlistStore();
+
   const previewItems = watchlist.slice(0, 4); // Ambil 4 item teratas untuk preview
   const totalItems = watchlist.length;
 
