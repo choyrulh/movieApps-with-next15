@@ -14,7 +14,6 @@ body {
   }
 }
 
-
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -68,7 +67,7 @@ body {
     --chart-3: 160 80% 40%;
     --chart-4: 100 65% 50%;
     --chart-5: 80 75% 50%;
-  }  
+  }
 }
 
 @layer utilities {
@@ -225,9 +224,16 @@ body {
 }
 
 .animate-pulse {
-  background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
+  background: #abaeb4;
+  background: linear-gradient(90deg, #abaeb4 25%, #f3f4f6 50%, #abaeb4 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
+}
+
+.dark .animate-pulse {
+  background: #1f2937;
+  background: linear-gradient(90deg, #1f2937 25%, #374151 50%, #1f2937 75%);
+  background-size: 200% 100%;
 }
 
 .text-gradient {
@@ -252,9 +258,15 @@ body {
 }
 
 @keyframes gradient {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 .animate-gradient {

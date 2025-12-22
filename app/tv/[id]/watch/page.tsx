@@ -47,8 +47,9 @@ function page() {
   });
   const [showSeasonDropdown, setShowSeasonDropdown] = useState(false);
   const [isCastExpanded, setIsCastExpanded] = useState(false);
-  const [showContent, setShowContent] = useState<"episodes" | "cast">("episodes");
-
+  const [showContent, setShowContent] = useState<"episodes" | "cast">(
+    "episodes"
+  );
 
   const videoProgressRef = useRef(videoProgress);
   const videoPlayerRef = useRef<HTMLDivElement>(null);
@@ -60,13 +61,13 @@ function page() {
   const saveIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const isMobile = useIsMobile();
 
-  const { 
-    data: show, 
-    isLoading, 
-    isError 
+  const {
+    data: show,
+    isLoading,
+    isError,
   } = useQuery<any>({
     queryKey: ["showDetail", id],
-    queryFn: () => 
+    queryFn: () =>
       getDetailShow(id as unknown as number, {
         append_to_response: "credits", // Tambahkan credits
       }),
@@ -309,18 +310,18 @@ function page() {
     (episodeNumber: string) => {
       // Update episode state
       setEpisode(episodeNumber);
-      
+
       // Scroll to video player section smoothly
       // Use setTimeout to ensure DOM has updated before scrolling
       setTimeout(() => {
         if (videoPlayerRef.current) {
-          videoPlayerRef.current.scrollIntoView({ 
-            behavior: 'smooth', 
-            block: 'start' 
+          videoPlayerRef.current.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
           });
         }
       }, 0);
-    }, 
+    },
     [] // Empty dependency array since it doesn't depend on any changing values
   );
 
@@ -398,9 +399,15 @@ function page() {
           )}
 
           {/* Main Content Area */}
-          <div className={`flex flex-col gap-6 ${isFullScreen ? 'lg:flex-col' : 'lg:flex-row'}`}>
+          <div
+            className={`flex flex-col gap-6 ${
+              isFullScreen ? "lg:flex-col" : "lg:flex-row"
+            }`}
+          >
             {/* Left Column - Video Player */}
-            <div className={isFullScreen ? 'w-full overflow-hidden' : 'lg:w-2/3'}>
+            <div
+              className={isFullScreen ? "w-full overflow-hidden" : "lg:w-2/3"}
+            >
               <div
                 ref={videoPlayerRef}
                 className="relative group aspect-video bg-black rounded-xl overflow-hidden shadow-xl"
@@ -525,13 +532,18 @@ function page() {
                     <div className="flex items-center gap-1">
                       <Calendar className="w-4 h-4" />
                       <span>
-                        {new Date(currentEpisodeData.air_date).toLocaleDateString()}
+                        {new Date(
+                          currentEpisodeData.air_date
+                        ).toLocaleDateString()}
                       </span>
                     </div>
                     <div className="flex items-center gap-1">
                       <Clock className="w-4 h-4" />
                       <span>
-                        {currentEpisodeData.runtime || show?.episode_run_time?.[0] || "N/A"}m
+                        {currentEpisodeData.runtime ||
+                          show?.episode_run_time?.[0] ||
+                          "N/A"}
+                        m
                       </span>
                     </div>
                   </div>
@@ -540,7 +552,11 @@ function page() {
             </div>
 
             {/* Right Column - Episode/Cast Selector */}
-            <div className={`bg-[#151515]/50 rounded-xl p-4 ${isFullScreen ? 'lg:w-auto' : 'lg:w-1/3'}`}>
+            <div
+              className={`bg-[#151515]/50 rounded-xl p-4 ${
+                isFullScreen ? "lg:w-auto" : "lg:w-1/3"
+              }`}
+            >
               {/* Toggle Buttons */}
               <div className="flex mb-4 border-b border-gray-700">
                 <button
@@ -572,7 +588,7 @@ function page() {
                 {showContent === "episodes" ? (
                   <>
                     {/* Season Selector */}
-                    <div className="mb-4 " >
+                    <div className="mb-4 ">
                       <select
                         value={season}
                         onChange={(e) => {
@@ -586,7 +602,8 @@ function page() {
                             key={s.season_number}
                             value={s.season_number.toString()}
                           >
-                            Season {s.season_number} ({s.episode_count} episodes)
+                            Season {s.season_number} ({s.episode_count}{" "}
+                            episodes)
                           </option>
                         ))}
                       </select>
@@ -605,16 +622,18 @@ function page() {
                         const isCurrentEpisode =
                           episode === ep.episode_number.toString();
                         const hasProgress = epProgress > 0;
-                        const episodeImage = ep.still_path 
+                        const episodeImage = ep.still_path
                           ? `https://image.tmdb.org/t/p/w300${ep.still_path}`
                           : show?.poster_path
-                            ? `https://image.tmdb.org/t/p/w300${show.poster_path}`
-                            : '/no-image.png';
+                          ? `https://image.tmdb.org/t/p/w300${show.poster_path}`
+                          : "/no-image.png";
 
                         return (
                           <div
                             key={ep.id}
-                            onClick={() => handleEpisodeChange(ep.episode_number.toString())}
+                            onClick={() =>
+                              handleEpisodeChange(ep.episode_number.toString())
+                            }
                             className={`group p-3 rounded-lg cursor-pointer transition-all ${
                               isCurrentEpisode
                                 ? "bg-green-600/20 border border-green-500/50"
@@ -629,7 +648,9 @@ function page() {
                                   alt={`Episode ${ep.episode_number} - ${ep.name}`}
                                   fill
                                   className={`object-cover transition-opacity duration-300 ${
-                                    isCurrentEpisode ? 'opacity-100' : 'opacity-90 group-hover:opacity-100'
+                                    isCurrentEpisode
+                                      ? "opacity-100"
+                                      : "opacity-90 group-hover:opacity-100"
                                   }`}
                                   sizes="(max-width: 640px) 20vw, 10vw"
                                   loading="lazy"
@@ -652,23 +673,28 @@ function page() {
                                     </div>
                                   )}
                                 </div>
-                                
+
                                 {/* Episode Metadata */}
                                 <div className="flex items-center gap-3 mt-1 text-xs text-gray-400">
                                   <div className="flex items-center gap-1">
                                     <Calendar className="w-3 h-3" />
                                     <span>
-                                      {new Date(ep.air_date).toLocaleDateString()}
+                                      {new Date(
+                                        ep.air_date
+                                      ).toLocaleDateString()}
                                     </span>
                                   </div>
                                   <div className="flex items-center gap-1">
                                     <Clock className="w-3 h-3" />
                                     <span>
-                                      {ep.runtime || show?.episode_run_time?.[0] || "N/A"}m
+                                      {ep.runtime ||
+                                        show?.episode_run_time?.[0] ||
+                                        "N/A"}
+                                      m
                                     </span>
                                   </div>
                                 </div>
-                                
+
                                 {/* Episode Description */}
                                 {ep.overview && (
                                   <p className="mt-2 text-xs text-gray-300 line-clamp-2">
@@ -683,79 +709,79 @@ function page() {
                     </div>
                   </>
                 ) : (
-                    /* Cast Section */
-                    <div className="space-y-4">
-  {/* Section Header */}
-  <div className="flex justify-between items-center px-2">
-    <h3 className="text-lg font-medium text-white">Cast Members</h3>
-    {show?.credits?.cast.length > 6 && (
-      <button
-        onClick={() => setIsCastExpanded(!isCastExpanded)}
-        className="text-xs text-green-400 hover:text-green-300 flex items-center gap-1"
-      >
-        {isCastExpanded ? (
-          <>
-            <ChevronUp className="w-3 h-3" />
-            <span>Show Less</span>
-          </>
-        ) : (
-          <>
-            <span>View All</span>
-            <ChevronDown className="w-3 h-3" />
-          </>
-        )}
-      </button>
-    )}
-  </div>
+                  /* Cast Section */
+                  <div className="space-y-4">
+                    {/* Section Header */}
+                    <div className="flex justify-between items-center px-2">
+                      <h3 className="text-lg font-medium text-white">
+                        Cast Members
+                      </h3>
+                      {show?.credits?.cast.length > 6 && (
+                        <button
+                          onClick={() => setIsCastExpanded(!isCastExpanded)}
+                          className="text-xs text-green-400 hover:text-green-300 flex items-center gap-1"
+                        >
+                          {isCastExpanded ? (
+                            <>
+                              <ChevronUp className="w-3 h-3" />
+                              <span>Show Less</span>
+                            </>
+                          ) : (
+                            <>
+                              <span>View All</span>
+                              <ChevronDown className="w-3 h-3" />
+                            </>
+                          )}
+                        </button>
+                      )}
+                    </div>
 
-  {/* Cast Grid - 2 Columns */}
-  <div className="grid grid-cols-2 gap-3">
-    {show?.credits?.cast
-      .slice(0, isCastExpanded ? show.credits.cast.length : 6)
-      .map((actor: any) => (
-        <div
-          key={actor.id}
-          className="flex items-center gap-3 p-2 rounded-lg bg-[#151515]/30 hover:bg-[#151515]/50 transition-colors"
-        >
-          {/* Actor Avatar - Larger and Clearer */}
-          <div className="relative w-16 h-16 min-w-[4rem] rounded-full overflow-hidden border border-gray-600">
-            <Image
-              src={
-                actor.profile_path
-                  ? `https://image.tmdb.org/t/p/w185${actor.profile_path}`
-                  : "/no-avatar.png"
-              }
-              alt={actor.name}
-              fill
-              className="object-cover"
-              sizes="64px"
-              loading="eager" // Changed to eager for better loading
-              quality={85} // Better image quality
-              priority={false}
-            />
-          </div>
-          
-          {/* Actor Info */}
-          <div className="flex-1 min-w-0">
-            <h3 className="text-sm font-medium text-white truncate">
-              {actor.name}
-            </h3>
-            {actor.character && (
-              <p className="text-xs text-gray-400 mt-0.5 truncate">
-                as {actor.character}
-              </p>
-            )}
-          </div>
-        </div>
-      ))}
-  </div>
-</div>
-                  )}
-                </div>
+                    {/* Cast Grid - 2 Columns */}
+                    <div className="grid grid-cols-2 gap-3">
+                      {show?.credits?.cast
+                        .slice(0, isCastExpanded ? show.credits.cast.length : 6)
+                        .map((actor: any) => (
+                          <div
+                            key={actor.id}
+                            className="flex items-center gap-3 p-2 rounded-lg bg-[#151515]/30 hover:bg-[#151515]/50 transition-colors"
+                          >
+                            {/* Actor Avatar - Larger and Clearer */}
+                            <div className="relative w-16 h-16 min-w-[4rem] rounded-full overflow-hidden border border-gray-600">
+                              <Image
+                                src={
+                                  actor.profile_path
+                                    ? `https://image.tmdb.org/t/p/w185${actor.profile_path}`
+                                    : "/no-avatar.png"
+                                }
+                                alt={actor.name}
+                                fill
+                                className="object-cover"
+                                sizes="64px"
+                                loading="eager" // Changed to eager for better loading
+                                quality={85} // Better image quality
+                                priority={false}
+                              />
+                            </div>
 
+                            {/* Actor Info */}
+                            <div className="flex-1 min-w-0">
+                              <h3 className="text-sm font-medium text-white truncate">
+                                {actor.name}
+                              </h3>
+                              {actor.character && (
+                                <p className="text-xs text-gray-400 mt-0.5 truncate">
+                                  as {actor.character}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
-
         </main>
       </div>
     </>

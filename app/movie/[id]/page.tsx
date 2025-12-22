@@ -97,7 +97,7 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
   if (isError) {
     return (
       <>
-        <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+        <div className="min-h-screen bg-gray-900 flex items-center justify-center">
           <div className="text-white text-xl">Failed to load movie data</div>
         </div>
       </>
@@ -107,7 +107,7 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
   if (!movie) {
     return (
       <>
-        <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+        <div className="min-h-screen bg-gray-900 flex items-center justify-center">
           <div className="text-white text-xl">Movie not found</div>
         </div>
       </>
@@ -272,7 +272,7 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
                 </div>
               </div>
             </div>
-            <div className="mt-8 bg-slate-800/10 shadow-lg backdrop-blur-lg rounded-2xl p-6 border border-white/10">
+            <div className="mt-8 bg-black/70 shadow-lg backdrop-blur-lg rounded-2xl p-6 border border-white/10">
               {/* Tab Headers with Animated Underline */}
               <div className="relative mb-8">
                 <Tabs />
@@ -454,7 +454,7 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
                             key={i}
                             className="group relative aspect-[2/3] animate-pulse"
                           >
-                            <div className="absolute inset-0 bg-slate-800 rounded-2xl" />
+                            <div className="absolute inset-0 bg-gray-900/10 rounded-2xl" />
                             <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent rounded-2xl" />
                           </div>
                         ))}

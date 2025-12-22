@@ -27,13 +27,13 @@ const TrailerModal = ({ videoKey }: TrailerModalProps) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-slate-900/90 z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 bg-transparent/70 z-50 flex items-center justify-center p-4"
             onClick={() => setIsOpen(false)}
           >
             <motion.div
               initial={{ scale: 0.95 }}
               animate={{ scale: 1 }}
-              className="relative w-full max-w-4xl bg-slate-800 rounded-xl overflow-hidden"
+              className="relative w-full max-w-4xl bg-black/70 rounded-xl overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
               <button

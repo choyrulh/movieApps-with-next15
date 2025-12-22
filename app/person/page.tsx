@@ -1,7 +1,7 @@
 "use client";
 
-import { memo, useMemo, useState } from "react";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { memo, useState } from "react";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { getPopularCasts } from "@/Service/fetchMovie";
@@ -36,9 +36,7 @@ const StatBox = ({
   value: string | number;
   color: string;
 }) => (
-  <div
-    className={`p-2 md:p-3 rounded-lg bg-[#222222] shadow-lg`}
-  >
+  <div className={`p-2 md:p-3 rounded-lg bg-[#222222] shadow-lg`}>
     <div className="text-xs md:text-sm text-gray-400">{label}</div>
     <div className={`text-base md:text-lg font-semibold text-${color}-400`}>
       {value}
@@ -395,15 +393,15 @@ export default function PopularPeoplePage() {
 
 // Add loading skeleton component
 const LoadingSkeleton = () => (
-  <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-8">
-    <div className="max-w-7xl mx-auto space-y-8">
+  <div className="min-h-screen bg-black dark:bg-gray-900 p-8">
+    <div className="max-w-7xl mx-auto space-y-8 pt-[5rem]">
       <div className="h-96 bg-gradient-to-r from-green-500/10 to-blue-500/10 rounded-2xl animate-pulse border border-dashed border-gray-300 dark:border-gray-700" />
-      <div className="h-12 bg-gray-200 dark:bg-gray-800 rounded-full w-1/3 animate-pulse" />
+      <div className="h-12 bg-black dark:bg-gray-800 rounded-full w-1/3 animate-pulse" />
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {[...Array(6)].map((_, i) => (
           <div
             key={i}
-            className="h-48 bg-gray-200 dark:bg-gray-800 rounded-xl animate-pulse"
+            className="h-48 bg-black dark:bg-gray-800 rounded-xl animate-pulse"
           />
         ))}
       </div>
@@ -413,7 +411,7 @@ const LoadingSkeleton = () => (
 
 // Add error state component
 const ErrorState = () => (
-  <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+  <div className="min-h-screen bg-black dark:bg-gray-900 flex items-center justify-center">
     <div className="text-center p-8 max-w-2xl">
       <div className="text-6xl mb-4 text-red-500">⚠️</div>
       <h2 className="text-2xl font-bold dark:text-white mb-4">

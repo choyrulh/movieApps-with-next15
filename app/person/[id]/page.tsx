@@ -163,7 +163,7 @@ const PersonDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
                       initial={{ opacity: 0, scale: 0.95 }}
                       animate={{ opacity: 1, scale: 1 }}
                       whileHover={{ y: -5 }}
-                      className="bg-slate-900/10 border border-slate-900/20 dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden"
+                      className="bg-gray-600/10 border border-gray-600/20 dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden"
                     >
                       <div className="relative aspect-[2/3]">
                         <Image
@@ -212,17 +212,59 @@ const PersonDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
 
 const LoadingSkeleton = () => (
   <div className="min-h-screen">
-    <div className="max-w-7xl mx-auto pt-[7rem] pb-[2rem] py-8 animate-pulse">
-      <div className="flex flex-col md:flex-row gap-8">
-        <div className="w-full md:w-1/3 lg:w-1/4 aspect-square rounded-2xl" />
-        <div className="flex-1 space-y-4">
-          <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded w-1/2" />
-          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/3" />
-          <div className="space-y-2">
-            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded" />
-            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-5/6" />
-            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-2/3" />
+    <div className="max-w-7xl mx-auto pt-[7rem] pb-[2rem] px-4">
+      <div className="flex flex-col md:flex-row gap-8 md:gap-12">
+        {/* Profile Image Skeleton */}
+        <div className="w-full md:w-64 lg:w-72 aspect-[2/3] bg-gray-300 rounded-2xl animate-pulse" />
+
+        {/* Personal Info Skeleton */}
+        <div className="flex-1 space-y-6 px-4 md:px-0">
+          {/* Name */}
+          <div className="h-10 bg-gray-300 rounded-lg w-3/4 md:w-1/2 animate-pulse" />
+
+          {/* Info Stats */}
+          <div className="flex gap-4">
+            <div className="h-5 bg-gray-300 rounded w-32 animate-pulse" />
+            <div className="h-5 bg-gray-300 rounded w-24 animate-pulse" />
+            <div className="h-5 bg-gray-300 rounded w-28 animate-pulse" />
           </div>
+
+          {/* Biography */}
+          <div className="space-y-3 pt-4">
+            <div className="h-4 bg-gray-300 rounded w-full animate-pulse" />
+            <div className="h-4 bg-gray-300 rounded w-full animate-pulse" />
+            <div className="h-4 bg-gray-300 rounded w-5/6 animate-pulse" />
+            <div className="h-4 bg-gray-300 rounded w-4/5 animate-pulse" />
+            <div className="h-4 bg-gray-300 rounded w-11/12 animate-pulse" />
+          </div>
+
+          {/* Actions */}
+          <div className="flex gap-4 pt-2">
+            <div className="h-10 w-40 bg-gray-300 rounded-full animate-pulse" />
+            <div className="h-10 w-10 bg-gray-300 rounded-full animate-pulse" />
+          </div>
+        </div>
+      </div>
+
+      {/* Filmography Section Skeleton */}
+      <div className="mt-12 space-y-6">
+        {/* Tabs */}
+        <div className="flex gap-4 border-b border-gray-200 dark:border-gray-800 pb-4">
+          <div className="h-8 w-24 bg-gray-300 rounded animate-pulse" />
+          <div className="h-8 w-24 bg-gray-300 rounded animate-pulse" />
+        </div>
+
+        {/* Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+          {[...Array(10)].map((_, i) => (
+            <div key={i} className="space-y-3">
+              <div className="aspect-[2/3] bg-gray-300 rounded-xl animate-pulse" />
+              <div className="space-y-2">
+                <div className="h-4 bg-gray-300 rounded w-3/4 animate-pulse" />
+                <div className="h-3 bg-gray-300 rounded w-1/2 animate-pulse" />
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>

@@ -15,7 +15,17 @@ import Head from "next/head";
 import Image from "next/image";
 import { Rating } from "@/components/common/Rating";
 import TrailerModal from "@/components/TrailerModal";
-import { CalendarIcon, ForwardIcon, Heart, Play, ChevronRight, Clock, Star, Users, ImageIcon } from "lucide-react";
+import {
+  CalendarIcon,
+  ForwardIcon,
+  Heart,
+  Play,
+  ChevronRight,
+  Clock,
+  Star,
+  Users,
+  ImageIcon,
+} from "lucide-react";
 import {
   BanknotesIcon,
   BuildingOfficeIcon,
@@ -45,7 +55,6 @@ function DetailShow({ params }: { params: Promise<{ id: string }> }) {
   const [selectedSeason, setSelectedSeason] = useState(1); // State untuk season yang dipilih
   const isMobile = useIsMobile();
   const { isAuthenticated } = useAuth();
-  
 
   const {
     data: show,
@@ -118,7 +127,7 @@ function DetailShow({ params }: { params: Promise<{ id: string }> }) {
   if (isLoading) {
     return (
       <>
-        <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+        <div className="min-h-screen bg-black flex items-center justify-center">
           <Loader />
         </div>
       </>
@@ -128,7 +137,7 @@ function DetailShow({ params }: { params: Promise<{ id: string }> }) {
   if (isError) {
     return (
       <>
-        <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+        <div className="min-h-screen bg-black flex items-center justify-center">
           <div className="text-white text-xl">Failed to load show data</div>
         </div>
       </>
@@ -138,7 +147,7 @@ function DetailShow({ params }: { params: Promise<{ id: string }> }) {
   if (!show) {
     return (
       <>
-        <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+        <div className="min-h-screen bg-black flex items-center justify-center">
           <div className="text-white text-xl">series not found</div>
         </div>
       </>
@@ -184,7 +193,7 @@ function DetailShow({ params }: { params: Promise<{ id: string }> }) {
         "Status",
         "Cast",
         "Episodes", // Tab baru untuk episodes
-        "Gallery"
+        "Gallery",
       ],
       []
     );
@@ -662,7 +671,7 @@ function DetailShow({ params }: { params: Promise<{ id: string }> }) {
                                   </div>
                                 )}
                                 {/* Gradient Overlay */}
-                                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-transparent to-transparent" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
                               </div>
 
                               {/* Text Content */}
@@ -723,15 +732,14 @@ function DetailShow({ params }: { params: Promise<{ id: string }> }) {
                     )}
                   </div>
                 )}
-                
+
                 {/* Tab Episodes */}
                 {activeTab === "episodes" && (
                   <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    
                     {/* Season Selector - Horizontal Scrollable */}
                     <div>
                       <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                        <Users className="w-5 h-5 text-green-400" /> 
+                        <Users className="w-5 h-5 text-green-400" />
                         Select Season
                       </h3>
                       <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-slate-800/50">
@@ -755,13 +763,16 @@ function DetailShow({ params }: { params: Promise<{ id: string }> }) {
                     {isLoadingEpisodes ? (
                       <div className="space-y-4">
                         {[1, 2, 3].map((i) => (
-                           <div key={i} className="bg-slate-800/50 rounded-xl p-4 h-40 animate-pulse flex gap-4">
-                             <div className="w-64 bg-slate-700 rounded-lg h-full"></div>
-                             <div className="flex-1 space-y-3 py-2">
-                                <div className="h-4 bg-slate-700 w-1/3 rounded"></div>
-                                <div className="h-3 bg-slate-700 w-full rounded"></div>
-                             </div>
-                           </div>
+                          <div
+                            key={i}
+                            className="bg-slate-black/50 rounded-xl p-4 h-40 animate-pulse flex gap-4"
+                          >
+                            <div className="w-64 bg-black rounded-lg h-full"></div>
+                            <div className="flex-1 space-y-3 py-2">
+                              <div className="h-4 bg-black w-1/3 rounded"></div>
+                              <div className="h-3 bg-black w-full rounded"></div>
+                            </div>
+                          </div>
                         ))}
                       </div>
                     ) : isEpisodesError ? (
@@ -777,7 +788,7 @@ function DetailShow({ params }: { params: Promise<{ id: string }> }) {
                         {episodes?.episodes?.map((episode: any) => (
                           <div
                             key={episode.id}
-                            className="group relative bg-slate-800/30 hover:bg-slate-800/80 border border-white/5 hover:border-green-500/30 rounded-xl overflow-hidden transition-all duration-300 p-3 sm:p-4 flex flex-col sm:flex-row gap-5"
+                            className="group relative bg-transparent hover:bg-transparent/80 border border-white/5 hover:border-green-500/30 rounded-xl overflow-hidden transition-all duration-300 p-3 sm:p-4 flex flex-col sm:flex-row gap-5"
                           >
                             {/* Thumbnail Area */}
                             <div className="relative w-full sm:w-[280px] h-[160px] sm:h-[158px] flex-shrink-0 rounded-lg overflow-hidden bg-slate-900">
@@ -790,10 +801,16 @@ function DetailShow({ params }: { params: Promise<{ id: string }> }) {
                                 />
                               ) : (
                                 <div className="w-full h-full flex items-center justify-center bg-slate-800">
-                                  <Image src="/placeholder-movie.png" alt="No Preview" width={50} height={50} className="opacity-20" />
+                                  <Image
+                                    src="/placeholder-movie.png"
+                                    alt="No Preview"
+                                    width={50}
+                                    height={50}
+                                    className="opacity-20"
+                                  />
                                 </div>
                               )}
-                              
+
                               {/* Overlay Play Icon */}
                               <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                                 <div className="w-12 h-12 rounded-full bg-green-500/90 flex items-center justify-center pl-1 transform scale-0 group-hover:scale-100 transition-transform duration-300 delay-75">
@@ -823,12 +840,20 @@ function DetailShow({ params }: { params: Promise<{ id: string }> }) {
                                 </div>
 
                                 <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-slate-400 mb-3">
-                                  <span className="flex items-center gap-1.5 bg-slate-700/50 px-2 py-1 rounded">
+                                  <span className="flex items-center border border-white/10 gap-1.5 bg-transparent/50 px-2 py-1 rounded">
                                     <CalendarIcon className="w-3.5 h-3.5" />
-                                    {episode.air_date ? new Date(episode.air_date).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }) : "TBA"}
+                                    {episode.air_date
+                                      ? new Date(
+                                          episode.air_date
+                                        ).toLocaleDateString(undefined, {
+                                          day: "numeric",
+                                          month: "short",
+                                          year: "numeric",
+                                        })
+                                      : "TBA"}
                                   </span>
                                   {episode.runtime && (
-                                    <span className="flex items-center gap-1.5 bg-slate-700/50 px-2 py-1 rounded">
+                                    <span className="flex items-center border border-white/10 gap-1.5 bg-transparent/50 px-2 py-1 rounded">
                                       <Clock className="w-3.5 h-3.5" />
                                       {episode.runtime}m
                                     </span>
@@ -836,27 +861,41 @@ function DetailShow({ params }: { params: Promise<{ id: string }> }) {
                                 </div>
 
                                 <p className="text-sm text-slate-300 line-clamp-2 leading-relaxed mb-3">
-                                  {episode.overview || "No overview available for this episode."}
+                                  {episode.overview ||
+                                    "No overview available for this episode."}
                                 </p>
                               </div>
 
                               {/* Footer Action */}
                               <div className="flex items-center justify-between mt-auto border-t border-white/5 pt-3">
                                 <div className="flex -space-x-2">
-                                    {/* Guest Stars Avatars (Optional visual flair) */}
-                                    {episode.guest_stars?.slice(0,3).map((star:any) => (
-                                        star.profile_path && (
-                                            <div key={star.id} className="w-6 h-6 rounded-full border border-slate-800 relative overflow-hidden bg-slate-700" title={star.name}>
-                                                <Image src={`https://image.tmdb.org/t/p/w200${star.profile_path}`} alt={star.name} fill className="object-cover" />
-                                            </div>
-                                        )
-                                    ))}
-                                    {episode.guest_stars?.length > 3 && (
-                                        <div className="w-6 h-6 rounded-full bg-slate-700 border border-slate-800 flex items-center justify-center text-[8px] text-white">+{episode.guest_stars.length - 3}</div>
-                                    )}
+                                  {/* Guest Stars Avatars (Optional visual flair) */}
+                                  {episode.guest_stars?.slice(0, 3).map(
+                                    (star: any) =>
+                                      star.profile_path && (
+                                        <div
+                                          key={star.id}
+                                          className="w-6 h-6 rounded-full border border-slate-800 relative overflow-hidden bg-transparent"
+                                          title={star.name}
+                                        >
+                                          <Image
+                                            src={`https://image.tmdb.org/t/p/w200${star.profile_path}`}
+                                            alt={star.name}
+                                            fill
+                                            className="object-cover"
+                                          />
+                                        </div>
+                                      )
+                                  )}
+                                  {episode.guest_stars?.length > 3 && (
+                                    <div className="w-6 h-6 rounded-full bg-transparent border border-slate-800 flex items-center justify-center text-[8px] text-white">
+                                      +{episode.guest_stars.length - 3}
+                                    </div>
+                                  )}
                                 </div>
                                 <button className="text-xs font-medium text-green-400 hover:text-green-300 flex items-center gap-1 group/btn">
-                                  Read More <ChevronRight className="w-3 h-3 transition-transform group-hover/btn:translate-x-1" />
+                                  Read More{" "}
+                                  <ChevronRight className="w-3 h-3 transition-transform group-hover/btn:translate-x-1" />
                                 </button>
                               </div>
                             </div>
@@ -870,12 +909,14 @@ function DetailShow({ params }: { params: Promise<{ id: string }> }) {
                 {/* --- TAB GALLERY --- */}
                 {activeTab === "gallery" && (
                   <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    
                     {isLoadingImages ? (
                       // Skeleton Loading Gallery
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {[...Array(6)].map((_, i) => (
-                          <div key={i} className="aspect-video bg-slate-800 rounded-xl animate-pulse" />
+                          <div
+                            key={i}
+                            className="aspect-video bg-transparent rounded-xl animate-pulse"
+                          />
                         ))}
                       </div>
                     ) : isImagesError ? (
@@ -890,28 +931,30 @@ function DetailShow({ params }: { params: Promise<{ id: string }> }) {
                             <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
                               <ImageIcon className="w-5 h-5 text-green-400" />
                               Backdrops
-                              <span className="text-xs font-normal text-slate-500 bg-slate-800 px-2 py-1 rounded-full">
+                              {/* <span className="text-xs font-normal text-slate-500 bg-slate-800 px-2 py-1 rounded-full">
                                 {images.backdrops.length} Images
-                              </span>
+                              </span> */}
                             </h3>
-                            
+
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                              {images.backdrops.slice(0, 9).map((img: any, idx: number) => (
-                                <div
-                                  key={idx}
-                                  className="group relative aspect-video bg-slate-800 rounded-xl overflow-hidden border border-white/5 cursor-zoom-in"
-                                >
-                                  <Image
-                                    src={`https://image.tmdb.org/t/p/w780${img.file_path}`}
-                                    alt="Backdrop"
-                                    fill
-                                    className="object-cover transition-transform duration-700 group-hover:scale-110"
-                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                                  />
-                                  {/* Overlay Gradient */}
-                                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                                </div>
-                              ))}
+                              {images.backdrops
+                                .slice(0, 9)
+                                .map((img: any, idx: number) => (
+                                  <div
+                                    key={idx}
+                                    className="group relative aspect-video bg-transparent rounded-xl overflow-hidden border border-white/5 cursor-zoom-in"
+                                  >
+                                    <Image
+                                      src={`https://image.tmdb.org/t/p/w780${img.file_path}`}
+                                      alt="Backdrop"
+                                      fill
+                                      className="object-cover transition-transform duration-700 group-hover:scale-110"
+                                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                    />
+                                    {/* Overlay Gradient */}
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                  </div>
+                                ))}
                             </div>
                           </div>
                         )}
@@ -922,37 +965,40 @@ function DetailShow({ params }: { params: Promise<{ id: string }> }) {
                             <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
                               <ImageIcon className="w-5 h-5 text-purple-400" />
                               Posters & Artwork
-                              <span className="text-xs font-normal text-slate-500 bg-slate-800 px-2 py-1 rounded-full">
+                              {/* <span className="text-xs font-normal text-slate-500 bg-slate-800 px-2 py-1 rounded-full">
                                 {images.posters.length} Images
-                              </span>
+                              </span> */}
                             </h3>
 
                             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                              {images.posters.slice(0, 12).map((img: any, idx: number) => (
-                                <div
-                                  key={idx}
-                                  className="group relative aspect-[2/3] bg-slate-800 rounded-xl overflow-hidden border border-white/5 shadow-lg"
-                                >
-                                  <Image
-                                    src={`https://image.tmdb.org/t/p/w500${img.file_path}`}
-                                    alt="Poster"
-                                    fill
-                                    className="object-cover transition-transform duration-500 group-hover:scale-110"
-                                    sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 16vw"
-                                  />
-                                </div>
-                              ))}
+                              {images.posters
+                                .slice(0, 12)
+                                .map((img: any, idx: number) => (
+                                  <div
+                                    key={idx}
+                                    className="group relative aspect-[2/3] bg-slate-800 rounded-xl overflow-hidden border border-white/5 shadow-lg"
+                                  >
+                                    <Image
+                                      src={`https://image.tmdb.org/t/p/w500${img.file_path}`}
+                                      alt="Poster"
+                                      fill
+                                      className="object-cover transition-transform duration-500 group-hover:scale-110"
+                                      sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 16vw"
+                                    />
+                                  </div>
+                                ))}
                             </div>
                           </div>
                         )}
 
                         {/* Empty State */}
-                        {images?.backdrops?.length === 0 && images?.posters?.length === 0 && (
-                          <div className="text-center py-20 text-slate-500">
-                            <ImageIcon className="w-12 h-12 mx-auto mb-4 opacity-20" />
-                            <p>No images available for this show.</p>
-                          </div>
-                        )}
+                        {images?.backdrops?.length === 0 &&
+                          images?.posters?.length === 0 && (
+                            <div className="text-center py-20 text-slate-500">
+                              <ImageIcon className="w-12 h-12 mx-auto mb-4 opacity-20" />
+                              <p>No images available for this show.</p>
+                            </div>
+                          )}
                       </>
                     )}
                   </div>

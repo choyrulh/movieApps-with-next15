@@ -21,26 +21,27 @@ const HistoryTontonan = () => {
 
     // Untuk data dari localStorage (non-authenticated)
     const progress = media.progress;
-    
+
     // Jika sudah ada percentage, langsung pakai
     if (progress?.percentage) {
       return Math.round(progress.percentage);
     }
-    
+
     // Hitung percentage dari watched dan duration
     if (progress?.watched && progress?.duration && progress.duration > 0) {
       const percentage = (progress.watched / progress.duration) * 100;
       return Math.min(Math.round(percentage), 100); // Maksimal 100%
     }
-    
+
     // Fallback untuk TV shows dengan episode data
     if (media.type === "tv" && media.season && media.episode) {
-      const episodeData = media.seasons?.[media.season]?.episodes?.[media.episode];
+      const episodeData =
+        media.seasons?.[media.season]?.episodes?.[media.episode];
       if (episodeData?.progress?.percentage) {
         return Math.round(episodeData.progress.percentage);
       }
     }
-    
+
     return 0;
   };
 
@@ -78,31 +79,39 @@ const HistoryTontonan = () => {
         let latestEpisode: number | null = null;
         let latestTimestamp: number = 0;
 
-        Object.entries(item.seasons).forEach(([seasonNum, seasonData]: [string, any]) => {
-          Object.entries(seasonData.episodes).forEach(([episodeNum, episodeData]: [string, any]) => {
-            const episodeTimestamp = new Date(episodeData.last_updated).getTime();
-            if (episodeTimestamp > latestTimestamp) {
-              latestSeason = parseInt(seasonNum);
-              latestEpisode = parseInt(episodeNum);
-              latestTimestamp = episodeTimestamp;
-              // Simpan progress data dari episode terbaru
-              progressData = {
-                watched: episodeData.progress?.watched || 0,
-                duration: episodeData.progress?.duration || 0,
-                percentage: episodeData.progress?.percentage || 0,
-              };
-            }
-          });
-        });
+        Object.entries(item.seasons).forEach(
+          ([seasonNum, seasonData]: [string, any]) => {
+            Object.entries(seasonData.episodes).forEach(
+              ([episodeNum, episodeData]: [string, any]) => {
+                const episodeTimestamp = new Date(
+                  episodeData.last_updated
+                ).getTime();
+                if (episodeTimestamp > latestTimestamp) {
+                  latestSeason = parseInt(seasonNum);
+                  latestEpisode = parseInt(episodeNum);
+                  latestTimestamp = episodeTimestamp;
+                  // Simpan progress data dari episode terbaru
+                  progressData = {
+                    watched: episodeData.progress?.watched || 0,
+                    duration: episodeData.progress?.duration || 0,
+                    percentage: episodeData.progress?.percentage || 0,
+                  };
+                }
+              }
+            );
+          }
+        );
 
         return {
           ...baseData,
           progress: progressData,
           season: latestSeason,
           episode: latestEpisode,
-          episode_title: latestSeason && latestEpisode 
-            ? item.seasons[latestSeason]?.episodes?.[latestEpisode]?.episode_title 
-            : null,
+          episode_title:
+            latestSeason && latestEpisode
+              ? item.seasons[latestSeason]?.episodes?.[latestEpisode]
+                  ?.episode_title
+              : null,
         };
       }
 
@@ -122,7 +131,7 @@ const HistoryTontonan = () => {
     const fetchWatchHistory = async () => {
       try {
         let data;
-        
+
         if (isAuthenticated) {
           const apiData = await getHistoryWatchUser();
           data = apiData.history || [];
@@ -138,7 +147,6 @@ const HistoryTontonan = () => {
 
         const formattedData = formatMediaData(data);
         setMediaDataHistory(formattedData);
-        
       } catch (error) {
         console.error("Gagal memuat riwayat tontonan:", error);
         setMediaDataHistory([]);
@@ -182,7 +190,7 @@ const HistoryTontonan = () => {
   const handleScroll = (direction: "left" | "right") => {
     const container = scrollContainerRef.current;
     if (container) {
-      const scrollAmount = 300;
+      const scrollAmount = 1000;
       container.scrollBy({
         left: direction === "left" ? -scrollAmount : scrollAmount,
         behavior: "smooth",
@@ -213,14 +221,38 @@ const HistoryTontonan = () => {
               className="p-2 rounded-full bg-white/5 hover:bg-white/20 border border-white/10 transition-all text-white backdrop-blur-sm"
               aria-label="Scroll left"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 19l-7-7 7-7"
+                />
+              </svg>
             </button>
             <button
               onClick={() => handleScroll("right")}
               className="p-2 rounded-full bg-white/5 hover:bg-white/20 border border-white/10 transition-all text-white backdrop-blur-sm"
               aria-label="Scroll right"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
             </button>
           </div>
         )}
@@ -230,7 +262,7 @@ const HistoryTontonan = () => {
       <div
         ref={scrollContainerRef}
         className="flex gap-4 md:gap-6 overflow-x-auto pb-8 pt-2 scrollbar-hide snap-x snap-mandatory"
-        style={{ scrollPaddingLeft: '1rem' }}
+        style={{ scrollPaddingLeft: "1rem" }}
       >
         {mediaDataHistory.map((media) => {
           const isTVShow = media.type === "tv";
@@ -245,12 +277,15 @@ const HistoryTontonan = () => {
               className="relative flex-shrink-0 snap-start group"
             >
               <Link
-                href={`/${media.type}/${media.id}/watch${isTVShow && media.season && media.episode ? `?season=${media.season}&episode=${media.episode}` : ''}`}
+                href={`/${media.type}/${media.id}/watch${
+                  isTVShow && media.season && media.episode
+                    ? `?season=${media.season}&episode=${media.episode}`
+                    : ""
+                }`}
                 className="block w-64 sm:w-72 md:w-80"
               >
                 {/* Image Container */}
                 <div className="relative aspect-video w-full rounded-xl overflow-hidden bg-gray-900 shadow-lg group-hover:shadow-2xl group-hover:shadow-amber-500/10 transition-all duration-300 ring-1 ring-white/10 group-hover:ring-amber-500/50">
-                  
                   {/* Backdrop Image */}
                   <Image
                     src={`https://image.tmdb.org/t/p/w780${media.backdrop_path}`}
@@ -265,7 +300,13 @@ const HistoryTontonan = () => {
                   {/* Centered Play Icon on Hover */}
                   <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 scale-90 group-hover:scale-100">
                     <div className="w-12 h-12 rounded-full bg-amber-500/90 flex items-center justify-center shadow-lg backdrop-blur-sm pl-1">
-                      <svg className="w-5 h-5 text-black" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+                      <svg
+                        className="w-5 h-5 text-black"
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M8 5v14l11-7z" />
+                      </svg>
                     </div>
                   </div>
 
@@ -274,17 +315,30 @@ const HistoryTontonan = () => {
                     onClick={(e) => {
                       e.stopPropagation();
                       e.preventDefault();
-                      handleDelete(isAuthenticated ? media._id : media.id.toString());
+                      handleDelete(
+                        isAuthenticated ? media._id : media.id.toString()
+                      );
                     }}
                     className="absolute top-2 right-2 p-2 bg-black/40 hover:bg-red-500/80 rounded-full text-white/70 hover:text-white transition-all backdrop-blur-md opacity-0 group-hover:opacity-100 z-20"
                     title="Hapus dari history"
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
                   </button>
 
                   {/* Content Overlay */}
                   <div className="absolute bottom-0 left-0 right-0 p-3 flex flex-col justify-end">
-                    
                     {/* TV Show Badge */}
                     {isTVShow && media.season && media.episode && (
                       <div className="flex items-center gap-2 mb-2">
@@ -304,11 +358,14 @@ const HistoryTontonan = () => {
                         }}
                       />
                     </div>
-                    
+
                     {/* Time Info */}
                     <div className="flex justify-between items-center text-[11px] font-medium text-gray-300">
                       <span>
-                        {formatRemainingTime(media.progress.watched, media.progress.duration)}
+                        {formatRemainingTime(
+                          media.progress.watched,
+                          media.progress.duration
+                        )}
                       </span>
                       <span>{progressPercentage}%</span>
                     </div>
@@ -327,7 +384,9 @@ const HistoryTontonan = () => {
                     {media.episode_title && isTVShow && (
                       <>
                         <span className="w-1 h-1 bg-gray-600 rounded-full" />
-                        <span className="truncate max-w-[150px]">{media.episode_title}</span>
+                        <span className="truncate max-w-[150px]">
+                          {media.episode_title}
+                        </span>
                       </>
                     )}
                   </div>
