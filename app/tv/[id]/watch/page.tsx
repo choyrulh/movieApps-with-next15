@@ -2,7 +2,6 @@
 
 import { useCallback, useMemo } from "react";
 import { getDetailShow, getSeasonDetails } from "@/Service/fetchMovie";
-import { useStore } from "@/store/useStore";
 import { useQuery } from "@tanstack/react-query";
 import { usePathname } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
@@ -11,23 +10,21 @@ import {
   Clock,
   Monitor,
   ChevronDown,
-  Tv,
+  Film,
+  Users,
   Expand,
   Shrink,
   Calendar,
-  Play,
   ChevronLeft,
   ChevronRight,
   ChevronUp,
-  Film,
-  Users,
 } from "lucide-react";
 import {
-  // addRecentlyWatched,
-  WatchHistory,
   fetchVideoProgress,
+  // Pastikan import addRecentlyWatched ada di sini
+  // addRecentlyWatched, 
 } from "@/Service/actionUser";
-import { getShowProgressUser, addRecentlyWatched } from "@/Service/fetchUser";
+import { getShowProgressUser, addRecentlyWatched } from "@/Service/fetchUser"; 
 import { Metadata } from "@/app/Metadata";
 import Image from "next/image";
 import useIsMobile from "@/hook/useIsMobile";
@@ -40,42 +37,37 @@ function page() {
   const [season, setSeason] = useState("1");
   const [episode, setEpisode] = useState("1");
   const [selectedServer, setSelectedServer] = useState("Media 1");
+  
+  // State progress video
   const [videoProgress, setVideoProgress] = useState({
     watched: 0,
     duration: 0,
     percentage: 0,
   });
+
   const [showSeasonDropdown, setShowSeasonDropdown] = useState(false);
   const [isCastExpanded, setIsCastExpanded] = useState(false);
-  const [showContent, setShowContent] = useState<"episodes" | "cast">(
-    "episodes"
-  );
+  const [showContent, setShowContent] = useState<"episodes" | "cast">("episodes");
 
   const videoProgressRef = useRef(videoProgress);
   const videoPlayerRef = useRef<HTMLDivElement>(null);
-
   const [lastSavedProgress, setLastSavedProgress] = useState({
     watched: 0,
     duration: 0,
   });
-  const saveIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const isMobile = useIsMobile();
 
-  const {
-    data: show,
-    isLoading,
-    isError,
-  } = useQuery<any>({
+  // Query Data Show
+  const { data: show, isError } = useQuery<any>({
     queryKey: ["showDetail", id],
     queryFn: () =>
       getDetailShow(id as unknown as number, {
-        append_to_response: "credits", // Tambahkan credits
+        append_to_response: "credits",
       }),
     staleTime: 5 * 60 * 1000,
     retry: 2,
   });
 
-  // get progress tv
+  // Query General Progress (untuk list episode)
   const { data: progress } = useQuery<any>({
     queryKey: ["progress", id],
     queryFn: () => getShowProgressUser(id as unknown as string),
@@ -83,160 +75,204 @@ function page() {
     retry: 2,
   });
 
-  const { data: seasonData, isLoading: isLoadingSeason } = useQuery<any>({
+  const { data: seasonData } = useQuery<any>({
     queryKey: ["seasonDetails", id, season],
     queryFn: () => getSeasonDetails(id, season),
     enabled: !!show?.id,
   });
 
-  console.log("progress: ", progress);
-
+  // Ref update untuk akses di dalam event listener/cleanup
   useEffect(() => {
     videoProgressRef.current = videoProgress;
   }, [videoProgress]);
-  // Update useEffect untuk mengambil data progress dari API
 
-  // Efek untuk interval penyimpanan
-  useEffect(() => {
-    if (!show) return;
-
-    const saveProgressPeriodically = async () => {
-      if (
-        videoProgress.watched !== lastSavedProgress.watched ||
-        videoProgress.duration !== lastSavedProgress.duration
-      ) {
-        try {
-          await saveProgress(videoProgress);
-          setLastSavedProgress(videoProgress);
-        } catch (error) {
-          console.error("Gagal menyimpan progress:", error);
-        }
-      }
-    };
-
-    const interval = setInterval(saveProgressPeriodically, 30000);
-    return () => clearInterval(interval);
-  }, [show, videoProgress, lastSavedProgress]);
-
-  useEffect(() => {
-    const getProgress = async () => {
-      const progress = await fetchVideoProgress({ id, season, episode });
-      if (progress) {
-        setVideoProgress(progress);
-      }
-    };
-
-    getProgress();
-  }, [id, season, episode]);
-
-  useEffect(() => {
-    const savedServer = localStorage.getItem("selectedVideoServer");
-    if (savedServer) setSelectedServer(savedServer);
-
-    const history = JSON.parse(localStorage.getItem("watchHistory") || "{}");
-    const tvHistory = history[`${id}`] as TVHistory;
-
-    if (tvHistory?.seasons?.[season]?.episodes?.[episode]) {
-      setVideoProgress(tvHistory.seasons[season].episodes[episode].progress);
-    }
-
-    const handleMessage = (event: MessageEvent) => {
-      if (event.origin !== "https://vidlink.pro") return;
-
-      if (event.data?.type === "MEDIA_DATA") {
-        const mediaData = event.data.data;
-
-        if (mediaData && mediaData[id]?.progress) {
-          const lastSeason = mediaData[id].last_season_watched;
-          const lastEpisode = mediaData[id].last_episode_watched;
-          const key = `s${lastSeason}e${lastEpisode}`;
-
-          const watched =
-            mediaData[id].show_progress[key]?.progress.watched ?? 0;
-          const duration =
-            mediaData[id].show_progress[key]?.progress.duration ?? 1;
-
-          const progress = {
-            watched,
-            duration,
-            percentage: (watched / duration) * 100,
-          };
-
-          setVideoProgress(progress);
-          saveProgress(progress);
-        }
-      }
-    };
-
-    window.addEventListener("message", handleMessage);
-    return () => {
-      window.removeEventListener("message", handleMessage);
-      saveProgress(videoProgressRef.current);
-    };
-  }, [id, season, episode, show]);
-
-  // Efek untuk inisialisasi progress
-  useEffect(() => {
-    const initializeProgress = async () => {
-      if (progress?.episodes?.length > 0) {
-        // Cari episode terakhir yang ditonton
-        const lastWatched = progress.episodes.reduce(
-          (latest: any, current: any) =>
-            new Date(current.watchedDate) > new Date(latest.watchedDate)
-              ? current
-              : latest
-        );
-
-        if (lastWatched) {
-          setSeason(lastWatched.season.toString());
-          setEpisode(lastWatched.episode.toString());
-          setVideoProgress({
-            watched: lastWatched.durationWatched,
-            duration: lastWatched.totalDuration,
-            percentage: lastWatched.progressPercentage,
-          });
-        }
-      } else {
-        // Fallback ke localStorage jika tidak ada data API
-        const localProgress = localStorage.getItem("watchHistory");
-        if (localProgress) {
-          const parsed = JSON.parse(localProgress)[id];
-          if (parsed?.last_watched) {
-            setSeason(parsed.last_watched.season.toString());
-            setEpisode(parsed.last_watched.episode.toString());
-          }
-        }
-      }
-    };
-
-    initializeProgress();
-  }, [progress, id]);
-
-  // Fungsi penyimpanan progress yang disederhanakan
+  // ==========================================
+  // 1. SAVE PROGRESS FUNCTION
+  // ==========================================
   const saveProgress = useCallback(
-    async (progress: typeof videoProgress) => {
+    async (currentProgress: typeof videoProgress) => {
       if (!show) return;
+
+      // Validasi minimal: jangan simpan jika durasi 0 atau belum ditonton sama sekali
+      if (currentProgress.duration === 0 || currentProgress.watched === 0) return;
 
       const historyItem = {
         type: "tv" as const,
-        contentId: show.id,
+        contentId: Number(show.id), // Pastikan Number
         season: parseInt(season),
         episode: parseInt(episode),
         title: show.name,
         poster: show.poster_path,
         backdrop_path: show.backdrop_path,
-        duration: progress.duration,
-        durationWatched: progress.watched,
-        totalDuration: progress.duration,
+        // Backend mengharapkan field ini:
+        totalDuration: currentProgress.duration, 
+        durationWatched: currentProgress.watched, 
         genres: show.genres?.map((g: any) => g.name) || [],
-        progressPercentage: progress.percentage,
       };
 
-      await addRecentlyWatched(historyItem);
+      try {
+        await addRecentlyWatched(historyItem);
+      } catch (error) {
+        console.error("Failed to save progress:", error);
+      }
     },
     [show, season, episode]
   );
 
+  // ==========================================
+  // 2. INTERVAL SAVE (HEARTBEAT)
+  // ==========================================
+  useEffect(() => {
+    if (!show) return;
+
+    const interval = setInterval(() => {
+      // Hanya simpan jika ada perubahan signifikan (> 2 detik) dari simpanan terakhir
+      const diff = Math.abs(videoProgress.watched - lastSavedProgress.watched);
+      
+      if (diff > 2) {
+        saveProgress(videoProgress);
+        setLastSavedProgress(videoProgress);
+      }
+    }, 30000); // Setiap 30 detik
+
+    return () => clearInterval(interval);
+  }, [show, videoProgress, lastSavedProgress, saveProgress]);
+
+  // ==========================================
+  // 3. FETCH SPECIFIC EPISODE PROGRESS (RESUME)
+  // ==========================================
+  useEffect(() => {
+    const getProgress = async () => {
+      // Reset state saat ganti episode agar tidak menampilkan progress episode sebelumnya
+      setVideoProgress({ watched: 0, duration: 0, percentage: 0 });
+
+      try {
+        const data = await fetchVideoProgress({ id, season, episode });
+        
+        if (data) {
+          // Backend mengembalikan { durationWatched, totalDuration }
+          // Kita map ke state frontend { watched, duration }
+          // Cek field mana yang dikembalikan backend (bisa 'watched' atau 'durationWatched')
+          const watchedVal = data.durationWatched || data.watched || 0;
+          const durationVal = data.totalDuration || data.duration || 0;
+          
+          if (durationVal > 0) {
+            setVideoProgress({
+              watched: watchedVal,
+              duration: durationVal,
+              percentage: (watchedVal / durationVal) * 100,
+            });
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching episode progress", error);
+      }
+    };
+
+    if (id && season && episode) {
+      getProgress();
+    }
+  }, [id, season, episode]);
+
+  // ==========================================
+  // 4. UNIFIED EVENT LISTENER (VidLink, VidSrc, Videasy)
+  // ==========================================
+  useEffect(() => {
+    // Load preference server
+    const savedServer = localStorage.getItem("selectedVideoServer");
+    if (savedServer) setSelectedServer(savedServer);
+
+    const handleMessage = (event: MessageEvent) => {
+      // Helper untuk update state
+      const updateState = (watched: number, duration: number) => {
+        if (!duration) return;
+        setVideoProgress({
+          watched,
+          duration,
+          percentage: (watched / duration) * 100,
+        });
+      };
+
+      // --- VIDLINK (Media 1) ---
+      if (selectedServer === "Media 1" && event.origin === "https://vidlink.pro") {
+        if (event.data?.type === "MEDIA_DATA") {
+          const mediaData = event.data.data;
+          // Key format vidlink biasanya s{season}e{episode}
+          const key = `s${season}e${episode}`;
+          
+          if (mediaData && mediaData[id]?.show_progress?.[key]?.progress) {
+            const { watched, duration } = mediaData[id].show_progress[key].progress;
+            updateState(watched, duration);
+          }
+        }
+      }
+
+      // --- VIDSRC (Media 2 & 3) ---
+      if ((selectedServer === "Media 2" || selectedServer === "Media 3") && event.origin === "https://vidsrc.cc") {
+        if (event.data?.type === "PLAYER_EVENT") {
+          const data = event.data.data;
+          // Validasi ID & Tipe
+          if (String(data.tmdbId) === id && data.mediaType === 'tv') {
+             // Update hanya jika event progress berjalan
+             if (data.event === 'time' || data.event === 'pause') {
+               updateState(data.currentTime, data.duration);
+             }
+          }
+        }
+      }
+
+      // --- VIDEASY (Media 4) ---
+      if (selectedServer === "Media 4" && event.origin.includes("videasy.net")) {
+        try {
+          const rawData = typeof event.data === "string" ? JSON.parse(event.data) : event.data;
+          if (String(rawData?.id) === id && String(rawData?.season) === season && String(rawData?.episode) === episode) {
+             const watched = parseFloat(rawData.progress || 0);
+             const duration = parseFloat(rawData.duration || 0);
+             updateState(watched, duration);
+          }
+        } catch (e) {
+          // ignore parsing error
+        }
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+    
+    return () => {
+      window.removeEventListener("message", handleMessage);
+      // PENTING: Save saat unmount/ganti episode
+      if (videoProgressRef.current.watched > 0) {
+        saveProgress(videoProgressRef.current);
+      }
+    };
+  }, [id, season, episode, selectedServer, saveProgress]); 
+
+
+  // ==========================================
+  // INITIALIZE LAST WATCHED (Auto Select Season/Ep)
+  // ==========================================
+  useEffect(() => {
+    if (progress?.episodes?.length > 0) {
+      // Cari episode terakhir yang ditonton berdasarkan tanggal
+      const lastWatched = progress.episodes.reduce(
+        (latest: any, current: any) =>
+          new Date(current.watchedDate) > new Date(latest.watchedDate)
+            ? current
+            : latest
+      );
+
+      if (lastWatched) {
+        setSeason(lastWatched.season.toString());
+        setEpisode(lastWatched.episode.toString());
+      }
+    }
+  }, [progress]);
+
+
+  // ==========================================
+  // HELPER & RENDER
+  // ==========================================
+  
   const getVideoUrl = () => {
     switch (selectedServer) {
       case "Media 1":
@@ -248,13 +284,13 @@ function page() {
       case "Media 4":
         return `https://player.videasy.net/tv/${id}/${season}/${episode}`;
       default:
-        return `https://vidlink.pro/tv/${id}/${season}/${episode}`; // Default to server 1
+        return `https://vidlink.pro/tv/${id}/${season}/${episode}`;
     }
   };
 
   if (isError) {
     return (
-      <div className="min-h-screen bg-[#151515] text-white p-4">
+      <div className="min-h-screen bg-[#151515] text-white p-4 flex items-center justify-center">
         Error loading data
       </div>
     );
@@ -264,66 +300,32 @@ function page() {
     (s: any) => s.season_number === parseInt(season)
   );
 
-  // const totalEpisodes = selectedSeasonData?.episode_count || 0;
   const episodes = seasonData?.episodes || [];
+  const currentEpisodeData = selectedSeasonData?.episodes?.[parseInt(episode) - 1];
 
-  const currentEpisodeData =
-    selectedSeasonData?.episodes?.[parseInt(episode) - 1];
-
-  // next and previous episode handle
+  // Navigation Logic
   const currentEpisodeIndex = useMemo(() => {
-    return episodes.findIndex(
-      (ep: any) => ep.episode_number === parseInt(episode)
-    );
+    return episodes.findIndex((ep: any) => ep.episode_number === parseInt(episode));
   }, [episode, episodes]);
 
-  const hasPreviousEpisode = useMemo(
-    () => currentEpisodeIndex > 0,
-    [currentEpisodeIndex]
-  );
-  const hasNextEpisode = useMemo(
-    () => currentEpisodeIndex < episodes.length - 1,
-    [currentEpisodeIndex, episodes.length]
-  );
+  const hasPreviousEpisode = currentEpisodeIndex > 0;
+  const hasNextEpisode = currentEpisodeIndex < episodes.length - 1;
 
-  const { previousEpisode, nextEpisode } = useMemo(() => {
-    const prevEp = hasPreviousEpisode
-      ? episodes[currentEpisodeIndex - 1]
-      : null;
-    const nextEp = hasNextEpisode ? episodes[currentEpisodeIndex + 1] : null;
-    return { previousEpisode: prevEp, nextEpisode: nextEp };
-  }, [currentEpisodeIndex, episodes, hasPreviousEpisode, hasNextEpisode]);
+  const handleEpisodeNavigation = useCallback((type: "prev" | "next") => {
+    if (type === "prev" && hasPreviousEpisode) {
+        setEpisode(episodes[currentEpisodeIndex - 1].episode_number.toString());
+    }
+    if (type === "next" && hasNextEpisode) {
+        setEpisode(episodes[currentEpisodeIndex + 1].episode_number.toString());
+    }
+  }, [hasPreviousEpisode, hasNextEpisode, currentEpisodeIndex, episodes]);
 
-  const handleEpisodeNavigation = useCallback(
-    (type: "prev" | "next") => {
-      if (type === "prev" && hasPreviousEpisode) {
-        setEpisode(previousEpisode.episode_number.toString());
-      }
-      if (type === "next" && hasNextEpisode) {
-        setEpisode(nextEpisode.episode_number.toString());
-      }
-    },
-    [hasPreviousEpisode, hasNextEpisode, previousEpisode, nextEpisode]
-  );
-
-  const handleEpisodeChange = useCallback(
-    (episodeNumber: string) => {
-      // Update episode state
-      setEpisode(episodeNumber);
-
-      // Scroll to video player section smoothly
-      // Use setTimeout to ensure DOM has updated before scrolling
-      setTimeout(() => {
-        if (videoPlayerRef.current) {
-          videoPlayerRef.current.scrollIntoView({
-            behavior: "smooth",
-            block: "start",
-          });
-        }
-      }, 0);
-    },
-    [] // Empty dependency array since it doesn't depend on any changing values
-  );
+  const handleEpisodeChange = useCallback((episodeNumber: string) => {
+    setEpisode(episodeNumber);
+    setTimeout(() => {
+      videoPlayerRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 100);
+  }, []);
 
   return (
     <>
@@ -334,25 +336,12 @@ function page() {
       />
 
       <div className="min-h-screen text-white pb-20">
-        <main
-          className={`mx-auto transition-all duration-300 ${
-            isFullScreen ? "max-w-full" : "px-4"
-          }`}
-        >
+        <main className={`mx-auto transition-all duration-300 ${isFullScreen ? "max-w-full" : "px-4"}`}>
+          
           {/* Header Section */}
           {!isFullScreen && (
             <div className="mx-auto px-4 pt-8">
               <div className="flex flex-col lg:flex-row gap-8 mb-8">
-                {/* Show Poster */}
-                {/*<div className="w-full lg:w-72 flex-shrink-0">
-                <img 
-                  src={`https://image.tmdb.org/t/p/w500${show?.poster_path}`} 
-                  alt={show?.name}
-                  className="rounded-xl shadow-xl hover:shadow-2xl transition-shadow duration-300"
-                />
-              </div>*/}
-
-                {/* Show Info */}
                 <div className="flex-1 space-y-4">
                   <Link href={`/tv/${id}`}>
                     <h1 className="text-4xl font-bold text-gradient bg-gradient-to-r from-green-400 to-purple-500 bg-clip-text text-transparent">
@@ -361,107 +350,70 @@ function page() {
                   </Link>
 
                   <div className="flex flex-wrap gap-4 text-sm">
-                    <div className="badge badge-info">
-                      ⭐ {show?.vote_average?.toFixed(1)} / 10
-                    </div>
+                    <div className="badge badge-info">⭐ {show?.vote_average?.toFixed(1)} / 10</div>
                     {show?.genres?.map((genre: any) => (
-                      <div key={genre.id} className="badge badge-outline">
-                        {genre.name}
-                      </div>
+                      <div key={genre.id} className="badge badge-outline">{genre.name}</div>
                     ))}
                     <div className="badge badge-ghost">
-                      🕒{" "}
-                      {currentEpisodeData?.runtime ||
-                        show?.episode_run_time?.[0]}
-                      m
+                       {/* Tampilkan progress bar sederhana jika ada */}
+                       {videoProgress.percentage > 0 && (
+                          <span className="text-green-400 font-bold ml-2">
+                            Resume: {Math.round(videoProgress.percentage)}%
+                          </span>
+                       )}
                     </div>
                   </div>
-
-                  <p className="text-gray-300 leading-relaxed">
-                    {currentEpisodeData?.overview || show?.overview}
-                  </p>
-
-                  {/* Air Date & Director */}
-                  <div className="grid grid-cols-2 gap-4 text-sm text-gray-400">
-                    <div>
-                      <Calendar className="inline-block w-4 h-4 mr-2" />
-                      {new Date(
-                        currentEpisodeData?.air_date || show?.first_air_date
-                      ).toLocaleDateString()}
-                    </div>
-                    {currentEpisodeData?.director && (
-                      <div>🎬 Directed by {currentEpisodeData.director}</div>
-                    )}
-                  </div>
+                  <p className="text-gray-300 leading-relaxed">{currentEpisodeData?.overview || show?.overview}</p>
                 </div>
               </div>
             </div>
           )}
 
           {/* Main Content Area */}
-          <div
-            className={`flex flex-col gap-6 ${
-              isFullScreen ? "lg:flex-col" : "lg:flex-row"
-            }`}
-          >
+          <div className={`flex flex-col gap-6 ${isFullScreen ? "lg:flex-col" : "lg:flex-row"}`}>
+            
             {/* Left Column - Video Player */}
-            <div
-              className={isFullScreen ? "w-full overflow-hidden" : "lg:w-2/3"}
-            >
-              <div
-                ref={videoPlayerRef}
-                className="relative group aspect-video bg-black rounded-xl overflow-hidden shadow-xl"
-              >
+            <div className={isFullScreen ? "w-full overflow-hidden" : "lg:w-2/3"}>
+              <div ref={videoPlayerRef} className="relative group aspect-video bg-black rounded-xl overflow-hidden shadow-xl">
                 <iframe
                   src={getVideoUrl()}
                   className="w-full h-full"
                   allowFullScreen
+                  scrolling="no"
+                  frameBorder="0"
                 />
 
                 {/* Floating Controls */}
-                <div className="absolute top-4 right-4 flex gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="absolute top-4 right-4 flex gap-3 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto">
                   <button
                     onClick={() => setIsFullScreen(!isFullScreen)}
-                    className="p-2 bg-[#151515]/50 rounded-lg hover:bg-[#151515]/70 transition-colors"
+                    className="p-2 bg-[#151515]/80 rounded-lg hover:bg-[#151515] transition-colors"
                   >
-                    {isFullScreen ? (
-                      <Shrink className="w-5 h-5 text-white" />
-                    ) : (
-                      <Expand className="w-5 h-5 text-white" />
-                    )}
+                    {isFullScreen ? <Shrink className="w-5 h-5 text-white" /> : <Expand className="w-5 h-5 text-white" />}
                   </button>
 
                   <div className="relative">
                     <button
                       onClick={() => setShowServerDropdown(!showServerDropdown)}
-                      className="p-2 bg-[#151515]/50 rounded-lg hover:bg-[#151515]/70 transition-colors flex items-center gap-2"
+                      className="p-2 bg-[#151515]/80 rounded-lg hover:bg-[#151515] transition-colors flex items-center gap-2"
                     >
                       <Monitor className="w-5 h-5" />
-                      <span className="text-sm">{selectedServer}</span>
+                      <span className="text-sm font-medium">{selectedServer}</span>
                     </button>
 
                     {showServerDropdown && (
-                      <div className="absolute right-0 mt-2 w-48 bg-[#151515]/95 backdrop-blur-xl rounded-xl shadow-lg border border-gray-700">
+                      <div className="absolute right-0 mt-2 w-48 bg-[#151515]/95 backdrop-blur-xl rounded-xl shadow-lg border border-gray-700 z-50">
                         {[1, 2, 3, 4].map((num) => (
                           <button
                             key={num}
                             onClick={() => {
                               setSelectedServer(`Media ${num}`);
-                              localStorage.setItem(
-                                "selectedVideoServer",
-                                `Media ${num}`
-                              );
+                              localStorage.setItem("selectedVideoServer", `Media ${num}`);
                               setShowServerDropdown(false);
                             }}
-                            className="w-full px-4 py-3 text-sm flex items-center gap-3 hover:bg-[#151515]/30 transition-colors"
+                            className="w-full px-4 py-3 text-sm flex items-center gap-3 hover:bg-[#151515]/50 transition-colors first:rounded-t-xl last:rounded-b-xl"
                           >
-                            <div
-                              className={`w-2 h-2 rounded-full ${
-                                selectedServer === `Media ${num}`
-                                  ? "bg-green-500"
-                                  : "bg-[#151515]"
-                              }`}
-                            />
+                            <div className={`w-2 h-2 rounded-full ${selectedServer === `Media ${num}` ? "bg-green-500" : "bg-gray-600"}`} />
                             <span>Media {num}</span>
                           </button>
                         ))}
@@ -471,92 +423,40 @@ function page() {
                 </div>
               </div>
 
-              {/* Episode Navigation */}
-              <div className="mt-4">
-                <div className="flex justify-between items-center gap-4">
+              {/* Episode Navigation Buttons */}
+              <div className="mt-4 flex justify-between items-center gap-4">
                   <button
                     onClick={() => handleEpisodeNavigation("prev")}
                     disabled={!hasPreviousEpisode}
-                    className={`
-                    flex items-center gap-2 px-4 py-2 rounded-lg transition-all
-                    ${
-                      hasPreviousEpisode
-                        ? "bg-green-600/30 hover:bg-green-600/50 text-green-400"
-                        : "bg-[#151515]/30 cursor-not-allowed text-gray-500"
-                    }
-                    `}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+                      hasPreviousEpisode ? "bg-green-600/20 hover:bg-green-600/40 text-green-400" : "bg-[#151515]/30 text-gray-600 cursor-not-allowed"
+                    }`}
                   >
                     <ChevronLeft className="w-5 h-5" />
-                    <span className="hidden sm:block">Previous Episode</span>
-                    {hasPreviousEpisode && (
-                      <span className="text-sm ml-2 text-gray-300">
-                        Ep {previousEpisode.episode_number}:{" "}
-                        {previousEpisode.name}
-                      </span>
-                    )}
+                    <span className="hidden sm:block">Previous</span>
                   </button>
+
+                  <div className="text-center">
+                    <span className="text-sm text-gray-400">
+                      Season {season} • Episode {episode}
+                    </span>
+                  </div>
 
                   <button
                     onClick={() => handleEpisodeNavigation("next")}
                     disabled={!hasNextEpisode}
-                    className={`
-                    flex items-center gap-2 px-4 py-2 rounded-lg transition-all
-                    ${
-                      hasNextEpisode
-                        ? "bg-green-600/30 hover:bg-green-600/50 text-green-400"
-                        : "bg-[#151515]/30 cursor-not-allowed text-gray-500"
-                    }
-                    `}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+                      hasNextEpisode ? "bg-green-600/20 hover:bg-green-600/40 text-green-400" : "bg-[#151515]/30 text-gray-600 cursor-not-allowed"
+                    }`}
                   >
-                    <span className="hidden sm:block">Next Episode</span>
-                    {hasNextEpisode && (
-                      <span className="text-sm mr-2 text-gray-300">
-                        Ep {nextEpisode.episode_number}: {nextEpisode.name}
-                      </span>
-                    )}
+                    <span className="hidden sm:block">Next</span>
                     <ChevronRight className="w-5 h-5" />
                   </button>
-                </div>
               </div>
-
-              {/* Current Episode Info */}
-              {currentEpisodeData && (
-                <div className="mt-6 bg-[#151515]/50 rounded-xl p-4">
-                  <h3 className="text-xl font-semibold mb-2">
-                    {currentEpisodeData.name || `Episode ${episode}`}
-                  </h3>
-                  <p className="text-gray-300">
-                    {currentEpisodeData.overview || "No description available."}
-                  </p>
-                  <div className="mt-3 flex items-center gap-4 text-sm text-gray-400">
-                    <div className="flex items-center gap-1">
-                      <Calendar className="w-4 h-4" />
-                      <span>
-                        {new Date(
-                          currentEpisodeData.air_date
-                        ).toLocaleDateString()}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Clock className="w-4 h-4" />
-                      <span>
-                        {currentEpisodeData.runtime ||
-                          show?.episode_run_time?.[0] ||
-                          "N/A"}
-                        m
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              )}
             </div>
 
-            {/* Right Column - Episode/Cast Selector */}
-            <div
-              className={`bg-[#151515]/50 rounded-xl p-4 ${
-                isFullScreen ? "lg:w-auto" : "lg:w-1/3"
-              }`}
-            >
+            {/* Right Column - Playlist */}
+            <div className={`bg-[#151515]/50 rounded-xl p-4 flex flex-col ${isFullScreen ? "lg:w-auto h-[500px]" : "lg:w-1/3 h-[700px]"}`}>
               {/* Toggle Buttons */}
               <div className="flex mb-4 border-b border-gray-700">
                 <button
@@ -781,6 +681,7 @@ function page() {
                 )}
               </div>
             </div>
+            
           </div>
         </main>
       </div>

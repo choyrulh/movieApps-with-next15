@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const url = process.env.BASE_URL_BACKEND;
+// const url = process.env.BASE_URL_BACKEND;
+const url= "http://localhost:3000/api"
 
 const getToken: any = () => {
   if (typeof window !== "undefined") {

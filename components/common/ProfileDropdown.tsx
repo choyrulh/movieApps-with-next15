@@ -80,9 +80,9 @@ export const ProfileDropDown = ({ props, onCloseMenu }: any) => {
             onClick={() => setState(!state)}
           >
             {isAuthenticated ? (
-              data?.data?.avatar ? (
+              data?.data?.profile?.avatar ? (
                 <AvatarImage
-                  src={data?.data?.avatar}
+                  src={data?.data?.profile?.avatar}
                   alt="Profile Picture"
                   className="w-full h-full object-cover rounded-full"
                 />

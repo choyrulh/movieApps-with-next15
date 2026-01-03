@@ -18,6 +18,7 @@ import Link from "next/link";
 import useIsMobile from "@/hook/useIsMobile";
 import WatchStatistics from "@/Fragments/WatchStatistics";
 import { Metadata } from "@/app/Metadata";
+import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 
 // Data dummy untuk contoh
 const userData = {
@@ -70,17 +71,36 @@ export default function page() {
             {/* Header */}
             <div className="flex justify-between items-center mb-8">
               <h1 className="text-2xl font-bold">Dashboard</h1>
+
               <div className="flex items-center space-x-4">
                 <div className="hidden md:block text-right">
-                  <p className="font-bold font-lg text-gray-400">
+                  <p className="font-bold text-gray-400">
                     Welcome,{" "}
-                    <span className="text-gray-400">{data?.data.name}</span>
+                    <span className="text-gray-400">
+                      {data?.data?.name}
+                    </span>
                   </p>
-                  {/*<p className="font-medium">{data?.data.name}</p>*/}
                 </div>
-                <AvatarPlaceholder name={data?.data?.name} />
+
+                <Avatar className="h-10 w-10">
+                  <AvatarImage
+                    src={data?.data?.profile?.avatar || ""}
+                    alt={data?.data?.name || "User Avatar"}
+                  />
+                  <AvatarFallback>
+                    {data?.data?.name
+                      ? data.data.name
+                          .split(" ")
+                          .map((n) => n[0])
+                          .join("")
+                          .slice(0, 2)
+                          .toUpperCase()
+                      : "U"}
+                  </AvatarFallback>
+                </Avatar>
               </div>
             </div>
+
 
             {/* Stats */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">

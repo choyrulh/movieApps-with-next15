@@ -3,18 +3,15 @@
 import { usePathname } from "next/navigation";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Movie } from "@/types/movie.";
+import { Movie } from "@/types/movie"; // Pastikan path type sesuai
 import { getDetailMovie } from "@/Service/fetchMovie";
 import {
   Monitor,
-  ChevronDown,
-  Tv,
   Expand,
   Shrink,
-  Clock,
   Calendar,
 } from "lucide-react";
-import { addRecentlyWatched, WatchHistory } from "@/Service/actionUser";
+import { addRecentlyWatched } from "@/Service/fetchUser"; // Sesuaikan import function API
 import { Metadata } from "@/app/Metadata";
 import Image from "next/image";
 import Link from "next/link";
@@ -22,197 +19,177 @@ import Link from "next/link";
 function Watch() {
   const pathname = usePathname();
   const id = pathname.split("/")[2];
+  
+  // State UI
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [selectedServer, setSelectedServer] = useState("Media 1");
+  const [showServerDropdown, setShowServerDropdown] = useState(false);
+  const [isCastExpanded, setIsCastExpanded] = useState(false);
+
+  // State Progress
   const [videoProgress, setVideoProgress] = useState({
     watched: 0,
     duration: 0,
     percentage: 0,
   });
+  
+  // Refs untuk akses state terbaru di dalam listener/cleanup
   const videoProgressRef = useRef(videoProgress);
-  const [lastSavedProgress, setLastSavedProgress] = useState(videoProgress);
-  const saveIntervalRef = useRef<NodeJS.Timeout>();
-  const isSavingRef = useRef(false);
-  const [showServerDropdown, setShowServerDropdown] = useState(false);
-  const [isCastExpanded, setIsCastExpanded] = useState(false);
+  const [lastSavedProgress, setLastSavedProgress] = useState({
+    watched: 0,
+    duration: 0,
+  });
 
+  // Query Data Movie
   const {
     data: movie,
-    isLoading,
     isError,
-  } = useQuery<Movie>({
+  } = useQuery<any>({
     queryKey: ["movie", id],
     queryFn: () =>
       getDetailMovie(id as unknown as number, {
-        append_to_response: "videos,credits",
+        append_to_response: "credits",
       }),
-
-    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+    staleTime: 5 * 60 * 1000,
     retry: 2,
     enabled: !!id,
   });
 
+  // Sinkronisasi Ref dengan State
   useEffect(() => {
     videoProgressRef.current = videoProgress;
   }, [videoProgress]);
 
+  // Load Saved Server Preference
   useEffect(() => {
     const savedServer = localStorage.getItem("selectedVideoServer");
     if (savedServer) setSelectedServer(savedServer);
-    const validServers = Array.from({ length: 6 }, (_, i) => `Media ${i + 1}`);
+  }, []);
 
-    if (savedServer && validServers.includes(savedServer)) {
-      setSelectedServer(savedServer);
-    }
+  // ==========================================
+  // 1. SAVE PROGRESS FUNCTION (API)
+  // ==========================================
+  const saveProgress = useCallback(
+    async (currentProgress: typeof videoProgress) => {
+      if (!movie) return;
 
-    // Load existing progress
-    const history = JSON.parse(localStorage.getItem("watchHistory") || "{}");
-    const movieProgress = history[`${id}`]?.progress;
-    if (movieProgress) {
-      setVideoProgress(movieProgress);
-    }
+      // Validasi dasar: Jangan simpan jika belum ditonton atau durasi 0
+      if (currentProgress.duration === 0 || currentProgress.watched === 0) return;
 
-    const handleMessage = (event: MessageEvent) => {
-      if (event.origin !== "https://vidlink.pro") return;
-
-      if (event.data?.type === "MEDIA_DATA") {
-        const mediaData = event.data.data;
-
-        if (mediaData && mediaData[id]?.progress) {
-          const progress = {
-            watched: mediaData[id].progress.watched,
-            duration: mediaData[id].progress.duration,
-            percentage:
-              (mediaData[id].progress.watched /
-                mediaData[id].progress.duration) *
-              100, // Diperbaiki
-          };
-
-          setVideoProgress(progress);
-
-          // Update localStorage
-          const history = JSON.parse(
-            localStorage.getItem("watchHistory") || "{}"
-          );
-          history[`${id}`] = {
-            ...history[`${id}`],
-            progress,
-            updated_at: new Date().toISOString(),
-          };
-          localStorage.setItem("watchHistory", JSON.stringify(history));
-        }
-      }
-    };
-    window.addEventListener("message", handleMessage);
-
-    return () => {
-      window.removeEventListener("message", handleMessage);
-
-      // Final save on unmount
-      if (movie) {
-        const history = JSON.parse(
-          localStorage.getItem("watchHistory") || "{}"
-        );
-        const progress = videoProgressRef.current;
-
-        history[`${id}`] = {
-          id: movie.id,
-          title: movie.title,
-          backdrop_path: movie.backdrop_path,
-          poster_path: movie.poster_path,
-          type: "movie",
-          progress,
-          updated_at: new Date().toISOString(),
-          release_date: movie.release_date,
-          runtime: movie.runtime,
-          video_key: movie.videos?.results[0]?.key,
-        };
-        localStorage.setItem("watchHistory", JSON.stringify(history));
-
-        // Kirim ke backend API
-        const watchHistoryItem: WatchHistory = {
-          contentId: movie.id,
-          type: "movie",
-          title: movie.title,
-          poster: movie.poster_path,
-          backdrop_path: movie.backdrop_path,
-          duration: movie?.runtime ? movie.runtime * 60 : 0, // Convert menit ke detik
-          durationWatched: progress.watched,
-          totalDuration: progress.duration,
-          genres: movie?.genres?.map((g: any) => g.name),
-          progressPercentage: progress.percentage,
-        };
-
-        addRecentlyWatched(watchHistoryItem).catch((error) => {
-          console.error("Gagal menyimpan riwayat:", error);
-        });
-      }
-    };
-  }, [id, movie]);
-
-  const saveProgressToAPI = useCallback(
-    async (progress: typeof videoProgress) => {
-      if (!movie || isSavingRef.current) return;
+      const historyItem = {
+        type: "movie" as const,
+        contentId: Number(movie.id), // Pastikan Number
+        title: movie.title,
+        poster: movie.poster_path,
+        backdrop_path: movie.backdrop_path,
+        // Backend mengharapkan totalDuration & durationWatched
+        totalDuration: currentProgress.duration,
+        durationWatched: currentProgress.watched,
+        genres: movie.genres?.map((g: any) => g.name) || [],
+      };
 
       try {
-        isSavingRef.current = true;
-
-        const watchHistoryItem: WatchHistory = {
-          contentId: movie.id,
-          type: "movie",
-          title: movie.title,
-          poster: movie.poster_path,
-          backdrop_path: movie.backdrop_path,
-          duration: movie?.runtime ? movie.runtime * 60 : 0, // Convert menit ke detik
-          durationWatched: progress.watched,
-          totalDuration: progress.duration,
-          genres: movie?.genres?.map((g: any) => g.name),
-          progressPercentage: progress.percentage,
-        };
-
-        await addRecentlyWatched(watchHistoryItem);
-        setLastSavedProgress(progress);
+        await addRecentlyWatched(historyItem);
       } catch (error) {
-        console.error("Gagal menyimpan progress:", error);
-      } finally {
-        isSavingRef.current = false;
+        console.error("Failed to save progress:", error);
       }
     },
     [movie]
   );
 
-  // Efek untuk interval penyimpanan
+  // ==========================================
+  // 2. INTERVAL SAVE (HEARTBEAT)
+  // ==========================================
   useEffect(() => {
     if (!movie) return;
 
     const interval = setInterval(() => {
-      // Hanya simpan jika ada perubahan progress
-      if (
-        videoProgress.watched !== lastSavedProgress.watched ||
-        videoProgress.duration !== lastSavedProgress.duration
-      ) {
-        saveProgressToAPI(videoProgress);
+      // Simpan hanya jika ada perbedaan signifikan (> 2 detik) dari save terakhir
+      // untuk mengurangi spam request API
+      const diff = Math.abs(videoProgress.watched - lastSavedProgress.watched);
+      
+      if (diff > 2) {
+        saveProgress(videoProgress);
+        setLastSavedProgress(videoProgress);
       }
-    }, 30000); // 30 detik - bisa disesuaikan
+    }, 30000); // Check setiap 30 detik
 
-    saveIntervalRef.current = interval;
+    return () => clearInterval(interval);
+  }, [movie, videoProgress, lastSavedProgress, saveProgress]);
 
-    return () => {
-      if (saveIntervalRef.current) clearInterval(saveIntervalRef.current);
-    };
-  }, [movie, lastSavedProgress, saveProgressToAPI, videoProgress]);
-
-  // Efek untuk penyimpanan terakhir saat unmount
+  // ==========================================
+  // 3. UNIFIED EVENT LISTENER (VidLink, VidSrc, Videasy)
+  // ==========================================
   useEffect(() => {
-    return () => {
-      // Simpan progress terakhir saat komponen unmount
-      if (movie && videoProgressRef.current) {
-        saveProgressToAPI(videoProgressRef.current).catch(console.error);
+    const handleMessage = (event: MessageEvent) => {
+      // Helper update state
+      const updateState = (watched: number, duration: number) => {
+        if (!duration || duration <= 0) return;
+        setVideoProgress({
+          watched,
+          duration,
+          percentage: (watched / duration) * 100,
+        });
+      };
+
+      // --- VIDLINK (Media 1) ---
+      if (selectedServer === "Media 1" && event.origin === "https://vidlink.pro") {
+        if (event.data?.type === "MEDIA_DATA") {
+          const mediaData = event.data.data;
+          // Struktur Vidlink Movie: mediaData[id].progress
+          if (mediaData && mediaData[id]?.progress) {
+            const { watched, duration } = mediaData[id].progress;
+            updateState(watched, duration);
+            
+            // Opsional: Simpan raw data vidlink ke localStorage jika diperlukan player
+            localStorage.setItem('vidLinkProgress', JSON.stringify(mediaData));
+          }
+        }
+      }
+
+      // --- VIDSRC (Media 2 & 3) ---
+      if ((selectedServer === "Media 2" || selectedServer === "Media 3") && event.origin === "https://vidsrc.cc") {
+        if (event.data?.type === "PLAYER_EVENT") {
+          const data = event.data.data;
+          // Validasi ID & Tipe
+          if (String(data.tmdbId) === id && data.mediaType === 'movie') {
+             if (data.event === 'time' || data.event === 'pause') {
+               updateState(data.currentTime, data.duration);
+             }
+          }
+        }
+      }
+
+      // --- VIDEASY (Media 4) ---
+      // Pastikan URL includes videasy karena player mungkin di subdomain
+      if ((selectedServer === "Media 4" || selectedServer === "Media 6") && event.origin.includes("videasy.net")) {
+        try {
+          const rawData = typeof event.data === "string" ? JSON.parse(event.data) : event.data;
+          if (String(rawData?.id) === id) {
+             const watched = parseFloat(rawData.progress || 0);
+             const duration = parseFloat(rawData.duration || 0);
+             updateState(watched, duration);
+          }
+        } catch (e) {
+          // Ignore parsing error
+        }
       }
     };
-  }, [movie, saveProgressToAPI]);
 
-  // Get video URL based on selected server
+    window.addEventListener("message", handleMessage);
+
+    // Cleanup: Remove listener & Save Final Progress
+    return () => {
+      window.removeEventListener("message", handleMessage);
+      if (videoProgressRef.current.watched > 0) {
+        saveProgress(videoProgressRef.current);
+      }
+    };
+  }, [id, selectedServer, saveProgress]);
+
+  // ==========================================
+  // HELPER: Get URL
+  // ==========================================
   const getVideoUrl = () => {
     switch (selectedServer) {
       case "Media 1":
@@ -222,29 +199,27 @@ function Watch() {
       case "Media 3":
         return `https://vidsrc.cc/v3/embed/movie/${id}?autoPlay=false`;
       case "Media 4":
-        return `https://vidsrc.to/embed/movie/${id}`;
+        return `https://player.videasy.net/movie/${id}`; 
+      // Media 5 & 6 bisa disesuaikan jika ada source lain
       case "Media 5":
-        return `https://vidsrc.icu/embed/movie/${id}`;
+        return `https://vidsrc.to/embed/movie/${id}`;
       case "Media 6":
-        return `https://player.videasy.net/movie/${id}`;
+        return `https://vidsrc.icu/embed/movie/${id}`;
       default:
         return `https://vidlink.pro/movie/${id}`;
     }
   };
 
-  // const handleServerChange = (e: any) => {
-  //   const server = e.target.value;
-  //   setSelectedServer(server);
-  //   localStorage.setItem("selectedVideoServer", server);
-  // };
-  console.log(movie);
+  if (isError) {
+     return <div className="text-white p-10 text-center">Error loading movie data</div>;
+  }
 
   return (
     <>
       <Metadata
         seoTitle={`${movie?.title} - Watch SlashVerse`}
         seoDescription={movie?.overview}
-        seoKeywords={movie?.genres?.map((genre) => genre.name).join(", ")}
+        seoKeywords={movie?.genres?.map((genre: any) => genre.name).join(", ")}
       />
 
       <div className="min-h-screen text-white pb-20">
@@ -280,16 +255,22 @@ function Watch() {
                     <div className="badge badge-info">
                       ⭐ {movie.vote_average?.toFixed(1)} / 10
                     </div>
-                    {movie.genres?.map((genre) => (
+                    {movie.genres?.map((genre: any) => (
                       <div key={genre.id} className="badge badge-outline">
                         {genre.name}
                       </div>
                     ))}
-                    {movie.runtime !== undefined && movie.runtime !== null && (
+                    {movie.runtime && (
                       <div className="badge badge-ghost">
                         🕒 {Math.floor(movie.runtime / 60)}h{" "}
                         {movie.runtime % 60}m
                       </div>
+                    )}
+                    {/* Progress Indicator Realtime */}
+                    {videoProgress.percentage > 0 && (
+                       <div className="badge badge-ghost text-green-400 font-bold">
+                          Resume: {Math.round(videoProgress.percentage)}%
+                       </div>
                     )}
                   </div>
 
@@ -297,16 +278,9 @@ function Watch() {
                     {movie.overview}
                   </p>
 
-                  <div className="grid grid-cols-2 gap-4 text-sm text-gray-400">
-                    <div>
-                      <Calendar className="inline-block w-4 h-4 mr-2" />
-                      {new Date(movie.release_date).toLocaleDateString()}
-                    </div>
-                    {/*{videoProgress.percentage > 0 && (
-                      <div className="bg-blue-500/20 text-blue-400 px-2.5 py-1 rounded-full">
-                        {Math.round(videoProgress.percentage)}% watched
-                      </div>
-                    )}*/}
+                  <div className="flex items-center gap-2 text-sm text-gray-400">
+                    <Calendar className="w-4 h-4" />
+                    {new Date(movie.release_date).toLocaleDateString()}
                   </div>
                 </div>
               </div>
@@ -317,19 +291,21 @@ function Watch() {
           <div
             className={`relative group ${
               isFullScreen ? "h-screen" : "aspect-video"
-            } bg-black`}
+            } bg-black rounded-xl overflow-hidden shadow-2xl`}
           >
             <iframe
               src={getVideoUrl()}
               className="w-full h-full"
               allowFullScreen
+              frameBorder="0"
+              scrolling="no"
             />
 
             {/* Floating Controls */}
-            <div className="absolute top-4 right-4 flex gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="absolute top-4 right-4 flex gap-3 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto">
               <button
                 onClick={() => setIsFullScreen(!isFullScreen)}
-                className="p-2 bg-gray-800/50 rounded-lg hover:bg-gray-700/70 transition-colors"
+                className="p-2 bg-[#151515]/80 rounded-lg hover:bg-[#151515] transition-colors"
               >
                 {isFullScreen ? (
                   <Shrink className="w-5 h-5 text-white" />
@@ -341,14 +317,14 @@ function Watch() {
               <div className="relative">
                 <button
                   onClick={() => setShowServerDropdown(!showServerDropdown)}
-                  className="p-2 bg-gray-800/50 rounded-lg hover:bg-gray-700/70 transition-colors flex items-center gap-2"
+                  className="p-2 bg-[#151515]/80 rounded-lg hover:bg-[#151515] transition-colors flex items-center gap-2"
                 >
                   <Monitor className="w-5 h-5" />
-                  <span className="text-sm">{selectedServer}</span>
+                  <span className="text-sm font-medium">{selectedServer}</span>
                 </button>
 
                 {showServerDropdown && (
-                  <div className="absolute right-0 mt-2 w-48 bg-gray-800/95 backdrop-blur-xl rounded-xl shadow-lg border border-gray-700">
+                  <div className="absolute right-0 mt-2 w-48 bg-[#151515]/95 backdrop-blur-xl rounded-xl shadow-lg border border-gray-700 z-50">
                     {[1, 2, 3, 4, 5, 6].map((num) => (
                       <button
                         key={num}
@@ -360,13 +336,13 @@ function Watch() {
                           );
                           setShowServerDropdown(false);
                         }}
-                        className="w-full px-4 py-3 text-sm flex items-center gap-3 hover:bg-gray-700/30 transition-colors"
+                        className="w-full px-4 py-3 text-sm flex items-center gap-3 hover:bg-[#151515]/50 transition-colors first:rounded-t-xl last:rounded-b-xl"
                       >
                         <div
                           className={`w-2 h-2 rounded-full ${
                             selectedServer === `Media ${num}`
                               ? "bg-blue-500"
-                              : "bg-gray-500"
+                              : "bg-gray-600"
                           }`}
                         />
                         <span>Media {num}</span>
@@ -378,6 +354,7 @@ function Watch() {
             </div>
           </div>
 
+          {/* Cast Section */}
           {movie?.credits?.cast && (
             <div className={`${isFullScreen ? "px-4" : ""} mt-8`}>
               <div className="max-w-7xl mx-auto">
@@ -386,9 +363,9 @@ function Watch() {
                   {movie.credits.cast.length > 6 && (
                     <button
                       onClick={() => setIsCastExpanded(!isCastExpanded)}
-                      className="text-green-400 hover:text-green-300 text-sm"
+                      className="text-blue-400 hover:text-blue-300 text-sm font-medium"
                     >
-                      {isCastExpanded ? "Tampilkan Sedikit" : "Lihat Semua"}
+                      {isCastExpanded ? "Show Less" : "View All"}
                     </button>
                   )}
                 </div>
@@ -399,7 +376,7 @@ function Watch() {
                     .map((actor: any) => (
                       <div
                         key={actor.id}
-                        className="group bg-transparent rounded-lg overflow-hidden bg-[#111111] hover:bg-[#222222] transition-colors"
+                        className="group bg-[#151515] rounded-lg overflow-hidden hover:bg-[#202020] transition-colors"
                       >
                         <div className="aspect-[2/3] relative">
                           <Image
@@ -415,11 +392,11 @@ function Watch() {
                             loading="lazy"
                           />
                         </div>
-                        <div className="p-2">
+                        <div className="p-3">
                           <p className="text-sm font-medium text-white truncate">
                             {actor.name}
                           </p>
-                          <p className="text-xs text-gray-400 truncate">
+                          <p className="text-xs text-gray-400 truncate mt-1">
                             {actor.character}
                           </p>
                         </div>
