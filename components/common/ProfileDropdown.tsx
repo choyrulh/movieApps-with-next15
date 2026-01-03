@@ -56,7 +56,7 @@ export const ProfileDropDown = ({ props, onCloseMenu }: any) => {
               <Skeleton className="h-4 w-24 mb-1" />
             ) : (
               <p className="text-sm font-medium text-gray-200">
-                Hello, {data?.data?.name || "User"}
+                Hello, {data?.data?.name?.trim().split(" ")[0] || "User"}
               </p>
             )}
             <p className="text-xs text-gray-400">

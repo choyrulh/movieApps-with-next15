@@ -192,7 +192,7 @@ const paginationRange = useMemo(() => {
           <p className="text-center text-lg text-gray-400">Tidak ada data</p>
         ) : (
           <>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
               {data?.results?.map((movie: Movie) => (
                 <MovieCard key={movie.id} movie={movie} />
               ))}

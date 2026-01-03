@@ -109,7 +109,7 @@ const GenrePage = () => {
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6"
+                  className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6"
                 >
                   {movies?.results?.map((movie: Movie) => (
                     <MovieCard key={movie.id} movie={movie} />
