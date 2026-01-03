@@ -3,14 +3,8 @@
 import { usePathname } from "next/navigation";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Movie } from "@/types/movie"; // Pastikan path type sesuai
 import { getDetailMovie } from "@/Service/fetchMovie";
-import {
-  Monitor,
-  Expand,
-  Shrink,
-  Calendar,
-} from "lucide-react";
+import { Monitor, Expand, Shrink, Calendar } from "lucide-react";
 import { addRecentlyWatched } from "@/Service/fetchUser"; // Sesuaikan import function API
 import { Metadata } from "@/app/Metadata";
 import Image from "next/image";
@@ -19,7 +13,7 @@ import Link from "next/link";
 function Watch() {
   const pathname = usePathname();
   const id = pathname.split("/")[2];
-  
+
   // State UI
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [selectedServer, setSelectedServer] = useState("Media 1");
@@ -32,7 +26,7 @@ function Watch() {
     duration: 0,
     percentage: 0,
   });
-  
+
   // Refs untuk akses state terbaru di dalam listener/cleanup
   const videoProgressRef = useRef(videoProgress);
   const [lastSavedProgress, setLastSavedProgress] = useState({
@@ -41,10 +35,7 @@ function Watch() {
   });
 
   // Query Data Movie
-  const {
-    data: movie,
-    isError,
-  } = useQuery<any>({
+  const { data: movie, isError } = useQuery<any>({
     queryKey: ["movie", id],
     queryFn: () =>
       getDetailMovie(id as unknown as number, {
@@ -74,7 +65,8 @@ function Watch() {
       if (!movie) return;
 
       // Validasi dasar: Jangan simpan jika belum ditonton atau durasi 0
-      if (currentProgress.duration === 0 || currentProgress.watched === 0) return;
+      if (currentProgress.duration === 0 || currentProgress.watched === 0)
+        return;
 
       const historyItem = {
         type: "movie" as const,
@@ -107,7 +99,7 @@ function Watch() {
       // Simpan hanya jika ada perbedaan signifikan (> 2 detik) dari save terakhir
       // untuk mengurangi spam request API
       const diff = Math.abs(videoProgress.watched - lastSavedProgress.watched);
-      
+
       if (diff > 2) {
         saveProgress(videoProgress);
         setLastSavedProgress(videoProgress);
@@ -133,42 +125,54 @@ function Watch() {
       };
 
       // --- VIDLINK (Media 1) ---
-      if (selectedServer === "Media 1" && event.origin === "https://vidlink.pro") {
+      if (
+        selectedServer === "Media 1" &&
+        event.origin === "https://vidlink.pro"
+      ) {
         if (event.data?.type === "MEDIA_DATA") {
           const mediaData = event.data.data;
           // Struktur Vidlink Movie: mediaData[id].progress
           if (mediaData && mediaData[id]?.progress) {
             const { watched, duration } = mediaData[id].progress;
             updateState(watched, duration);
-            
+
             // Opsional: Simpan raw data vidlink ke localStorage jika diperlukan player
-            localStorage.setItem('vidLinkProgress', JSON.stringify(mediaData));
+            localStorage.setItem("vidLinkProgress", JSON.stringify(mediaData));
           }
         }
       }
 
       // --- VIDSRC (Media 2 & 3) ---
-      if ((selectedServer === "Media 2" || selectedServer === "Media 3") && event.origin === "https://vidsrc.cc") {
+      if (
+        (selectedServer === "Media 2" || selectedServer === "Media 3") &&
+        event.origin === "https://vidsrc.cc"
+      ) {
         if (event.data?.type === "PLAYER_EVENT") {
           const data = event.data.data;
           // Validasi ID & Tipe
-          if (String(data.tmdbId) === id && data.mediaType === 'movie') {
-             if (data.event === 'time' || data.event === 'pause') {
-               updateState(data.currentTime, data.duration);
-             }
+          if (String(data.tmdbId) === id && data.mediaType === "movie") {
+            if (data.event === "time" || data.event === "pause") {
+              updateState(data.currentTime, data.duration);
+            }
           }
         }
       }
 
       // --- VIDEASY (Media 4) ---
       // Pastikan URL includes videasy karena player mungkin di subdomain
-      if ((selectedServer === "Media 4" || selectedServer === "Media 6") && event.origin.includes("videasy.net")) {
+      if (
+        (selectedServer === "Media 4" || selectedServer === "Media 6") &&
+        event.origin.includes("videasy.net")
+      ) {
         try {
-          const rawData = typeof event.data === "string" ? JSON.parse(event.data) : event.data;
+          const rawData =
+            typeof event.data === "string"
+              ? JSON.parse(event.data)
+              : event.data;
           if (String(rawData?.id) === id) {
-             const watched = parseFloat(rawData.progress || 0);
-             const duration = parseFloat(rawData.duration || 0);
-             updateState(watched, duration);
+            const watched = parseFloat(rawData.progress || 0);
+            const duration = parseFloat(rawData.duration || 0);
+            updateState(watched, duration);
           }
         } catch (e) {
           // Ignore parsing error
@@ -199,7 +203,7 @@ function Watch() {
       case "Media 3":
         return `https://vidsrc.cc/v3/embed/movie/${id}?autoPlay=false`;
       case "Media 4":
-        return `https://player.videasy.net/movie/${id}`; 
+        return `https://player.videasy.net/movie/${id}`;
       // Media 5 & 6 bisa disesuaikan jika ada source lain
       case "Media 5":
         return `https://vidsrc.to/embed/movie/${id}`;
@@ -211,7 +215,11 @@ function Watch() {
   };
 
   if (isError) {
-     return <div className="text-white p-10 text-center">Error loading movie data</div>;
+    return (
+      <div className="text-white p-10 text-center">
+        Error loading movie data
+      </div>
+    );
   }
 
   return (
@@ -268,9 +276,9 @@ function Watch() {
                     )}
                     {/* Progress Indicator Realtime */}
                     {videoProgress.percentage > 0 && (
-                       <div className="badge badge-ghost text-green-400 font-bold">
-                          Resume: {Math.round(videoProgress.percentage)}%
-                       </div>
+                      <div className="badge badge-ghost text-green-400 font-bold">
+                        Resume: {Math.round(videoProgress.percentage)}%
+                      </div>
                     )}
                   </div>
 

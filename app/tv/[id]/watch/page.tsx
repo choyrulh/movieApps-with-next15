@@ -22,9 +22,9 @@ import {
 import {
   fetchVideoProgress,
   // Pastikan import addRecentlyWatched ada di sini
-  // addRecentlyWatched, 
+  // addRecentlyWatched,
 } from "@/Service/actionUser";
-import { getShowProgressUser, addRecentlyWatched } from "@/Service/fetchUser"; 
+import { getShowProgressUser, addRecentlyWatched } from "@/Service/fetchUser";
 import { Metadata } from "@/app/Metadata";
 import Image from "next/image";
 import useIsMobile from "@/hook/useIsMobile";
@@ -37,7 +37,7 @@ function page() {
   const [season, setSeason] = useState("1");
   const [episode, setEpisode] = useState("1");
   const [selectedServer, setSelectedServer] = useState("Media 1");
-  
+
   // State progress video
   const [videoProgress, setVideoProgress] = useState({
     watched: 0,
@@ -47,7 +47,9 @@ function page() {
 
   const [showSeasonDropdown, setShowSeasonDropdown] = useState(false);
   const [isCastExpanded, setIsCastExpanded] = useState(false);
-  const [showContent, setShowContent] = useState<"episodes" | "cast">("episodes");
+  const [showContent, setShowContent] = useState<"episodes" | "cast">(
+    "episodes"
+  );
 
   const videoProgressRef = useRef(videoProgress);
   const videoPlayerRef = useRef<HTMLDivElement>(null);
@@ -94,7 +96,8 @@ function page() {
       if (!show) return;
 
       // Validasi minimal: jangan simpan jika durasi 0 atau belum ditonton sama sekali
-      if (currentProgress.duration === 0 || currentProgress.watched === 0) return;
+      if (currentProgress.duration === 0 || currentProgress.watched === 0)
+        return;
 
       const historyItem = {
         type: "tv" as const,
@@ -105,8 +108,8 @@ function page() {
         poster: show.poster_path,
         backdrop_path: show.backdrop_path,
         // Backend mengharapkan field ini:
-        totalDuration: currentProgress.duration, 
-        durationWatched: currentProgress.watched, 
+        totalDuration: currentProgress.duration,
+        durationWatched: currentProgress.watched,
         genres: show.genres?.map((g: any) => g.name) || [],
       };
 
@@ -128,7 +131,7 @@ function page() {
     const interval = setInterval(() => {
       // Hanya simpan jika ada perubahan signifikan (> 2 detik) dari simpanan terakhir
       const diff = Math.abs(videoProgress.watched - lastSavedProgress.watched);
-      
+
       if (diff > 2) {
         saveProgress(videoProgress);
         setLastSavedProgress(videoProgress);
@@ -148,14 +151,12 @@ function page() {
 
       try {
         const data = await fetchVideoProgress({ id, season, episode });
-        
+
         if (data) {
-          // Backend mengembalikan { durationWatched, totalDuration }
-          // Kita map ke state frontend { watched, duration }
-          // Cek field mana yang dikembalikan backend (bisa 'watched' atau 'durationWatched')
-          const watchedVal = data.durationWatched || data.watched || 0;
-          const durationVal = data.totalDuration || data.duration || 0;
-          
+          // fetchVideoProgress already maps backend fields to { watched, duration, percentage }
+          const watchedVal = data.watched || 0;
+          const durationVal = data.duration || 0;
+
           if (durationVal > 0) {
             setVideoProgress({
               watched: watchedVal,
@@ -194,41 +195,58 @@ function page() {
       };
 
       // --- VIDLINK (Media 1) ---
-      if (selectedServer === "Media 1" && event.origin === "https://vidlink.pro") {
+      if (
+        selectedServer === "Media 1" &&
+        event.origin === "https://vidlink.pro"
+      ) {
         if (event.data?.type === "MEDIA_DATA") {
           const mediaData = event.data.data;
           // Key format vidlink biasanya s{season}e{episode}
           const key = `s${season}e${episode}`;
-          
+
           if (mediaData && mediaData[id]?.show_progress?.[key]?.progress) {
-            const { watched, duration } = mediaData[id].show_progress[key].progress;
+            const { watched, duration } =
+              mediaData[id].show_progress[key].progress;
             updateState(watched, duration);
           }
         }
       }
 
       // --- VIDSRC (Media 2 & 3) ---
-      if ((selectedServer === "Media 2" || selectedServer === "Media 3") && event.origin === "https://vidsrc.cc") {
+      if (
+        (selectedServer === "Media 2" || selectedServer === "Media 3") &&
+        event.origin === "https://vidsrc.cc"
+      ) {
         if (event.data?.type === "PLAYER_EVENT") {
           const data = event.data.data;
           // Validasi ID & Tipe
-          if (String(data.tmdbId) === id && data.mediaType === 'tv') {
-             // Update hanya jika event progress berjalan
-             if (data.event === 'time' || data.event === 'pause') {
-               updateState(data.currentTime, data.duration);
-             }
+          if (String(data.tmdbId) === id && data.mediaType === "tv") {
+            // Update hanya jika event progress berjalan
+            if (data.event === "time" || data.event === "pause") {
+              updateState(data.currentTime, data.duration);
+            }
           }
         }
       }
 
       // --- VIDEASY (Media 4) ---
-      if (selectedServer === "Media 4" && event.origin.includes("videasy.net")) {
+      if (
+        selectedServer === "Media 4" &&
+        event.origin.includes("videasy.net")
+      ) {
         try {
-          const rawData = typeof event.data === "string" ? JSON.parse(event.data) : event.data;
-          if (String(rawData?.id) === id && String(rawData?.season) === season && String(rawData?.episode) === episode) {
-             const watched = parseFloat(rawData.progress || 0);
-             const duration = parseFloat(rawData.duration || 0);
-             updateState(watched, duration);
+          const rawData =
+            typeof event.data === "string"
+              ? JSON.parse(event.data)
+              : event.data;
+          if (
+            String(rawData?.id) === id &&
+            String(rawData?.season) === season &&
+            String(rawData?.episode) === episode
+          ) {
+            const watched = parseFloat(rawData.progress || 0);
+            const duration = parseFloat(rawData.duration || 0);
+            updateState(watched, duration);
           }
         } catch (e) {
           // ignore parsing error
@@ -237,7 +255,7 @@ function page() {
     };
 
     window.addEventListener("message", handleMessage);
-    
+
     return () => {
       window.removeEventListener("message", handleMessage);
       // PENTING: Save saat unmount/ganti episode
@@ -245,8 +263,7 @@ function page() {
         saveProgress(videoProgressRef.current);
       }
     };
-  }, [id, season, episode, selectedServer, saveProgress]); 
-
+  }, [id, season, episode, selectedServer, saveProgress]);
 
   // ==========================================
   // INITIALIZE LAST WATCHED (Auto Select Season/Ep)
@@ -268,11 +285,10 @@ function page() {
     }
   }, [progress]);
 
-
   // ==========================================
   // HELPER & RENDER
   // ==========================================
-  
+
   const getVideoUrl = () => {
     switch (selectedServer) {
       case "Media 1":
@@ -301,29 +317,38 @@ function page() {
   );
 
   const episodes = seasonData?.episodes || [];
-  const currentEpisodeData = selectedSeasonData?.episodes?.[parseInt(episode) - 1];
+  const currentEpisodeData =
+    selectedSeasonData?.episodes?.[parseInt(episode) - 1];
 
   // Navigation Logic
   const currentEpisodeIndex = useMemo(() => {
-    return episodes.findIndex((ep: any) => ep.episode_number === parseInt(episode));
+    return episodes.findIndex(
+      (ep: any) => ep.episode_number === parseInt(episode)
+    );
   }, [episode, episodes]);
 
   const hasPreviousEpisode = currentEpisodeIndex > 0;
   const hasNextEpisode = currentEpisodeIndex < episodes.length - 1;
 
-  const handleEpisodeNavigation = useCallback((type: "prev" | "next") => {
-    if (type === "prev" && hasPreviousEpisode) {
+  const handleEpisodeNavigation = useCallback(
+    (type: "prev" | "next") => {
+      if (type === "prev" && hasPreviousEpisode) {
         setEpisode(episodes[currentEpisodeIndex - 1].episode_number.toString());
-    }
-    if (type === "next" && hasNextEpisode) {
+      }
+      if (type === "next" && hasNextEpisode) {
         setEpisode(episodes[currentEpisodeIndex + 1].episode_number.toString());
-    }
-  }, [hasPreviousEpisode, hasNextEpisode, currentEpisodeIndex, episodes]);
+      }
+    },
+    [hasPreviousEpisode, hasNextEpisode, currentEpisodeIndex, episodes]
+  );
 
   const handleEpisodeChange = useCallback((episodeNumber: string) => {
     setEpisode(episodeNumber);
     setTimeout(() => {
-      videoPlayerRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      videoPlayerRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
     }, 100);
   }, []);
 
@@ -336,8 +361,11 @@ function page() {
       />
 
       <div className="min-h-screen text-white pb-20">
-        <main className={`mx-auto transition-all duration-300 ${isFullScreen ? "max-w-full" : "px-4"}`}>
-          
+        <main
+          className={`mx-auto transition-all duration-300 ${
+            isFullScreen ? "max-w-full" : "px-4"
+          }`}
+        >
           {/* Header Section */}
           {!isFullScreen && (
             <div className="mx-auto px-4 pt-8">
@@ -350,31 +378,45 @@ function page() {
                   </Link>
 
                   <div className="flex flex-wrap gap-4 text-sm">
-                    <div className="badge badge-info">⭐ {show?.vote_average?.toFixed(1)} / 10</div>
+                    <div className="badge badge-info">
+                      ⭐ {show?.vote_average?.toFixed(1)} / 10
+                    </div>
                     {show?.genres?.map((genre: any) => (
-                      <div key={genre.id} className="badge badge-outline">{genre.name}</div>
+                      <div key={genre.id} className="badge badge-outline">
+                        {genre.name}
+                      </div>
                     ))}
                     <div className="badge badge-ghost">
-                       {/* Tampilkan progress bar sederhana jika ada */}
-                       {videoProgress.percentage > 0 && (
-                          <span className="text-green-400 font-bold ml-2">
-                            Resume: {Math.round(videoProgress.percentage)}%
-                          </span>
-                       )}
+                      {/* Tampilkan progress bar sederhana jika ada */}
+                      {videoProgress.percentage > 0 && (
+                        <span className="text-green-400 font-bold ml-2">
+                          Resume: {Math.round(videoProgress.percentage)}%
+                        </span>
+                      )}
                     </div>
                   </div>
-                  <p className="text-gray-300 leading-relaxed">{currentEpisodeData?.overview || show?.overview}</p>
+                  <p className="text-gray-300 leading-relaxed">
+                    {currentEpisodeData?.overview || show?.overview}
+                  </p>
                 </div>
               </div>
             </div>
           )}
 
           {/* Main Content Area */}
-          <div className={`flex flex-col gap-6 ${isFullScreen ? "lg:flex-col" : "lg:flex-row"}`}>
-            
+          <div
+            className={`flex flex-col gap-6 ${
+              isFullScreen ? "lg:flex-col" : "lg:flex-row"
+            }`}
+          >
             {/* Left Column - Video Player */}
-            <div className={isFullScreen ? "w-full overflow-hidden" : "lg:w-2/3"}>
-              <div ref={videoPlayerRef} className="relative group aspect-video bg-black rounded-xl overflow-hidden shadow-xl">
+            <div
+              className={isFullScreen ? "w-full overflow-hidden" : "lg:w-2/3"}
+            >
+              <div
+                ref={videoPlayerRef}
+                className="relative group aspect-video bg-black rounded-xl overflow-hidden shadow-xl"
+              >
                 <iframe
                   src={getVideoUrl()}
                   className="w-full h-full"
@@ -389,7 +431,11 @@ function page() {
                     onClick={() => setIsFullScreen(!isFullScreen)}
                     className="p-2 bg-[#151515]/80 rounded-lg hover:bg-[#151515] transition-colors"
                   >
-                    {isFullScreen ? <Shrink className="w-5 h-5 text-white" /> : <Expand className="w-5 h-5 text-white" />}
+                    {isFullScreen ? (
+                      <Shrink className="w-5 h-5 text-white" />
+                    ) : (
+                      <Expand className="w-5 h-5 text-white" />
+                    )}
                   </button>
 
                   <div className="relative">
@@ -398,7 +444,9 @@ function page() {
                       className="p-2 bg-[#151515]/80 rounded-lg hover:bg-[#151515] transition-colors flex items-center gap-2"
                     >
                       <Monitor className="w-5 h-5" />
-                      <span className="text-sm font-medium">{selectedServer}</span>
+                      <span className="text-sm font-medium">
+                        {selectedServer}
+                      </span>
                     </button>
 
                     {showServerDropdown && (
@@ -408,12 +456,21 @@ function page() {
                             key={num}
                             onClick={() => {
                               setSelectedServer(`Media ${num}`);
-                              localStorage.setItem("selectedVideoServer", `Media ${num}`);
+                              localStorage.setItem(
+                                "selectedVideoServer",
+                                `Media ${num}`
+                              );
                               setShowServerDropdown(false);
                             }}
                             className="w-full px-4 py-3 text-sm flex items-center gap-3 hover:bg-[#151515]/50 transition-colors first:rounded-t-xl last:rounded-b-xl"
                           >
-                            <div className={`w-2 h-2 rounded-full ${selectedServer === `Media ${num}` ? "bg-green-500" : "bg-gray-600"}`} />
+                            <div
+                              className={`w-2 h-2 rounded-full ${
+                                selectedServer === `Media ${num}`
+                                  ? "bg-green-500"
+                                  : "bg-gray-600"
+                              }`}
+                            />
                             <span>Media {num}</span>
                           </button>
                         ))}
@@ -425,38 +482,46 @@ function page() {
 
               {/* Episode Navigation Buttons */}
               <div className="mt-4 flex justify-between items-center gap-4">
-                  <button
-                    onClick={() => handleEpisodeNavigation("prev")}
-                    disabled={!hasPreviousEpisode}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
-                      hasPreviousEpisode ? "bg-green-600/20 hover:bg-green-600/40 text-green-400" : "bg-[#151515]/30 text-gray-600 cursor-not-allowed"
-                    }`}
-                  >
-                    <ChevronLeft className="w-5 h-5" />
-                    <span className="hidden sm:block">Previous</span>
-                  </button>
+                <button
+                  onClick={() => handleEpisodeNavigation("prev")}
+                  disabled={!hasPreviousEpisode}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+                    hasPreviousEpisode
+                      ? "bg-green-600/20 hover:bg-green-600/40 text-green-400"
+                      : "bg-[#151515]/30 text-gray-600 cursor-not-allowed"
+                  }`}
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                  <span className="hidden sm:block">Previous</span>
+                </button>
 
-                  <div className="text-center">
-                    <span className="text-sm text-gray-400">
-                      Season {season} • Episode {episode}
-                    </span>
-                  </div>
+                <div className="text-center">
+                  <span className="text-sm text-gray-400">
+                    Season {season} • Episode {episode}
+                  </span>
+                </div>
 
-                  <button
-                    onClick={() => handleEpisodeNavigation("next")}
-                    disabled={!hasNextEpisode}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
-                      hasNextEpisode ? "bg-green-600/20 hover:bg-green-600/40 text-green-400" : "bg-[#151515]/30 text-gray-600 cursor-not-allowed"
-                    }`}
-                  >
-                    <span className="hidden sm:block">Next</span>
-                    <ChevronRight className="w-5 h-5" />
-                  </button>
+                <button
+                  onClick={() => handleEpisodeNavigation("next")}
+                  disabled={!hasNextEpisode}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+                    hasNextEpisode
+                      ? "bg-green-600/20 hover:bg-green-600/40 text-green-400"
+                      : "bg-[#151515]/30 text-gray-600 cursor-not-allowed"
+                  }`}
+                >
+                  <span className="hidden sm:block">Next</span>
+                  <ChevronRight className="w-5 h-5" />
+                </button>
               </div>
             </div>
 
             {/* Right Column - Playlist */}
-            <div className={`bg-[#151515]/50 rounded-xl p-4 flex flex-col ${isFullScreen ? "lg:w-auto h-[500px]" : "lg:w-1/3 h-[700px]"}`}>
+            <div
+              className={`bg-[#151515]/50 rounded-xl p-4 flex flex-col ${
+                isFullScreen ? "lg:w-auto h-[500px]" : "lg:w-1/3 h-[700px]"
+              }`}
+            >
               {/* Toggle Buttons */}
               <div className="flex mb-4 border-b border-gray-700">
                 <button
@@ -681,7 +746,6 @@ function page() {
                 )}
               </div>
             </div>
-            
           </div>
         </main>
       </div>

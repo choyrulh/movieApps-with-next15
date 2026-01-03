@@ -91,7 +91,7 @@ export default function page() {
                     {data?.data?.name
                       ? data.data.name
                           .split(" ")
-                          .map((n) => n[0])
+                          .map((n: any) => n[0])
                           .join("")
                           .slice(0, 2)
                           .toUpperCase()

@@ -15,14 +15,14 @@ import {
   EyeOff,
   Check,
   Save,
-  Loader2
+  Loader2,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { useUserProfile } from "@/hook/useUserProfile";
 import Link from "next/link";
 import axios from "axios"; // Pastikan install axios
-import { toast } from "sonner"; 
+import { toast } from "sonner";
 import { getCookie } from "@/Service/fetchUser";
 
 // --- Types ---
@@ -44,32 +44,47 @@ interface UserPreferences {
 export default function Page() {
   const [mounted, setMounted] = useState(false);
   const { data: userProfile, isLoading, refetch } = useUserProfile();
-  
+
   // Local State untuk Edit Mode Profile Info
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     bio: "",
     phone: "",
-    avatar: ""
+    avatar: "",
   });
 
   // Local State untuk Preferences (agar UI responsif instan)
   const [preferences, setPreferences] = useState<UserPreferences | null>(null);
 
   // Password State
-  const [password, setPassword] = useState({ current: "", new: "", confirm: "" });
-  const [showPassword, setShowPassword] = useState({ current: false, new: false, confirm: false });
+  const [password, setPassword] = useState({
+    current: "",
+    new: "",
+    confirm: "",
+  });
+  const [showPassword, setShowPassword] = useState({
+    current: false,
+    new: false,
+    confirm: false,
+  });
   const [isSavingPassword, setIsSavingPassword] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Constants
   const genres = [
-    { id: 28, name: "Action" }, { id: 12, name: "Adventure" }, { id: 16, name: "Animation" },
-    { id: 35, name: "Comedy" }, { id: 80, name: "Crime" }, { id: 99, name: "Documentary" },
-    { id: 18, name: "Drama" }, { id: 14, name: "Fantasy" }, { id: 27, name: "Horror" },
-    { id: 878, name: "Sci-Fi" }, { id: 53, name: "Thriller" }
+    { id: 28, name: "Action" },
+    { id: 12, name: "Adventure" },
+    { id: 16, name: "Animation" },
+    { id: 35, name: "Comedy" },
+    { id: 80, name: "Crime" },
+    { id: 99, name: "Documentary" },
+    { id: 18, name: "Drama" },
+    { id: 14, name: "Fantasy" },
+    { id: 27, name: "Horror" },
+    { id: 878, name: "Sci-Fi" },
+    { id: 53, name: "Thriller" },
   ];
 
   // --- Initialize State when Data Loads ---
@@ -80,23 +95,28 @@ export default function Page() {
         name: userProfile.data.name || "",
         bio: userProfile.data.profile?.bio || "",
         phone: userProfile.data.profile?.phone || "",
-        avatar: userProfile.data.profile?.avatar || "/default-avatar.png"
+        avatar: userProfile.data.profile?.avatar || "/default-avatar.png",
       });
 
       // Default preferences fallback
       setPreferences({
         favoriteGenres: userProfile.data.preferences?.favoriteGenres || [],
-        maturityRating: userProfile.data.preferences?.maturityRating || "Semua Umur",
+        maturityRating:
+          userProfile.data.preferences?.maturityRating || "Semua Umur",
         language: userProfile.data.preferences?.language || "Bahasa Indonesia",
-        subtitleLanguage: userProfile.data.preferences?.subtitleLanguage || "Bahasa Indonesia",
+        subtitleLanguage:
+          userProfile.data.preferences?.subtitleLanguage || "Bahasa Indonesia",
         darkMode: userProfile.data.preferences?.darkMode ?? true,
         autoplay: userProfile.data.preferences?.autoplay ?? true,
         notifications: {
           email: userProfile.data.preferences?.notifications?.email ?? true,
           push: userProfile.data.preferences?.notifications?.push ?? true,
-          newReleases: userProfile.data.preferences?.notifications?.newReleases ?? true,
-          recommendations: userProfile.data.preferences?.notifications?.recommendations ?? true,
-        }
+          newReleases:
+            userProfile.data.preferences?.notifications?.newReleases ?? true,
+          recommendations:
+            userProfile.data.preferences?.notifications?.recommendations ??
+            true,
+        },
       });
     }
   }, [userProfile]);
@@ -107,10 +127,10 @@ export default function Page() {
     // Generate angka acak 1 - 30
     const randomNum = Math.floor(Math.random() * 30) + 1;
     const newAvatarUrl = `https://avatar.iran.liara.run/public/${randomNum}`;
-    
+
     // Update local state
-    setFormData(prev => ({ ...prev, avatar: newAvatarUrl }));
-    
+    setFormData((prev) => ({ ...prev, avatar: newAvatarUrl }));
+
     // Memberikan feedback ke user
     toast.success("Avatar acak dipilih! Jangan lupa klik Simpan.");
   };
@@ -119,15 +139,19 @@ export default function Page() {
   const handleProfileSave = async () => {
     try {
       const token = getCookie("user");
-      await axios.put(`${process.env.BASE_URL_BACKEND}user/profile`, {
-        name: formData.name,
-        profile: {
-          bio: formData.bio,
-          phone: formData.phone,
-          avatar: formData.avatar
-        }
-      }, { headers: { Authorization: `Bearer ${token}` }});
-      
+      await axios.put(
+        `${process.env.BASE_URL_BACKEND}user/profile`,
+        {
+          name: formData.name,
+          profile: {
+            bio: formData.bio,
+            phone: formData.phone,
+            avatar: formData.avatar,
+          },
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
       toast.success("Profil berhasil disimpan!");
       setEditMode(false);
       refetch();
@@ -140,7 +164,7 @@ export default function Page() {
   // 2. Real-time Preference Update (Auto-save logic)
   const updatePreference = async (newPrefs: Partial<UserPreferences>) => {
     if (!preferences) return;
-    
+
     // Optimistic Update UI
     const updatedPreferences = { ...preferences, ...newPrefs };
     setPreferences(updatedPreferences); // Update local UI immediately
@@ -148,9 +172,13 @@ export default function Page() {
     // API Call
     try {
       const token = getCookie("user");
-      await axios.put(`${process.env.BASE_URL_BACKEND}user/profile`, {
-        preferences: updatedPreferences
-      }, { headers: { Authorization: `Bearer ${token}` }});
+      await axios.put(
+        `${process.env.BASE_URL_BACKEND}user/profile`,
+        {
+          preferences: updatedPreferences,
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
     } catch (error) {
       toast.error("Gagal menyingkronkan pengaturan.");
       // Rollback logic could go here
@@ -158,11 +186,11 @@ export default function Page() {
   };
 
   // 3. Notification Toggle
-  const toggleNotification = (key: keyof typeof preferences.notifications) => {
+  const toggleNotification = (key: keyof UserPreferences["notifications"]) => {
     if (!preferences) return;
     const newNotifications = {
       ...preferences.notifications,
-      [key]: !preferences.notifications[key]
+      [key]: !preferences.notifications[key],
     };
     updatePreference({ notifications: newNotifications });
   };
@@ -171,9 +199,9 @@ export default function Page() {
   const handleGenreToggle = (genreName: string) => {
     if (!preferences) return;
     let currentGenres = [...preferences.favoriteGenres];
-    
+
     if (currentGenres.includes(genreName)) {
-      currentGenres = currentGenres.filter(g => g !== genreName);
+      currentGenres = currentGenres.filter((g) => g !== genreName);
     } else {
       currentGenres.push(genreName);
     }
@@ -191,10 +219,14 @@ export default function Page() {
     setIsSavingPassword(true);
     try {
       const token = getCookie("user");
-      await axios.put(`${process.env.BASE_URL_BACKEND}auth/change-password`, {
-        currentPassword: password.current,
-        newPassword: password.new
-      }, { headers: { Authorization: `Bearer ${token}` }});
+      await axios.put(
+        `${process.env.BASE_URL_BACKEND}auth/change-password`,
+        {
+          currentPassword: password.current,
+          newPassword: password.new,
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
       toast.success("Password berhasil diubah!");
       setPassword({ current: "", new: "", confirm: "" });
@@ -213,15 +245,18 @@ export default function Page() {
       // Untuk demo, kita buat fake URL
       const fakeUrl = URL.createObjectURL(file);
       setFormData({ ...formData, avatar: fakeUrl });
-      toast("Jangan lupa klik Simpan untuk menerapkan foto baru.", { icon: 'ℹ️' });
+      toast("Jangan lupa klik Simpan untuk menerapkan foto baru.", {
+        icon: "ℹ️",
+      });
     }
   };
 
-  if (!mounted || isLoading || !preferences) return (
-    <div className="flex h-screen items-center justify-center">
-      <Loader2 className="animate-spin h-8 w-8 text-green-500" />
-    </div>
-  );
+  if (!mounted || isLoading || !preferences)
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <Loader2 className="animate-spin h-8 w-8 text-green-500" />
+      </div>
+    );
 
   return (
     <div className="max-w-4xl mx-auto px-4 pb-20 pt-6">
@@ -234,24 +269,29 @@ export default function Page() {
       {/* --- Section 1: Profil --- */}
       <SectionContainer>
         <SectionHeading icon={<User size={20} />} title="Profil Saya" />
-        
+
         {editMode ? (
-          <motion.div 
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             className="space-y-6 bg-[#111111]/50 p-6 rounded-xl border border-black"
           >
             <div className="flex flex-col items-center mb-6">
-              <div className="relative group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
+              <div
+                className="relative group cursor-pointer"
+                onClick={() => fileInputRef.current?.click()}
+              >
                 <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-gray-700 group-hover:border-green-500 transition-colors">
-                  <Image 
-                    src={formData.avatar || "/default-avatar.png"} 
-                    alt="Profile" 
-                    width={112} height={112} 
+                  <Image
+                    src={formData.avatar || "/default-avatar.png"}
+                    alt="Profile"
+                    width={112}
+                    height={112}
                     className="object-cover w-full h-full"
                   />
                 </div>
                 {/* Tombol Ganti Avatar Acak */}
-                <button 
+                <button
                   type="button"
                   onClick={handleRandomAvatar}
                   className="absolute bottom-0 right-0 p-2 bg-green-600 rounded-full text-white hover:bg-green-500 shadow-lg transition-transform hover:scale-110"
@@ -260,87 +300,131 @@ export default function Page() {
                   <Edit size={16} />
                 </button>
               </div>
-              <p className="text-xs text-gray-500 mt-3">Klik tombol hijau untuk ganti avatar acak</p>
+              <p className="text-xs text-gray-500 mt-3">
+                Klik tombol hijau untuk ganti avatar acak
+              </p>
             </div>
 
             <div className="grid md:grid-cols-2 gap-4">
-              <InputField label="Nama Lengkap" value={formData.name} onChange={(v) => setFormData({...formData, name: v})} />
-              <InputField label="Nomor Telepon" value={formData.phone} onChange={(v) => setFormData({...formData, phone: v})} />
+              <InputField
+                label="Nama Lengkap"
+                value={formData.name}
+                onChange={(v) => setFormData({ ...formData, name: v })}
+              />
+              <InputField
+                label="Nomor Telepon"
+                value={formData.phone}
+                onChange={(v) => setFormData({ ...formData, phone: v })}
+              />
               <div className="md:col-span-2">
                 <label className="block text-sm text-gray-400 mb-1">Bio</label>
                 <textarea
                   value={formData.bio}
-                  onChange={(e) => setFormData({...formData, bio: e.target.value})}
+                  onChange={(e) =>
+                    setFormData({ ...formData, bio: e.target.value })
+                  }
                   className="w-full bg-[#333333] rounded-lg px-4 py-2 text-white border border-gray-700 focus:border-green-500 focus:outline-none h-24 resize-none"
                 />
               </div>
             </div>
 
             <div className="flex justify-end gap-3 pt-4">
-              <button onClick={() => setEditMode(false)} className="px-4 py-2 rounded-lg text-gray-300 hover:bg-gray-800">Batal</button>
-              <button onClick={handleProfileSave} className="flex items-center gap-2 px-6 py-2 bg-green-600 rounded-lg text-white hover:bg-green-700 font-medium">
+              <button
+                onClick={() => setEditMode(false)}
+                className="px-4 py-2 rounded-lg text-gray-300 hover:bg-gray-800"
+              >
+                Batal
+              </button>
+              <button
+                onClick={handleProfileSave}
+                className="flex items-center gap-2 px-6 py-2 bg-green-600 rounded-lg text-white hover:bg-green-700 font-medium"
+              >
                 <Save size={18} /> Simpan Perubahan
               </button>
             </div>
           </motion.div>
         ) : (
           <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
-             <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-green-500/30 flex-shrink-0">
-                <Image 
-                  src={formData.avatar || "/default-avatar.png"} 
-                  alt="Profile" 
-                  width={80} height={80} 
-                  className="object-cover w-full h-full"
-                />
-              </div>
-              <div className="flex-1">
-                <h3 className="text-xl font-semibold text-white">{formData.name}</h3>
-                <p className="text-gray-400 text-sm">{userProfile?.data?.email}</p>
-                <p className="text-gray-500 text-sm mt-1">{formData.bio || "Belum ada bio"}</p>
-              </div>
-              <button
-                onClick={() => setEditMode(true)}
-                className="px-4 py-2 bg-[#555555]/50 hover:bg-[#555555] rounded-lg text-sm text-white transition flex items-center gap-2 border border-gray-600"
-              >
-                <Edit size={16} /> Edit Profil
-              </button>
+            <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-green-500/30 flex-shrink-0">
+              <Image
+                src={formData.avatar || "/default-avatar.png"}
+                alt="Profile"
+                width={80}
+                height={80}
+                className="object-cover w-full h-full"
+              />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-xl font-semibold text-white">
+                {formData.name}
+              </h3>
+              <p className="text-gray-400 text-sm">
+                {userProfile?.data?.email}
+              </p>
+              <p className="text-gray-500 text-sm mt-1">
+                {formData.bio || "Belum ada bio"}
+              </p>
+            </div>
+            <button
+              onClick={() => setEditMode(true)}
+              className="px-4 py-2 bg-[#555555]/50 hover:bg-[#555555] rounded-lg text-sm text-white transition flex items-center gap-2 border border-gray-600"
+            >
+              <Edit size={16} /> Edit Profil
+            </button>
           </div>
         )}
       </SectionContainer>
 
       {/* --- Section 2: Keamanan --- */}
       <SectionContainer>
-        <SectionHeading icon={<Shield size={20} />} title="Keamanan & Password" />
+        <SectionHeading
+          icon={<Shield size={20} />}
+          title="Keamanan & Password"
+        />
         <form onSubmit={handlePasswordSubmit} className="space-y-4 max-w-lg">
-          <PasswordInput 
-            label="Password Saat Ini" 
-            value={password.current} 
+          <PasswordInput
+            label="Password Saat Ini"
+            value={password.current}
             show={showPassword.current}
-            onChange={(v) => setPassword({...password, current: v})}
-            onToggle={() => setShowPassword({...showPassword, current: !showPassword.current})}
+            onChange={(v: any) => setPassword({ ...password, current: v })}
+            onToggle={() =>
+              setShowPassword({
+                ...showPassword,
+                current: !showPassword.current,
+              })
+            }
           />
           <div className="grid grid-cols-2 gap-4">
-            <PasswordInput 
-              label="Password Baru" 
-              value={password.new} 
+            <PasswordInput
+              label="Password Baru"
+              value={password.new}
               show={showPassword.new}
-              onChange={(v) => setPassword({...password, new: v})}
-              onToggle={() => setShowPassword({...showPassword, new: !showPassword.new})}
+              onChange={(v: any) => setPassword({ ...password, new: v })}
+              onToggle={() =>
+                setShowPassword({ ...showPassword, new: !showPassword.new })
+              }
             />
-            <PasswordInput 
-              label="Konfirmasi" 
-              value={password.confirm} 
+            <PasswordInput
+              label="Konfirmasi"
+              value={password.confirm}
               show={showPassword.confirm}
-              onChange={(v) => setPassword({...password, confirm: v})}
-              onToggle={() => setShowPassword({...showPassword, confirm: !showPassword.confirm})}
+              onChange={(v: any) => setPassword({ ...password, confirm: v })}
+              onToggle={() =>
+                setShowPassword({
+                  ...showPassword,
+                  confirm: !showPassword.confirm,
+                })
+              }
             />
           </div>
           <div className="pt-2">
-             <button
+            <button
               type="submit"
               disabled={isSavingPassword || !password.current}
               className={`px-5 py-2 rounded-lg text-white font-medium transition ${
-                !password.current ? 'bg-[#555555] cursor-not-allowed text-gray-400' : 'bg-green-600 hover:bg-green-700'
+                !password.current
+                  ? "bg-[#555555] cursor-not-allowed text-gray-400"
+                  : "bg-green-600 hover:bg-green-700"
               }`}
             >
               {isSavingPassword ? "Memproses..." : "Update Password"}
@@ -351,66 +435,110 @@ export default function Page() {
 
       {/* --- Section 3: Berlangganan --- */}
       <SectionContainer>
-        <SectionHeading icon={<CreditCard size={20} />} title="Status Langganan" />
+        <SectionHeading
+          icon={<CreditCard size={20} />}
+          title="Status Langganan"
+        />
         {userProfile?.data?.subscription?.plan === "Free" ? (
-             <div className="bg-gradient-to-r from-gray-800 to-gray-700 rounded-xl p-6 flex justify-between items-center">
-                <div>
-                   <h3 className="text-lg font-bold text-white">Paket Gratis</h3>
-                   <p className="text-gray-400 text-sm">Upgrade ke Premium untuk akses tanpa batas.</p>
-                </div>
-                <button className="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-black font-bold rounded-lg">Upgrade Premium</button>
-             </div>
+          <div className="bg-gradient-to-r from-gray-800 to-gray-700 rounded-xl p-6 flex justify-between items-center">
+            <div>
+              <h3 className="text-lg font-bold text-white">Paket Gratis</h3>
+              <p className="text-gray-400 text-sm">
+                Upgrade ke Premium untuk akses tanpa batas.
+              </p>
+            </div>
+            <button className="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-black font-bold rounded-lg">
+              Upgrade Premium
+            </button>
+          </div>
         ) : (
-            <div className="bg-gradient-to-r from-green-900/80 to-green-800/80 rounded-xl p-6 border border-green-700/50">
+          <div className="bg-gradient-to-r from-green-900/80 to-green-800/80 rounded-xl p-6 border border-green-700/50">
             <div className="flex justify-between items-start mb-4">
-                <div>
-                <span className="text-sm text-green-300 font-semibold tracking-wider">PAKET AKTIF</span>
-                <h3 className="text-2xl font-bold text-white mt-1">{userProfile?.data?.subscription?.plan || "Premium"}</h3>
-                </div>
-                <span className="bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-xs font-bold border border-green-500/30">
-                LUNAS
+              <div>
+                <span className="text-sm text-green-300 font-semibold tracking-wider">
+                  PAKET AKTIF
                 </span>
+                <h3 className="text-2xl font-bold text-white mt-1">
+                  {userProfile?.data?.subscription?.plan || "Premium"}
+                </h3>
+              </div>
+              <span className="bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-xs font-bold border border-green-500/30">
+                LUNAS
+              </span>
             </div>
             <div className="space-y-1 text-sm text-gray-300">
-                <p>Harga: <span className="font-semibold text-white">{userProfile?.data?.subscription?.price || "Rp 59.000"}/bulan</span></p>
-                <p>Perpanjangan otomatis pada: <span className="font-semibold text-white">
-                    {userProfile?.data?.subscription?.billingDate ? new Date(userProfile.data.subscription.billingDate).toLocaleDateString() : "-"}
-                </span></p>
+              <p>
+                Harga:{" "}
+                <span className="font-semibold text-white">
+                  {userProfile?.data?.subscription?.price || "Rp 59.000"}/bulan
+                </span>
+              </p>
+              <p>
+                Perpanjangan otomatis pada:{" "}
+                <span className="font-semibold text-white">
+                  {userProfile?.data?.subscription?.billingDate
+                    ? new Date(
+                        userProfile.data.subscription.billingDate
+                      ).toLocaleDateString()
+                    : "-"}
+                </span>
+              </p>
             </div>
-            </div>
+          </div>
         )}
       </SectionContainer>
 
       {/* --- Section 4: Tampilan & Bahasa --- */}
       <SectionContainer>
-        <SectionHeading icon={<Globe size={20} />} title="Preferensi Aplikasi" />
+        <SectionHeading
+          icon={<Globe size={20} />}
+          title="Preferensi Aplikasi"
+        />
         <div className="space-y-1">
           <SettingsItem
             title="Mode Gelap"
             description="Menggunakan tema gelap yang nyaman di mata"
-            action={<ToggleSwitch isChecked={preferences.darkMode} onChange={() => updatePreference({ darkMode: !preferences.darkMode })} />}
+            action={
+              <ToggleSwitch
+                isChecked={preferences.darkMode}
+                onChange={() =>
+                  updatePreference({ darkMode: !preferences.darkMode })
+                }
+              />
+            }
           />
           <SettingsItem
             title="Putar Otomatis"
             description="Otomatis memutar episode selanjutnya"
-            action={<ToggleSwitch isChecked={preferences.autoplay} onChange={() => updatePreference({ autoplay: !preferences.autoplay })} />}
+            action={
+              <ToggleSwitch
+                isChecked={preferences.autoplay}
+                onChange={() =>
+                  updatePreference({ autoplay: !preferences.autoplay })
+                }
+              />
+            }
           />
           <SettingsItem
             title="Bahasa Aplikasi"
             action={
-              <SelectBox 
-                value={preferences.language} 
-                onChange={(e) => updatePreference({ language: e.target.value })}
+              <SelectBox
+                value={preferences.language}
+                onChange={(e: any) =>
+                  updatePreference({ language: e.target.value })
+                }
                 options={["Bahasa Indonesia", "English", "日本語", "Español"]}
               />
             }
           />
-           <SettingsItem
+          <SettingsItem
             title="Bahasa Subtitle Default"
             action={
-              <SelectBox 
-                value={preferences.subtitleLanguage} 
-                onChange={(e) => updatePreference({ subtitleLanguage: e.target.value })}
+              <SelectBox
+                value={preferences.subtitleLanguage}
+                onChange={(e: any) =>
+                  updatePreference({ subtitleLanguage: e.target.value })
+                }
                 options={["Bahasa Indonesia", "English", "Off"]}
               />
             }
@@ -421,22 +549,40 @@ export default function Page() {
 
       {/* --- Section 5: Notifikasi --- */}
       <SectionContainer>
-        <SectionHeading icon={<Bell size={20} />} title="Pengaturan Notifikasi" />
+        <SectionHeading
+          icon={<Bell size={20} />}
+          title="Pengaturan Notifikasi"
+        />
         <div className="space-y-1">
           <SettingsItem
             title="Email Newsletter"
             description="Berita terbaru dan promo eksklusif"
-            action={<ToggleSwitch isChecked={preferences.notifications.email} onChange={() => toggleNotification('email')} />}
+            action={
+              <ToggleSwitch
+                isChecked={preferences.notifications.email}
+                onChange={() => toggleNotification("email")}
+              />
+            }
           />
           <SettingsItem
             title="Notifikasi Push"
             description="Pemberitahuan langsung di perangkat"
-            action={<ToggleSwitch isChecked={preferences.notifications.push} onChange={() => toggleNotification('push')} />}
+            action={
+              <ToggleSwitch
+                isChecked={preferences.notifications.push}
+                onChange={() => toggleNotification("push")}
+              />
+            }
           />
           <SettingsItem
             title="Rekomendasi Film"
             description="Saran tontonan sesuai seleramu"
-            action={<ToggleSwitch isChecked={preferences.notifications.recommendations} onChange={() => toggleNotification('recommendations')} />}
+            action={
+              <ToggleSwitch
+                isChecked={preferences.notifications.recommendations}
+                onChange={() => toggleNotification("recommendations")}
+              />
+            }
             isLast
           />
         </div>
@@ -444,9 +590,14 @@ export default function Page() {
 
       {/* --- Section 6: Preferensi Konten --- */}
       <SectionContainer>
-        <SectionHeading icon={<Film size={20} />} title="Personalisasi Konten" />
+        <SectionHeading
+          icon={<Film size={20} />}
+          title="Personalisasi Konten"
+        />
         <div className="mb-6">
-          <h3 className="text-gray-300 font-medium mb-3 text-sm">Genre Favorit</h3>
+          <h3 className="text-gray-300 font-medium mb-3 text-sm">
+            Genre Favorit
+          </h3>
           <div className="flex flex-wrap gap-2">
             {genres.map((genre) => (
               <button
@@ -463,31 +614,43 @@ export default function Page() {
             ))}
           </div>
         </div>
-        
+
         <div>
-           <h3 className="text-gray-300 font-medium mb-3 text-sm">Rating Usia</h3>
-           <div className="inline-flex bg-[#333333] p-1 rounded-lg border border-gray-700">
-             {["Semua Umur", "13+", "18+"].map(rating => (
-               <button
-                 key={rating}
-                 onClick={() => updatePreference({ maturityRating: rating })}
-                 className={`px-4 py-1.5 rounded-md text-sm transition-all ${
-                    preferences.maturityRating === rating 
-                    ? "bg-green-600 text-white shadow-sm" 
+          <h3 className="text-gray-300 font-medium mb-3 text-sm">
+            Rating Usia
+          </h3>
+          <div className="inline-flex bg-[#333333] p-1 rounded-lg border border-gray-700">
+            {["Semua Umur", "13+", "18+"].map((rating) => (
+              <button
+                key={rating}
+                onClick={() => updatePreference({ maturityRating: rating })}
+                className={`px-4 py-1.5 rounded-md text-sm transition-all ${
+                  preferences.maturityRating === rating
+                    ? "bg-green-600 text-white shadow-sm"
                     : "text-gray-400 hover:text-white"
-                 }`}
-               >
-                 {rating}
-               </button>
-             ))}
-           </div>
+                }`}
+              >
+                {rating}
+              </button>
+            ))}
+          </div>
         </div>
       </SectionContainer>
 
       {/* --- Links Footer --- */}
       <div className="grid grid-cols-2 gap-4 mt-8 opacity-70">
-         <Link href="/help" className="block p-4 bg-[#333333] rounded-lg hover:bg-[#555555] text-center text-sm">Pusat Bantuan</Link>
-         <Link href="/terms" className="block p-4 bg-[#333333] rounded-lg hover:bg-[#555555] text-center text-sm">Syarat & Ketentuan</Link>
+        <Link
+          href="/help"
+          className="block p-4 bg-[#333333] rounded-lg hover:bg-[#555555] text-center text-sm"
+        >
+          Pusat Bantuan
+        </Link>
+        <Link
+          href="/terms"
+          className="block p-4 bg-[#333333] rounded-lg hover:bg-[#555555] text-center text-sm"
+        >
+          Syarat & Ketentuan
+        </Link>
       </div>
     </div>
   );
@@ -505,16 +668,32 @@ const SectionContainer = ({ children }: { children: React.ReactNode }) => (
   </motion.div>
 );
 
-const SectionHeading = ({ icon, title }: { icon: React.ReactNode; title: string }) => (
+const SectionHeading = ({
+  icon,
+  title,
+}: {
+  icon: React.ReactNode;
+  title: string;
+}) => (
   <div className="flex items-center space-x-3 mb-6 pb-4 border-b border-gray-800">
     <div className="text-green-500 bg-green-500/10 p-2 rounded-lg">{icon}</div>
     <h2 className="text-lg font-semibold text-white">{title}</h2>
   </div>
 );
 
-const InputField = ({ label, value, onChange }: { label: string, value: string, onChange: (v: string) => void }) => (
+const InputField = ({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+}) => (
   <div>
-    <label className="block text-xs text-gray-400 mb-1.5 font-medium uppercase tracking-wide">{label}</label>
+    <label className="block text-xs text-gray-400 mb-1.5 font-medium uppercase tracking-wide">
+      {label}
+    </label>
     <input
       type="text"
       value={value}
@@ -526,7 +705,9 @@ const InputField = ({ label, value, onChange }: { label: string, value: string, 
 
 const PasswordInput = ({ label, value, show, onChange, onToggle }: any) => (
   <div>
-    <label className="block text-xs text-gray-400 mb-1.5 font-medium uppercase tracking-wide">{label}</label>
+    <label className="block text-xs text-gray-400 mb-1.5 font-medium uppercase tracking-wide">
+      {label}
+    </label>
     <div className="relative">
       <input
         type={show ? "text" : "password"}
@@ -534,16 +715,28 @@ const PasswordInput = ({ label, value, show, onChange, onToggle }: any) => (
         onChange={(e) => onChange(e.target.value)}
         className="w-full bg-[#333333] rounded-lg px-4 py-2.5 text-white border border-gray-700 focus:border-green-500 focus:ring-1 focus:ring-green-500 focus:outline-none"
       />
-      <button type="button" onClick={onToggle} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white">
+      <button
+        type="button"
+        onClick={onToggle}
+        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+      >
         {show ? <EyeOff size={18} /> : <Eye size={18} />}
       </button>
     </div>
   </div>
 );
 
-const ToggleSwitch = ({ isChecked, onChange }: { isChecked: boolean; onChange: () => void }) => (
+const ToggleSwitch = ({
+  isChecked,
+  onChange,
+}: {
+  isChecked: boolean;
+  onChange: () => void;
+}) => (
   <div
-    className={`relative w-11 h-6 rounded-full transition-colors duration-200 cursor-pointer ${isChecked ? "bg-green-600" : "bg-[#333333]"}`}
+    className={`relative w-11 h-6 rounded-full transition-colors duration-200 cursor-pointer ${
+      isChecked ? "bg-green-600" : "bg-[#333333]"
+    }`}
     onClick={onChange}
   >
     <motion.div
@@ -561,16 +754,24 @@ const SelectBox = ({ value, onChange, options }: any) => (
     className="bg-[#333333] text-white text-sm rounded-lg px-3 py-2 border border-gray-700 focus:outline-none focus:border-green-500"
   >
     {options.map((opt: string) => (
-      <option key={opt} value={opt}>{opt}</option>
+      <option key={opt} value={opt}>
+        {opt}
+      </option>
     ))}
   </select>
 );
 
 const SettingsItem = ({ title, description, action, isLast = false }: any) => (
-  <div className={`flex justify-between items-center py-4 ${!isLast && "border-b border-gray-800"}`}>
+  <div
+    className={`flex justify-between items-center py-4 ${
+      !isLast && "border-b border-gray-800"
+    }`}
+  >
     <div className="pr-4">
       <h3 className="font-medium text-gray-200">{title}</h3>
-      {description && <p className="text-xs text-gray-500 mt-0.5">{description}</p>}
+      {description && (
+        <p className="text-xs text-gray-500 mt-0.5">{description}</p>
+      )}
     </div>
     <div className="flex-shrink-0">{action}</div>
   </div>
