@@ -140,7 +140,7 @@ export default function Page() {
     try {
       const token = getCookie("user");
       await axios.put(
-        `${process.env.BASE_URL_BACKEND}user/profile`,
+        `https://backend-movie-apps-api-one.vercel.app/api/user/profile`,
         {
           name: formData.name,
           profile: {
@@ -173,7 +173,7 @@ export default function Page() {
     try {
       const token = getCookie("user");
       await axios.put(
-        `${process.env.BASE_URL_BACKEND}user/profile`,
+        `https://backend-movie-apps-api-one.vercel.app/api/user/profile`,
         {
           preferences: updatedPreferences,
         },
@@ -220,7 +220,7 @@ export default function Page() {
     try {
       const token = getCookie("user");
       await axios.put(
-        `${process.env.BASE_URL_BACKEND}auth/change-password`,
+        `https://backend-movie-apps-api-one.vercel.app/api/auth/change-password`,
         {
           currentPassword: password.current,
           newPassword: password.new,
