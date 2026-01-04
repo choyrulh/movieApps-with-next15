@@ -9,6 +9,8 @@ import dynamic from "next/dynamic";
 import { Suspense, useEffect, useMemo } from "react";
 import axios from "axios";
 import { Loader2 } from "lucide-react";
+import HistoryTontonan from "@/Fragments/HistoryWatch";
+
 
 // --- Helpers ---
 // Mapping Nama Genre User ke TMDB ID
@@ -104,6 +106,9 @@ export default function Home() {
       </Suspense>
 
       <div className="-mt-10 relative z-20 md:-mt-0 pl-0">
+        <div className="container mx-auto py-4 max-w-[95.625vw]">
+          <HistoryTontonan />
+        </div>
         
         {/* ROW 1: Popular Movies (Selalu ada) */}
         {isPopLoading ? (
