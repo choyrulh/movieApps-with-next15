@@ -265,9 +265,11 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
                         media_type: "movie",
                       }}
                     />
-                    {/* <GoWatchButton params={id} typeData={"movie"}>
-                      <Play /> Play
-                    </GoWatchButton> */}
+                     <GoWatchButton params={id} typeData={"movie"} variant="secondary"
+  size="sm">
+                      {/*<Play /> */}
+                      Play
+                    </GoWatchButton> 
                   </div>
                 </div>
               </div>
