@@ -69,15 +69,16 @@ export const getWatchlistUser = async () => {
   }
 };
 
-export const getHistoryWatchUser = async () => {
+export const getHistoryWatchUser = async (page = 1) => {
   const token = getCookie("user");
   if (!token) {
     throw new Error("Token tidak ditemukan");
   }
 
   try {
+    // Menambahkan query param page
     const response = await axios.get(
-      `https://backend-movie-apps-api-one.vercel.app/api/recently-watched`,
+      `https://backend-movie-apps-api-one.vercel.app/api/recently-watched?page=${page}&limit=10`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -86,7 +87,7 @@ export const getHistoryWatchUser = async () => {
     );
     return response.data;
   } catch (error) {
-    console.error("Error fetching user profile:", error);
+    console.error("Error fetching user history:", error);
     throw error;
   }
 };

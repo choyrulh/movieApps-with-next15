@@ -101,9 +101,9 @@ export default function Home() {
 
   return (
     <main className="relative min-h-screen pb-20 overflow-x-hidden">
-      <Suspense fallback={<BannerSkeleton />}>
+      {/*<Suspense fallback={<BannerSkeleton />}>*/}
         <Banner type="movie" />
-      </Suspense>
+      {/*</Suspense>*/}
 
       <div className="-mt-10 relative z-20 md:-mt-0 pl-0">
         <div className="container mx-auto py-4 max-w-[95.625vw]">
