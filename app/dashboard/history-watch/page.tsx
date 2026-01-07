@@ -1,6 +1,5 @@
 "use client";
 
-import { useUserProfile } from "@/hook/useUserProfile";
 import {
   Clock,
   Play,
@@ -160,14 +159,16 @@ const MovieHistoryCard = ({
 
 const HistorySkeleton = () => (
   <div className="space-y-4">
-    {[1, 2, 3].map((i) => <Skeleton key={i} className="h-32 w-full rounded-xl bg-[#111111]" />)}
+    {[1, 2, 3].map((i) => (
+      <Skeleton key={i} className="h-32 w-full rounded-xl bg-[#111111]" />
+    ))}
   </div>
 );
 
 export default function Page() {
   const queryClient = useQueryClient();
   const [showClearAllModal, setShowClearAllModal] = useState(false);
-  
+
   // --- INFINITE QUERY ---
   const {
     data,
@@ -175,43 +176,55 @@ export default function Page() {
     hasNextPage,
     isFetchingNextPage,
     isLoading,
-    refetch
+    refetch,
   } = useInfiniteQuery({
     queryKey: ["history-dashboard"],
     queryFn: ({ pageParam = 1 }) => getHistoryWatchUser(pageParam),
-    getNextPageParam: (lastPage) => lastPage.pagination?.hasMore ? lastPage.pagination.page + 1 : undefined,
+    getNextPageParam: (lastPage) =>
+      lastPage.pagination?.hasMore ? lastPage.pagination.page + 1 : undefined,
     initialPageParam: 1,
   });
 
   // --- NATIVE INTERSECTION OBSERVER LOGIC ---
   const observer = useRef<IntersectionObserver | null>(null);
-  const lastElementRef = useCallback((node: HTMLDivElement) => {
-    if (isFetchingNextPage) return; // Jangan observe jika sedang loading
-    if (observer.current) observer.current.disconnect(); // Putus observer lama
+  const lastElementRef = useCallback(
+    (node: HTMLDivElement) => {
+      if (isFetchingNextPage) return; // Jangan observe jika sedang loading
+      if (observer.current) observer.current.disconnect(); // Putus observer lama
 
-    observer.current = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting && hasNextPage) {
-        fetchNextPage(); // Panggil page selanjutnya saat elemen terlihat
-      }
-    });
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && hasNextPage) {
+          fetchNextPage(); // Panggil page selanjutnya saat elemen terlihat
+        }
+      });
 
-    if (node) observer.current.observe(node);
-  }, [isFetchingNextPage, hasNextPage, fetchNextPage]);
+      if (node) observer.current.observe(node);
+    },
+    [isFetchingNextPage, hasNextPage, fetchNextPage]
+  );
 
   const allHistory = data?.pages.flatMap((page) => page.history) || [];
 
   return (
     <>
-      <Metadata seoTitle="Riwayat Nonton" seoDescription="Histori tontonan Anda" />
+      <Metadata
+        seoTitle="Riwayat Nonton"
+        seoDescription="Histori tontonan Anda"
+      />
 
       <div className="max-w-5xl mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
           <div className="flex items-center gap-4">
-            <div className="p-3 rounded-full bg-green-500/20"><Clock className="text-green-500" /></div>
+            <div className="p-3 rounded-full bg-green-500/20">
+              <Clock className="text-green-500" />
+            </div>
             <h1 className="text-2xl font-bold">Riwayat Nonton</h1>
           </div>
           {allHistory.length > 0 && (
-            <button onClick={() => setShowClearAllModal(true)} className="text-red-500 text-sm hover:underline">
+            <button
+              onClick={() => setShowClearAllModal(true)}
+              className="text-red-500 text-sm hover:underline"
+            >
               Hapus Semua
             </button>
           )}
@@ -226,11 +239,15 @@ export default function Page() {
               const isLast = index === allHistory.length - 1;
               return (
                 <div key={item._id} ref={isLast ? lastElementRef : null}>
-                   {/* Gunakan komponen MovieHistoryCard Anda yang sudah ada di page.tsx */}
-                   <MovieHistoryCard 
-                     item={item} 
-                     onDelete={() => queryClient.invalidateQueries({ queryKey: ["history-dashboard"] })} 
-                   />
+                  {/* Gunakan komponen MovieHistoryCard Anda yang sudah ada di page.tsx */}
+                  <MovieHistoryCard
+                    item={item}
+                    onDelete={() =>
+                      queryClient.invalidateQueries({
+                        queryKey: ["history-dashboard"],
+                      })
+                    }
+                  />
                 </div>
               );
             })}
@@ -243,7 +260,9 @@ export default function Page() {
             )}
           </div>
         ) : (
-          <div className="text-center py-20 text-gray-500">Belum ada riwayat</div>
+          <div className="text-center py-20 text-gray-500">
+            Belum ada riwayat
+          </div>
         )}
       </div>
 

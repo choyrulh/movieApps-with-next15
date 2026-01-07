@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { useState, useRef, useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
@@ -6,16 +6,21 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import useIsMobile from "@/hook/useIsMobile";
 import { useAuth } from "@/context/AuthContext";
-import { useUserProfile } from "@/hook/useUserProfile";
-import { Skeleton } from "@/components/ui/skeleton"
+
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const ProfileDropDown = ({ props, onCloseMenu }: any) => {
   const [state, setState] = useState(false);
   const isMobile = useIsMobile();
   const router = useRouter();
   const profileRef: any = useRef();
-  const { isAuthenticated, token, handleLogout } = useAuth();
-  const { data, isLoading, error } = useUserProfile({ queryType: "userProfile" });
+  const {
+    isAuthenticated,
+    token,
+    handleLogout,
+    user: data,
+    isLoadingUser: isLoading,
+  } = useAuth();
 
   useEffect(() => {
     const handleDropDown = (e: any) => {
@@ -38,7 +43,7 @@ export const ProfileDropDown = ({ props, onCloseMenu }: any) => {
   // Function to get initials from name
   const getInitials = (name: string) => {
     if (!name) return "U";
-    const names = name.split(' ');
+    const names = name.split(" ");
     let initials = names[0].substring(0, 1).toUpperCase();
     if (names.length > 1) {
       initials += names[names.length - 1].substring(0, 1).toUpperCase();
@@ -68,7 +73,7 @@ export const ProfileDropDown = ({ props, onCloseMenu }: any) => {
             </p>
           </div>
         )}
-        
+
         <Avatar
           className={`flex items-center space-x-4 ${
             isMobile ? "flex-row-reverse gap-4" : "flex-row"
@@ -109,7 +114,7 @@ export const ProfileDropDown = ({ props, onCloseMenu }: any) => {
           </div>
         </Avatar>
       </div>
-      
+
       {/* Profile Dropdown Content */}
       {isMobile ? (
         <div
@@ -138,8 +143,8 @@ export const ProfileDropDown = ({ props, onCloseMenu }: any) => {
                   <button
                     className="block px-4 py-2 text-gray-200 transition-colors duration-200 hover:bg-slate-800/80 w-full text-end"
                     onClick={() => {
-                      handleLogout()
-                      onCloseMenu() // Tambahkan ini
+                      handleLogout();
+                      onCloseMenu(); // Tambahkan ini
                     }}
                   >
                     {item.title}
@@ -149,8 +154,8 @@ export const ProfileDropDown = ({ props, onCloseMenu }: any) => {
                     className="block px-4 py-2 text-gray-200 transition-colors duration-200 hover:bg-slate-800/80"
                     href={item.path}
                     onClick={() => {
-                      setState(false)
-                      onCloseMenu() // Tambahkan ini
+                      setState(false);
+                      onCloseMenu(); // Tambahkan ini
                     }}
                   >
                     {item.title}

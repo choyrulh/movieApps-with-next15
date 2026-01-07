@@ -11,6 +11,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { useUserProfile } from "@/hook/useUserProfile";
+import { useAuth } from "@/context/AuthContext";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
@@ -27,9 +28,7 @@ const userData = {
 
 export default function page() {
   const [mounted, setMounted] = useState(false);
-  const { data, isLoading, error } = useUserProfile({
-    queryType: "userProfile",
-  });
+  const { user: data, isLoadingUser: isLoading } = useAuth();
   const [statsType, setStatsType] = useState<"month" | "week">("week");
   const { data: watchlistData } = useUserProfile({ queryType: "watchlist" });
   const { data: favoritesData } = useUserProfile({ queryType: "favorites" });
@@ -76,9 +75,7 @@ export default function page() {
                 <div className="hidden md:block text-right">
                   <p className="font-bold text-gray-400">
                     Welcome,{" "}
-                    <span className="text-gray-400">
-                      {data?.data?.name}
-                    </span>
+                    <span className="text-gray-400">{data?.data?.name}</span>
                   </p>
                 </div>
 
@@ -100,7 +97,6 @@ export default function page() {
                 </Avatar>
               </div>
             </div>
-
 
             {/* Stats */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">

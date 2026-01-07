@@ -36,19 +36,19 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-  className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black text-green-100 tracking-tight`}
->
-        <AuthProvider>
-          <ReactQueryProvider>
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black text-green-100 tracking-tight`}
+      >
+        <ReactQueryProvider>
+          <AuthProvider>
             <Navbar />
             {/*<PageTransition>*/}
             {children}
             <Toaster />
 
             {/*</PageTransition>*/}
-          </ReactQueryProvider>
-          <Footer />
-        </AuthProvider>
+            <Footer />
+          </AuthProvider>
+        </ReactQueryProvider>
       </body>
     </html>
   );

@@ -1,5 +1,4 @@
 import {
-  fetchUserProfile,
   getWatchlistUser,
   getHistoryWatchUser,
   getFavoritesUser,
@@ -7,12 +6,7 @@ import {
 } from "@/Service/fetchUser";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
-type QueryType =
-  | "userProfile"
-  | "watchlist"
-  | "history"
-  | "favorites"
-  | "stats";
+type QueryType = "watchlist" | "history" | "favorites" | "stats";
 
 interface UseUserDataOptions {
   queryType: QueryType;
@@ -20,15 +14,13 @@ interface UseUserDataOptions {
 }
 
 export function useUserProfile({
-  queryType = "userProfile",
+  queryType,
   type = "week",
-}: Partial<UseUserDataOptions> = {}) {
+}: UseUserDataOptions) {
   const queryClient = useQueryClient();
 
   const fetchFunction = () => {
     switch (queryType) {
-      case "userProfile":
-        return fetchUserProfile();
       case "watchlist":
         return getWatchlistUser();
       case "history":

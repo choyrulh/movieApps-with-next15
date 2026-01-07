@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
-import { useUserProfile } from "@/hook/useUserProfile";
+import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
 import axios from "axios"; // Pastikan install axios
 import { toast } from "sonner";
@@ -43,7 +43,11 @@ interface UserPreferences {
 
 export default function Page() {
   const [mounted, setMounted] = useState(false);
-  const { data: userProfile, isLoading, refetch } = useUserProfile();
+  const {
+    user: userProfile,
+    isLoadingUser: isLoading,
+    refetchUser: refetch,
+  } = useAuth();
 
   // Local State untuk Edit Mode Profile Info
   const [editMode, setEditMode] = useState(false);
