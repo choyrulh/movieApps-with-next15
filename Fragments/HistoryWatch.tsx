@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef, useMemo } from "react";
 import Image from "next/image";
+import { ImageWithFallback } from "@/components/common/ImageWithFallback";
 import Link from "next/link";
 import useIsMobile from "@/hook/useIsMobile";
 import { getHistoryWatchUser } from "@/Service/fetchUser";
@@ -354,11 +355,16 @@ const HistoryTontonan = () => {
                   >
                     {/* Card UI Code (Sama seperti original) */}
                     <div className="relative aspect-video w-full rounded-xl overflow-hidden bg-gray-900 shadow-lg group-hover:shadow-2xl group-hover:shadow-amber-500/10 transition-all duration-300 ring-1 ring-white/10 group-hover:ring-amber-500/50">
-                      <Image
-                        src={`https://image.tmdb.org/t/p/w780${media.backdrop_path}`}
+                      <ImageWithFallback
+                        src={
+                          media.backdrop_path
+                            ? `https://image.tmdb.org/t/p/w780${media.backdrop_path}`
+                            : ""
+                        }
                         alt={media.title || "Untitled"}
                         fill
                         className="object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out opacity-90 group-hover:opacity-100"
+                        fallbackText="No Image"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80" />
 

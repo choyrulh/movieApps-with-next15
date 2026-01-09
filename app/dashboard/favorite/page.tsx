@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Heart, Play, Star, X, Calendar, ChevronDown } from "lucide-react";
 import Image from "next/image";
+import { ImageWithFallback } from "@/components/common/ImageWithFallback";
 import { useFavoriteStore } from "@/store/useFavoriteStore";
 import { AddFavoriteButton } from "@/components/AddFavoriteButton";
 import { Metadata } from "@/app/Metadata";
@@ -25,13 +26,14 @@ const FavoriteCard = ({
       className="relative rounded-xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 ease-out group"
     >
       <div className="relative aspect-[2/3]">
-        <Image
+        <ImageWithFallback
           src={`https://image.tmdb.org/t/p/w780${movie.imagePath}`}
           alt={movie.title}
           className="object-cover object-center group-hover:scale-105 transition-transform duration-300"
           fill
           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
           loading="lazy"
+          fallbackText="No Poster"
         />
 
         <div className="absolute inset-0 bg-gradient-to-t from-[#333333] via-20% via-[#333333]/20 to-transparent" />

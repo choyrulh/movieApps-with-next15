@@ -13,6 +13,7 @@ import {
 import { useUserProfile } from "@/hook/useUserProfile";
 import { useAuth } from "@/context/AuthContext";
 import Image from "next/image";
+import { ImageWithFallback } from "@/components/common/ImageWithFallback";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -215,7 +216,7 @@ const RecentMovieCard = ({ movie }: { movie: any }) => {
           </div>
         </div>
         <div className="relative w-full h-full">
-          <Image
+          <ImageWithFallback
             src={
               `https://image.tmdb.org/t/p/${isMobile ? "w300" : "w500"}${
                 movie.backdrop_path
@@ -227,6 +228,7 @@ const RecentMovieCard = ({ movie }: { movie: any }) => {
             className="object-cover"
             placeholder="blur"
             blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+P+/HgAFdQIQX8Ku3QAAAABJRU5ErkJggg=="
+            fallbackText="No Image"
           />
         </div>
       </div>

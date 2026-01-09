@@ -4,9 +4,18 @@ import React, { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Star, Award, Film, TrendingUp } from "lucide-react";
 import { Person } from "@/app/person/page";
-import Image from "next/image"
+import Image from "next/image";
+import { ImageWithFallback } from "./common/ImageWithFallback";
 
-const StatBox = ({ icon, value, label }: { icon: React.ReactNode; value: any; label: string }) => (
+const StatBox = ({
+  icon,
+  value,
+  label,
+}: {
+  icon: React.ReactNode;
+  value: any;
+  label: string;
+}) => (
   <div className="bg-[#333333]/50 p-2 rounded-md text-center">
     <div className="flex justify-center">{icon}</div>
     <div className="text-lg font-semibold text-gray-100 mt-1">{value}</div>
@@ -34,7 +43,9 @@ export const NetworkGraph = ({ people }: { people: Person[] }) => {
       animate={{ opacity: 1 }}
       className="bg-[#222222] rounded-xl p-4 md:p-6 shadow-sm"
     >
-      <h2 className="text-xl font-semibold text-gray-100 mb-4">Featured Cast</h2>
+      <h2 className="text-xl font-semibold text-gray-100 mb-4">
+        Featured Cast
+      </h2>
 
       <div className="grid md:grid-cols-2 gap-4 md:gap-6">
         {/* Actor List */}
@@ -53,13 +64,18 @@ export const NetworkGraph = ({ people }: { people: Person[] }) => {
               onClick={() => setSelectedActor(index)}
             >
               <div className="flex items-center gap-3">
-                <Image
-                  src={`https://image.tmdb.org/t/p/w200${actor.profile_path}`}
+                <ImageWithFallback
+                  src={
+                    actor.profile_path
+                      ? `https://image.tmdb.org/t/p/w200${actor.profile_path}`
+                      : ""
+                  }
                   alt={actor.name}
                   width={48}
                   height={48}
                   className="w-12 h-12 rounded-md object-cover"
                   loading="lazy"
+                  fallbackText=""
                 />
                 <div className="flex-1">
                   <h3 className="font-medium text-gray-100">{actor.name}</h3>
@@ -86,12 +102,17 @@ export const NetworkGraph = ({ people }: { people: Person[] }) => {
             className="bg-[#333333] rounded-lg p-4 space-y-4"
           >
             <div className="relative aspect-video rounded-md overflow-hidden">
-              <Image
-                src={`https://image.tmdb.org/t/p/w500${actorDetails[selectedActor]?.profile_path}`}
+              <ImageWithFallback
+                src={
+                  actorDetails[selectedActor]?.profile_path
+                    ? `https://image.tmdb.org/t/p/w500${actorDetails[selectedActor]?.profile_path}`
+                    : ""
+                }
                 alt={actorDetails[selectedActor]?.name}
                 fill
                 className="object-cover"
                 loading="lazy"
+                fallbackText="No Image"
               />
               <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/90">
                 <h2 className="text-lg font-semibold text-gray-100">

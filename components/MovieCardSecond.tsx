@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Rating } from "./common/Rating";
 import Image from "next/image";
+import { ImageWithFallback } from "./common/ImageWithFallback";
 import { motion } from "framer-motion";
 
 export const MovieCardSecond = ({
@@ -22,19 +23,18 @@ export const MovieCardSecond = ({
     >
       <Link href={`/${type}/${movie.id}`}>
         <div className="relative aspect-[2/3]">
-          {movie.poster_path ? (
-            <Image
-              src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-              alt={movie.title || movie.name || "Movie poster"}
-              width={200}
-              height={300}
-              className="object-cover group-hover:opacity-75 transition-opacity"
-            />
-          ) : (
-            <div className="w-[10.42vw] h-[15.63vw] bg-black flex items-center justify-center">
-              <span className="text-sm text-white/60">No poster available</span>
-            </div>
-          )}
+          <ImageWithFallback
+            src={
+              movie.poster_path
+                ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+                : ""
+            }
+            alt={movie.title || movie.name || "Movie poster"}
+            width={200}
+            height={300}
+            className="object-cover group-hover:opacity-75 transition-opacity"
+            fallbackText="No poster available"
+          />
 
           <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
           <div className="absolute bottom-0 left-0 right-0 p-4">

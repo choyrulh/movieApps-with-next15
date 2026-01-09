@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import { ImageWithFallback } from "@/components/common/ImageWithFallback";
 import { useWatchlistStore } from "@/store/useWatchListStore";
 import { Trash2, Star, Film, Heart, Award } from "lucide-react";
 import Link from "next/link";
@@ -187,7 +188,7 @@ const PersonCard = ({ person, remove }: any) => (
             transition={{ type: "spring", stiffness: 200, damping: 25 }}
             className="h-full w-full"
           >
-            <Image
+            <ImageWithFallback
               src={
                 person.profile_path
                   ? `https://image.tmdb.org/t/p/w500${person.profile_path}`
@@ -197,6 +198,7 @@ const PersonCard = ({ person, remove }: any) => (
               fill
               className="object-cover transition-all duration-700 group-hover:scale-105"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              fallbackText=""
             />
           </motion.div>
 
@@ -253,7 +255,7 @@ const MediaCard = ({ item, remove, type }: any) => (
     </button>
     <Link href={`/${type}/${item.id || item.movieId}`}>
       <div className="relative aspect-[2/3]">
-        <Image
+        <ImageWithFallback
           src={
             item.poster
               ? `https://image.tmdb.org/t/p/w500${item.poster}`
@@ -262,6 +264,7 @@ const MediaCard = ({ item, remove, type }: any) => (
           alt={item.title || item.name}
           fill
           className="object-cover transition-transform group-hover:scale-105"
+          fallbackText="No Poster"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
       </div>

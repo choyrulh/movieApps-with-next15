@@ -2,6 +2,7 @@
 
 import { useState, use, useMemo } from "react";
 import Image from "next/image";
+import { ImageWithFallback } from "@/components/common/ImageWithFallback";
 import { motion } from "framer-motion";
 import { getCreditPerson, getDetailPerson } from "@/Service/fetchMovie";
 import { useQuery } from "@tanstack/react-query";
@@ -66,13 +67,14 @@ const PersonDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
           >
             {/* Profile Image - Improved */}
             <div className="relative h-[52vh] w-full md:w-64 lg:w-72 aspect-[2/3] rounded-2xl overflow-hidden shadow-xl ring-1 ring-white/10">
-              <Image
+              <ImageWithFallback
                 src={`https://image.tmdb.org/t/p/w780${personData?.profile_path}`} // Higher quality image
                 alt={personData?.name}
                 fill
                 priority // Prioritize loading for above-the-fold image
                 className="object-cover object-top" // Ensure face stays at top
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 30vw, 25vw"
+                fallbackText={personData?.name}
               />
               <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/30" />
             </div>
@@ -166,15 +168,16 @@ const PersonDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
                       className="bg-gray-600/10 border border-gray-600/20 dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden"
                     >
                       <div className="relative aspect-[2/3]">
-                        <Image
+                        <ImageWithFallback
                           src={
                             credit.poster_path
                               ? `https://image.tmdb.org/t/p/w500${credit.poster_path}`
-                              : "/placeholder-movie.jpg"
+                              : ""
                           }
                           alt={credit.title || credit.name}
                           fill
                           className="object-cover"
+                          fallbackText="No Poster"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                       </div>

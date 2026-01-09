@@ -153,7 +153,9 @@ const paginationRange = useMemo(() => {
               options={[
                 { value: "newest", label: "Terbaru" },
                 { value: "oldest", label: "Terlama" },
-                { value: "__RESET__", label: "Cancel" }
+                { value: "popularity.desc", label: "Populer" }, // Opsional tambahan
+                { value: "vote_average.desc", label: "Rating Tertinggi" } // Opsional tambahan
+                // Hapus opsi RESET dari sini, biarkan handleClear di component yang bekerja
               ]}
               selected={filters.sort}
               onChange={(value) => handleFilterChange("sort", value)}

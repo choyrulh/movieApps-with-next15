@@ -3,6 +3,7 @@
 import { Movie } from "@/types/movie.";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import { ImageWithFallback } from "./common/ImageWithFallback";
 import Link from "next/link";
 import { Rating } from "./common/Rating";
 import { memo, useState } from "react";
@@ -83,11 +84,12 @@ const MovieCard = ({ movie }: { movie: Movie }) => {
         className="block h-full w-full"
       >
         <div className="relative h-full w-full rounded-xl overflow-hidden bg-zinc-900 shadow-lg">
-          <Image
+          <ImageWithFallback
             src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
             alt={movie.title || movie.name || ""}
             fill
             className="object-cover transition-transform duration-300"
+            fallbackText="No Poster"
           />
 
           {/* Badge */}
@@ -135,13 +137,14 @@ const MovieCard = ({ movie }: { movie: Movie }) => {
             >
               {/* Preview Image */}
               <div className="relative h-32 w-full">
-                <Image
+                <ImageWithFallback
                   src={`https://image.tmdb.org/t/p/w500${
                     movie.backdrop_path || movie.poster_path
                   }`}
                   alt="preview"
                   fill
                   className="object-cover"
+                  fallbackText="No Preview"
                 />
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-zinc-900" />
 

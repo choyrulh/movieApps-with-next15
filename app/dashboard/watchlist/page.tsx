@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Star, Play, X, Calendar } from "lucide-react";
 import Image from "next/image";
+import { ImageWithFallback } from "@/components/common/ImageWithFallback";
 import { useWatchlistStore } from "@/store/useWatchListStore";
 import { AddToWatchListButton } from "@/components/AddWatchListButton";
 import { Metadata } from "@/app/Metadata";
@@ -91,13 +92,14 @@ const MovieCard = ({
     >
       {/* Image Container */}
       <div className="relative h-full w-full overflow-hidden rounded-lg sm:rounded-xl">
-        <Image
+        <ImageWithFallback
           src={`https://image.tmdb.org/t/p/w780${movie.poster}`}
           alt={movie.title}
           fill
           className="object-cover object-center transition-transform duration-300 group-hover:scale-105"
           loading="lazy"
           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
+          fallbackText="No Poster"
         />
 
         {/* Top Bar */}

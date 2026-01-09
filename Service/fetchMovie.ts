@@ -502,3 +502,15 @@ export const getTopRatedShow = async () => {
     return error;
   }
 };
+
+export const getLatestMoviesByRegion = async (region: string = "ID") => {
+  const today = new Date().toISOString().split("T")[0];
+  try {
+    const response = await axios.get(`${url}/discover/movie?api_key=${api_key}&with_origin_country=${region}&region=${region}&sort_by=primary_release_date.desc&release_date.lte=${today}`);
+    const data = await response.data;
+    return data;
+  } catch (error) {
+    return error;
+  }
+};
+

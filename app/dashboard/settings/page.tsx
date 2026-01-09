@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import { ImageWithFallback } from "@/components/common/ImageWithFallback";
 import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
 import axios from "axios"; // Pastikan install axios
@@ -286,12 +287,13 @@ export default function Page() {
                 onClick={() => fileInputRef.current?.click()}
               >
                 <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-gray-700 group-hover:border-green-500 transition-colors">
-                  <Image
+                  <ImageWithFallback
                     src={formData.avatar || "/default-avatar.png"}
                     alt="Profile"
                     width={112}
                     height={112}
                     className="object-cover w-full h-full"
+                    fallbackText="No Avatar"
                   />
                 </div>
                 {/* Tombol Ganti Avatar Acak */}
@@ -350,12 +352,13 @@ export default function Page() {
         ) : (
           <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
             <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-green-500/30 flex-shrink-0">
-              <Image
+              <ImageWithFallback
                 src={formData.avatar || "/default-avatar.png"}
                 alt="Profile"
                 width={80}
                 height={80}
                 className="object-cover w-full h-full"
+                fallbackText="No Avatar"
               />
             </div>
             <div className="flex-1">

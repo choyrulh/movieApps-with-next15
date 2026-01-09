@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { ImageWithFallback } from "./common/ImageWithFallback";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
@@ -153,10 +154,9 @@ function Banner({ type }: { type: "movie" | "tv" }) {
 
   const currentMovie = data.results[activeIndex];
 
-  const movieGenres = currentMovie.genre_ids?.map((id: any) => 
-    genres[type].find((g) => g.id === id)?.name
-  ).filter(Boolean);
-
+  const movieGenres = currentMovie.genre_ids
+    ?.map((id: any) => genres[type].find((g) => g.id === id)?.name)
+    .filter(Boolean);
 
   const handleSlideClick = (index: number) => {
     setActiveIndex(index);
@@ -169,7 +169,7 @@ function Banner({ type }: { type: "movie" | "tv" }) {
 
   const handleTouchEnd = () => {
     if (!touchStartX) return;
-    
+
     const diff = touchStartX - touchEndX;
     const swipeThreshold = 50;
 
@@ -178,7 +178,7 @@ function Banner({ type }: { type: "movie" | "tv" }) {
     } else if (diff < -swipeThreshold) {
       handlePrev();
     }
-    
+
     setTouchStartX(0);
     setTouchEndX(0);
   };
@@ -210,23 +210,34 @@ function Banner({ type }: { type: "movie" | "tv" }) {
           className="absolute inset-0"
         >
           {/* Background Image with Gradient Overlay */}
-          {currentMovie.backdrop_path && (
-            <Image
-              src={`https://image.tmdb.org/t/p/${isMobile ? "w780" : "original"}${
-                isMobile ? currentMovie.poster_path : currentMovie.backdrop_path
-              }`}
-              alt={
-                currentMovie.title
-                  ? currentMovie.title
-                  : currentMovie.original_name
-              }
-              blurDataURL={`https://image.tmdb.org/t/p/w120${currentMovie.backdrop_path}`}
-              placeholder="blur"
-              fill
-              loading="lazy"
-              className="object-cover"
-            />
-          )}
+          <ImageWithFallback
+            src={
+              (isMobile ? currentMovie.poster_path : currentMovie.backdrop_path)
+                ? `https://image.tmdb.org/t/p/${
+                    isMobile ? "w780" : "original"
+                  }${
+                    isMobile
+                      ? currentMovie.poster_path
+                      : currentMovie.backdrop_path
+                  }`
+                : ""
+            }
+            alt={
+              currentMovie.title
+                ? currentMovie.title
+                : currentMovie.original_name || "Banner"
+            }
+            blurDataURL={
+              currentMovie.backdrop_path
+                ? `https://image.tmdb.org/t/p/w120${currentMovie.backdrop_path}`
+                : undefined
+            }
+            placeholder={currentMovie.backdrop_path ? "blur" : "empty"}
+            fill
+            loading="lazy"
+            className="object-cover"
+            fallbackText="Banner not available"
+          />
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
         </motion.div>
       </AnimatePresence>
@@ -244,9 +255,9 @@ function Banner({ type }: { type: "movie" | "tv" }) {
           </h1>
 
           <div className="flex items-center gap-4 text-sm md:text-base">
-           <span className="bg-gradient-to-r from-green-600 to-green-400 px-3 py-1 rounded-full text-xs font-bold text-white shadow-lg shadow-green-500/20">
-            Trending #{activeIndex + 1}
-          </span>
+            <span className="bg-gradient-to-r from-green-600 to-green-400 px-3 py-1 rounded-full text-xs font-bold text-white shadow-lg shadow-green-500/20">
+              Trending #{activeIndex + 1}
+            </span>
             <div className="flex items-center gap-1">
               <Star className="w-4 h-4 text-yellow-400 fill-current" />
               <span>{currentMovie.vote_average.toFixed(1)}</span>
@@ -264,25 +275,24 @@ function Banner({ type }: { type: "movie" | "tv" }) {
           </div>
 
           {movieGenres && movieGenres.length > 0 && (
-  <div className="flex gap-2 flex-wrap">
-    {movieGenres.slice(0, 3).map((genre: any) => (
-      <span 
-        key={genre}
-        className="px-3 py-1 text-xs rounded-full bg-white/10 backdrop-blur-md text-white"
-      >
-        {genre}
-      </span>
-    ))}
-  </div>
-)}
-
+            <div className="flex gap-2 flex-wrap">
+              {movieGenres.slice(0, 3).map((genre: any) => (
+                <span
+                  key={genre}
+                  className="px-3 py-1 text-xs rounded-full bg-white/10 backdrop-blur-md text-white"
+                >
+                  {genre}
+                </span>
+              ))}
+            </div>
+          )}
 
           <p className="line-clamp-3 text-sm md:text-base text-slate-200">
             {currentMovie.overview}
           </p>
 
           <div className="flex gap-4">
-             <Link href={`/${type}/${currentMovie.id}/watch`}> 
+            <Link href={`/${type}/${currentMovie.id}/watch`}>
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -291,7 +301,7 @@ function Banner({ type }: { type: "movie" | "tv" }) {
                 <Play className="w-5 h-5 fill-current" />
                 Watch Now
               </motion.button>
-             </Link> 
+            </Link>
             <Link href={`/${type}/${currentMovie.id}`}>
               <motion.button
                 whileHover={{ scale: 1.05 }}
@@ -339,8 +349,8 @@ function Banner({ type }: { type: "movie" | "tv" }) {
           <div className="absolute left-1/2 -translate-x-1/2 w-24 h-32 bg-black/20 backdrop-blur-sm rounded-lg z-10" />
 
           {/* Thumbnails container */}
-          <motion.div 
-            style={{ touchAction: 'pan-y' }} // Memastikan swipe vertikal tetap bekerja
+          <motion.div
+            style={{ touchAction: "pan-y" }} // Memastikan swipe vertikal tetap bekerja
             className="flex items-center justify-center gap-4 h-32"
           >
             {data.results.map((movie: Movie, index: number) => {
@@ -356,8 +366,20 @@ function Banner({ type }: { type: "movie" | "tv" }) {
                     position: "absolute",
                     left: "50%",
                     x: `calc(-50% + ${position * 185}px)`, // Adjust spacing
-                    paddingLeft: isAfter ? (isMobile ? "14vw" : "4vw") : isActive ? "0" : undefined,
-                    paddingRight: isBefore ? (isMobile ? "14vw" : "4vw") : isActive ? "0" : undefined,
+                    paddingLeft: isAfter
+                      ? isMobile
+                        ? "14vw"
+                        : "4vw"
+                      : isActive
+                      ? "0"
+                      : undefined,
+                    paddingRight: isBefore
+                      ? isMobile
+                        ? "14vw"
+                        : "4vw"
+                      : isActive
+                      ? "0"
+                      : undefined,
                   }}
                   animate={{
                     scale: index === activeIndex ? 1.5 : 1,
@@ -373,14 +395,17 @@ function Banner({ type }: { type: "movie" | "tv" }) {
                   className={`cursor-pointer`}
                 >
                   <div className={`relative w-40 h-24 overflow-hidden`}>
-                    <Image
-                      src={`https://image.tmdb.org/t/p/w780${movie.backdrop_path}`}
+                    <ImageWithFallback
+                      src={
+                        movie.backdrop_path
+                          ? `https://image.tmdb.org/t/p/w780${movie.backdrop_path}`
+                          : ""
+                      }
                       alt={movie.title ?? movie.name ?? ""}
                       fill
                       className="object-cover"
                       loading="lazy"
-
-                      // sizes="80px"
+                      fallbackText="No Image"
                     />
                     {index === activeIndex && (
                       <div className="absolute inset-0 bg-red-500/10" />

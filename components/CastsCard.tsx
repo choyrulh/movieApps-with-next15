@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { ImageWithFallback } from "./common/ImageWithFallback";
 import Link from "next/link";
 
 const CastsCard = ({
@@ -8,37 +9,33 @@ const CastsCard = ({
   member: any;
   numberOrder: boolean;
 }) => {
-
-
   return (
-    <Link 
-      href={`/person/${member.id}`}
-      key={member.id}
-    >
-      <div
-        className="group relative aspect-[2/3] transition-transform duration-300 hover:-translate-y-2"
-      >
+    <Link href={`/person/${member.id}`} key={member.id}>
+      <div className="group relative aspect-[2/3] transition-transform duration-300 hover:-translate-y-2">
         {/* Image Container */}
         <div className="absolute inset-0 rounded-2xl overflow-hidden shadow-xl">
-          {member.profile_path ? (
-            <Image
-              src={`https://image.tmdb.org/t/p/w500${member.profile_path}`}
-              alt={member.name}
-              width={500}
-              height={750}
-              className="object-cover transition-transform duration-500 group-hover:scale-105"
-              sizes="(max-width: 768px) 50vw, 33vw"
-            />
-          ) : (
-            <div className="w-full h-full bg-gradient-to-br from-cyan-500 to-purple-600 flex items-center justify-center">
-              <span className="text-2xl font-bold text-white uppercase">
-                {member.name
-                  .split(" ")
-                  .map((n: string) => n[0])
-                  .join("")}
-              </span>
-            </div>
-          )}
+          <ImageWithFallback
+            src={
+              member.profile_path
+                ? `https://image.tmdb.org/t/p/w500${member.profile_path}`
+                : ""
+            }
+            alt={member.name}
+            width={500}
+            height={750}
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            sizes="(max-width: 768px) 50vw, 33vw"
+            fallback={
+              <div className="w-full h-full bg-gradient-to-br from-cyan-500 to-purple-600 flex items-center justify-center">
+                <span className="text-2xl font-bold text-white uppercase">
+                  {member.name
+                    ?.split(" ")
+                    .map((n: string) => n[0])
+                    .join("")}
+                </span>
+              </div>
+            }
+          />
           {/* Gradient Overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-transparent to-transparent" />
         </div>

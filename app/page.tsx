@@ -2,11 +2,11 @@
 
 import { BannerSkeleton } from "@/components/Banner";
 import MovieRow from "@/components/MovieRow"; // Import komponen baru
-import { getPopularMovie, getSearchByGenre } from "@/Service/fetchMovie";
+import { getPopularMovie, getSearchByGenre, getLatestMoviesByRegion } from "@/Service/fetchMovie";
 import { useAuth } from "@/context/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 import dynamic from "next/dynamic";
-import { Suspense, useEffect, useMemo } from "react";
+import { useState, Suspense, useEffect, useMemo } from "react";
 import axios from "axios";
 import { Loader2 } from "lucide-react";
 import HistoryTontonan from "@/Fragments/HistoryWatch";
@@ -69,12 +69,37 @@ const GenreSection = ({ genreName }: { genreName: string }) => {
 export default function Home() {
   // 1. Ambil Profil User untuk Preferensi
   const { user: userProfile, isLoadingUser: isUserLoading } = useAuth();
+  const [userRegion, setUserRegion] = useState<string>("ID"); // Default ID
 
   // 2. Fetch Popular Movies (Default Row)
   const { data: popularMovies, isLoading: isPopLoading } = useQuery({
     queryKey: ["movie", "popular"],
     queryFn: () => getPopularMovie(1, {}),
     staleTime: 5 * 60 * 1000,
+  });
+
+  // 1. Deteksi Lokasi User berdasarkan IP saat halaman dimuat
+  useEffect(() => {
+    const fetchUserRegion = async () => {
+      try {
+        // Menggunakan service gratis untuk cek lokasi berdasarkan IP
+        const res = await axios.get("https://ipapi.co/json/");
+        if (res.data.country_code) {
+          setUserRegion(res.data.country_code);
+        }
+      } catch (error) {
+        console.error("Gagal mendapatkan lokasi user:", error);
+      }
+    };
+    fetchUserRegion();
+  }, []);
+
+  // 2. Fetch Movies berdasarkan region yang dideteksi
+  const { data: regionalMovies, isLoading: isRegLoading } = useQuery({
+    // Tambahkan userRegion ke queryKey agar refresh saat lokasi berubah
+    queryKey: ["movie", "regional", userRegion],
+    queryFn: () => getLatestMoviesByRegion(userRegion),
+    staleTime: 10 * 60 * 1000,
   });
 
   // 3. Tracking Logs
@@ -109,6 +134,20 @@ export default function Home() {
         <div className="container mx-auto py-4 max-w-[95.625vw]">
           <HistoryTontonan />
         </div>
+
+        {/* Dynamic Regional Section */}
+        {isRegLoading ? (
+           <div className="h-40 w-full animate-pulse bg-gray-900/30 my-4 rounded-md container mx-auto" />
+        ) : (
+          regionalMovies?.results?.length > 0 && (
+            <MovieRow
+              id="regional-latest"
+              // Judul dinamis berdasarkan region
+              title={`Film Terbaru di Negara Anda (${userRegion})`}
+              movies={regionalMovies.results}
+            />
+          )
+        )}
 
         {/* ROW 1: Popular Movies (Selalu ada) */}
         {isPopLoading ? (

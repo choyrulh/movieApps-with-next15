@@ -6,18 +6,19 @@ import { useState, useRef, useEffect, memo, useCallback } from "react";
 // import { Skeleton } from "./skeleton";
 import { usePathname, useRouter } from "next/navigation";
 import { BookmarkPlus, Clapperboard, ChevronDown } from "lucide-react";
-import brandLogo from "@/assets/SlashVerseLogo.webp"
+import brandLogo from "@/assets/SlashVerseLogo.webp";
 import useIsMobile from "@/hook/useIsMobile";
 import { TitleText } from "./../TitleText";
 // import { logoutUser } from "@/action/Auth";
 // import { useAuth } from "@/context/AuthContext";
 // import { useUserProfile } from "@/hook/useUserProfile";
-import {ProfileDropDown} from "@/components/common/ProfileDropdown"
-import Image from "next/image"
+import { ProfileDropDown } from "@/components/common/ProfileDropdown";
+import Image from "next/image";
+import { ImageWithFallback } from "@/components/common/ImageWithFallback";
 
 import { useWatchlistStore } from "@/store/useWatchListStore"; // <-- Tambahkan ini
 import { useAuth } from "@/context/AuthContext"; // <-- Tambahkan ini jika dibutuhkan untuk filter data terautentikasi
- 
+
 const MemoizedBookmarkIcon = memo(BookmarkPlus);
 
 export const Navbar = () => {
@@ -35,7 +36,7 @@ export const Navbar = () => {
   useEffect(() => {
     // Sinkronisasi watchlist saat komponen navbar dimount
     syncWithServer();
-    
+
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 0);
     };
@@ -74,9 +75,9 @@ export const Navbar = () => {
   };
 
   const handleCloseMenu = () => {
-    setMenuState(false)
-    setActiveDropdown(null)
-  }
+    setMenuState(false);
+    setActiveDropdown(null);
+  };
 
   const navigation = [
     { title: "Home", path: "/" },
@@ -99,19 +100,24 @@ export const Navbar = () => {
     <>
       <nav
         className={`${
-          pathname === "/search" || pathname.endsWith("/watch") ? "relative" : "fixed"
+          pathname === "/search" || pathname.endsWith("/watch")
+            ? "relative"
+            : "fixed"
         } left-0 right-0 z-[100] ${
           isScrolled
             ? "bg-[#111111]/60 backdrop-blur-sm shadow-xl"
             : "bg-transparent bg-opacity-50"
         } ${
-          ["/login", "/register"].includes(pathname) || pathname.startsWith("/dashboard") ? "hidden" : "block"
+          ["/login", "/register"].includes(pathname) ||
+          pathname.startsWith("/dashboard")
+            ? "hidden"
+            : "block"
         } transition-all duration-300`}
       >
         <div className="flex items-center space-x-8 py-3 px-4 max-w-[95.625vw] mx-auto md:px-8">
           <div className="flex-1 flex items-center justify-between">
             <Link href={"/"} className="flex items-center gap-2">
-              <Image 
+              <Image
                 src={brandLogo}
                 alt="SlashVerse Logo"
                 width={300}
@@ -120,10 +126,10 @@ export const Navbar = () => {
                 className="object-contain w-40 md:w-48 lg:w-56 xl:w-64 2xl:w-[300px]"
               />
             </Link>
-            
+
             {/* Bagian menu dan dropdown tetap sama */}
             {/* ... (Menu Utama - tetap sama) ... */}
-             <div
+            <div
               className={`bg-black/95 lg:bg-inherit absolute z-20 w-full top-16 left-0 p-4 border-b lg:static lg:block lg:border-none transition-all duration-300 ease-in-out ${
                 isMobile ? "text-end" : "unset"
               } ${
@@ -264,7 +270,7 @@ export const Navbar = () => {
               />
             </div>
             {/* Akhir Bagian menu dan dropdown */}
-            
+
             <div className="flex-1 flex items-center justify-end space-x-2 sm:space-x-6">
               {/* --- WATCHLIST DROPDOWN WRAPPER BARU (MODERN & LIGHTER) --- */}
               <div
@@ -273,12 +279,16 @@ export const Navbar = () => {
                 onMouseLeave={handleWatchlistMouseLeave}
               >
                 {/* Watchlist Icon Link */}
-                <Link href={"/watch-list"} prefetch={false} className="block p-1">
+                <Link
+                  href={"/watch-list"}
+                  prefetch={false}
+                  className="block p-1"
+                >
                   <MemoizedBookmarkIcon className="w-6 h-6 text-gray-300 hover:text-white transition-colors" />
                   {/* Badge Notifikasi Jumlah Item */}
                   {totalItems > 0 && (
                     <span className="absolute top-0 right-0 transform translate-x-1 -translate-y-1 w-4 h-4 text-[10px] bg-red-600 rounded-full flex items-center justify-center text-white font-bold ring-1 ring-black/50 pointer-events-none">
-                      {totalItems > 9 ? '9+' : totalItems}
+                      {totalItems > 9 ? "9+" : totalItems}
                     </span>
                   )}
                 </Link>
@@ -289,57 +299,77 @@ export const Navbar = () => {
                     absolute right-0 top-full mt-4 w-72 md:w-80 p-4
                     bg-black backdrop-blur-lg rounded-2xl shadow-xl shadow-black/50 border border-slate-700/50 
                     transform transition-all duration-300 z-50
-                    ${isWatchlistHovered && totalItems > 0 ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-2 pointer-events-none'}
+                    ${
+                      isWatchlistHovered && totalItems > 0
+                        ? "opacity-100 visible translate-y-0"
+                        : "opacity-0 invisible -translate-y-2 pointer-events-none"
+                    }
                   `}
                 >
                   <h4 className="text-lg font-extrabold text-white mb-3 flex items-center gap-2 border-b border-slate-700 pb-2">
                     <MemoizedBookmarkIcon className="w-5 h-5 text-green-400" />
                     Watchlist Preview
-                    <span className="ml-auto text-sm text-slate-400 font-medium">({totalItems})</span>
+                    <span className="ml-auto text-sm text-slate-400 font-medium">
+                      ({totalItems})
+                    </span>
                   </h4>
-                  
+
                   {/* Item Preview List */}
                   <div className="space-y-1">
-                      {previewItems.map((item: any) => (
-                        <Link
-                          key={item.id || item.movieId}
-                          href={`/${item.media_type || item.type}/${item.id || item.movieId}`}
-                          onClick={() => setIsWatchlistHovered(false)}
-                          className="flex items-center gap-3 py-2 px-2 -mx-2 hover:bg-slate-black/90 rounded-lg transition-colors group"
-                        >
-                          {/* Item Thumbnail (Lebih kecil & rapi) */}
-                          <div className="relative w-10 h-14 flex-shrink-0 rounded-lg overflow-hidden bg-gray-700 shadow-sm">
-                            <Image
-                              src={`https://image.tmdb.org/t/p/w200${item.poster || item.poster_path}`}
-                              alt={item.title || item.name}
-                              fill
-                              className="object-cover transition-transform duration-300 group-hover:scale-105"
-                            />
+                    {previewItems.map((item: any) => (
+                      <Link
+                        key={item.id || item.movieId}
+                        href={`/${item.media_type || item.type}/${
+                          item.id || item.movieId
+                        }`}
+                        onClick={() => setIsWatchlistHovered(false)}
+                        className="flex items-center gap-3 py-2 px-2 -mx-2 hover:bg-slate-black/90 rounded-lg transition-colors group"
+                      >
+                        {/* Item Thumbnail (Lebih kecil & rapi) */}
+                        <div className="relative w-10 h-14 flex-shrink-0 rounded-lg overflow-hidden bg-gray-700 shadow-sm">
+                          <ImageWithFallback
+                            src={
+                              item.poster || item.poster_path
+                                ? `https://image.tmdb.org/t/p/w200${
+                                    item.poster || item.poster_path
+                                  }`
+                                : ""
+                            }
+                            alt={item.title || item.name}
+                            fill
+                            className="object-cover transition-transform duration-300 group-hover:scale-105"
+                            fallbackText=""
+                          />
+                        </div>
+
+                        {/* Item Info (Minimalis) */}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold text-white truncate group-hover:text-green-400">
+                            {item.title || item.name}
+                          </p>
+                          <div className="text-xs text-slate-400 flex items-center gap-2 mt-0.5">
+                            {/* Teks tipe tanpa background badge yang berat */}
+                            <span className="font-medium">
+                              {item.media_type === "movie" ||
+                              item.type === "movie"
+                                ? "Movie"
+                                : "TV Show"}
+                            </span>
+                            {/* Separator dan Tahun */}
+                            {(item.release_date || item.first_air_date) && (
+                              <>
+                                <span className="text-slate-600">|</span>
+                                <span className="font-light">
+                                  {new Date(
+                                    item.release_date || item.first_air_date
+                                  ).getFullYear()}
+                                </span>
+                              </>
+                            )}
                           </div>
-                          
-                          {/* Item Info (Minimalis) */}
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-semibold text-white truncate group-hover:text-green-400">
-                              {item.title || item.name}
-                            </p>
-                            <div className="text-xs text-slate-400 flex items-center gap-2 mt-0.5">
-                              {/* Teks tipe tanpa background badge yang berat */}
-                              <span className="font-medium">
-                                {item.media_type === 'movie' || item.type === 'movie' ? 'Movie' : 'TV Show'}
-                              </span>
-                              {/* Separator dan Tahun */}
-                              {(item.release_date || item.first_air_date) && (
-                                <>
-                                  <span className="text-slate-600">|</span>
-                                  <span className="font-light">
-                                    {new Date(item.release_date || item.first_air_date).getFullYear()}
-                                  </span>
-                                </>
-                              )}
-                            </div>
-                          </div>
-                        </Link>
-                      ))}
+                        </div>
+                      </Link>
+                    ))}
                   </div>
 
                   {/* View All Button */}
@@ -355,7 +385,7 @@ export const Navbar = () => {
                 </div>
               </div>
               {/* --- AKHIR WATCHLIST DROPDOWN WRAPPER --- */}
-              
+
               <ProfileDropDown props="hidden lg:block" />
               <button
                 className="outline-none text-gray-300 hover:text-white block lg:hidden"

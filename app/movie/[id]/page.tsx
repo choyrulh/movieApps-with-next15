@@ -12,6 +12,7 @@ import { memo, Suspense, use, useMemo, useRef, useState } from "react";
 import { Loader } from "@/components/common/Loader";
 import Head from "next/head";
 import Image from "next/image";
+import { ImageWithFallback } from "@/components/common/ImageWithFallback";
 import { Rating } from "@/components/common/Rating";
 import TrailerModal from "@/components/TrailerModal";
 import { AddToWatchListButton } from "@/components/AddWatchListButton";
@@ -176,7 +177,7 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
           {/* Backdrop Image */}
           <div className="relative h-[100vh] pb-8">
             {movie.backdrop_path && (
-              <Image
+              <ImageWithFallback
                 src={`https://image.tmdb.org/t/p/original${
                   isMobile ? movie.poster_path : movie.backdrop_path
                 }`}
@@ -184,6 +185,7 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
                 fill
                 priority
                 className="object-fill opacity-30"
+                fallbackText="No Backdrop"
               />
             )}
           </div>
@@ -195,12 +197,13 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
               <div className="w-auto self-center sm:self-auto">
                 <div className="relative h-[18rem] lg:h-[30rem] sm:h-[18rem] md:[22rem] lg:w-[20rem] w-[12rem] sm:w-[12rem] md:w-[16rem] rounded-xl overflow-hidden shadow-xl">
                   {movie.poster_path && (
-                    <Image
+                    <ImageWithFallback
                       src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
                       alt={movie.title ?? movie.name ?? ""}
                       fill
                       priority
                       className="object-cover"
+                      fallbackText="No Poster"
                     />
                   )}
                 </div>
@@ -265,11 +268,15 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
                         media_type: "movie",
                       }}
                     />
-                     <GoWatchButton params={id} typeData={"movie"} variant="secondary"
-  size="sm">
+                    <GoWatchButton
+                      params={id}
+                      typeData={"movie"}
+                      variant="secondary"
+                      size="sm"
+                    >
                       {/*<Play /> */}
                       Play
-                    </GoWatchButton> 
+                    </GoWatchButton>
                   </div>
                 </div>
               </div>
@@ -356,11 +363,12 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
                         <div className="flex flex-col items-center text-center p-4">
                           {company.logo_path ? (
                             <div className="relative h-16 w-full mb-4">
-                              <Image
+                              <ImageWithFallback
                                 src={`https://image.tmdb.org/t/p/w500${company.logo_path}`}
                                 alt={company.name}
                                 fill
                                 className="object-contain"
+                                fallbackText={company.name}
                               />
                             </div>
                           ) : (
@@ -477,12 +485,22 @@ function DetailMovie({ params }: { params: Promise<{ id: string }> }) {
                               {/* Image Container */}
                               <div className="absolute inset-0 rounded-2xl overflow-hidden shadow-xl">
                                 {member.profile_path ? (
-                                  <Image
+                                  <ImageWithFallback
                                     src={`https://image.tmdb.org/t/p/w500${member.profile_path}`}
                                     alt={member.name}
                                     fill
                                     className="object-cover transition-transform duration-500 group-hover:scale-105"
                                     sizes="(max-width: 768px) 50vw, 33vw"
+                                    fallback={
+                                      <div className="w-full h-full bg-gradient-to-br from-green-500 to-purple-600 flex items-center justify-center">
+                                        <span className="text-2xl font-bold text-white uppercase">
+                                          {member.name
+                                            .split(" ")
+                                            .map((n: string) => n[0])
+                                            .join("")}
+                                        </span>
+                                      </div>
+                                    }
                                   />
                                 ) : (
                                   <div className="w-full h-full bg-gradient-to-br from-green-500 to-purple-600 flex items-center justify-center">

@@ -4,6 +4,7 @@
 import { motion } from "framer-motion";
 import { Film, Tv, Clock, Star, Zap, Calendar, Activity } from "lucide-react";
 import capitalize from "@/lib/function/capitalize";
+import { ImageWithFallback } from "@/components/common/ImageWithFallback";
 
 interface WatchStatisticsProps {
   statsData: any;
@@ -22,7 +23,7 @@ const WatchStatistics = ({
   const overallData = statsData?.data?.overall || {};
   const recentActivity = statsData?.data?.recentActivity || [];
 
-   // Format durasi dalam jam
+  // Format durasi dalam jam
   const formatHours = (seconds: number) => {
     if (!seconds) return "0j 0m";
     const hours = Math.floor(seconds / 3600);
@@ -35,7 +36,6 @@ const WatchStatistics = ({
     ...periodData.map((e: any) => e.totalDuration || 0),
     1 // Minimal 1 untuk menghindari pembagian 0
   );
-
 
   return (
     <div>
@@ -131,7 +131,7 @@ const WatchStatistics = ({
             <span>Aktivitas Menonton</span>
             <span>{statsType === "month" ? "Bulan Ini" : "Minggu Ini"}</span>
           </div>
-          
+
           {/* Container grafik */}
           <div className="h-64 bg-[#111111] rounded-lg p-4">
             {periodData?.length > 0 ? (
@@ -141,8 +141,9 @@ const WatchStatistics = ({
                     ...periodData.map((e: any) => e.totalDuration),
                     1 // Pastikan tidak division by zero
                   );
-                  
-                  const heightPercentage = (entry.totalDuration / maxDuration) * 100;
+
+                  const heightPercentage =
+                    (entry.totalDuration / maxDuration) * 100;
                   const barHeight = `${heightPercentage}%`;
 
                   return (
@@ -158,10 +159,10 @@ const WatchStatistics = ({
                       <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs text-green-300 whitespace-nowrap">
                         {formatHours(entry.totalDuration)}
                       </div>
-                      
+
                       {/* Tooltip hover */}
                       <div className="hidden group-hover:block absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-1 bg-[#111111] rounded text-xs">
-                        {statsType === 'month' ? entry.label : entry.dayOfWeek}
+                        {statsType === "month" ? entry.label : entry.dayOfWeek}
                       </div>
                     </motion.div>
                   );
@@ -177,19 +178,17 @@ const WatchStatistics = ({
           {/* Label sumbu X */}
           <div className="flex justify-between text-xs text-gray-500 mt-2 px-2">
             {periodData?.map((entry: any) => (
-              <span 
-                key={entry.label || entry.date} 
+              <span
+                key={entry.label || entry.date}
                 className="flex-1 text-center truncate"
               >
-                {statsType === 'month' 
-                  ? entry.label?.replace('Minggu ', 'W') 
+                {statsType === "month"
+                  ? entry.label?.replace("Minggu ", "W")
                   : entry.dayOfWeek}
               </span>
             ))}
           </div>
         </div>
-
-
 
         {/* Additional Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-gray-700">
@@ -253,10 +252,12 @@ const WatchStatistics = ({
                     className="flex items-center gap-4 p-3 rounded-lg bg-[#111111]"
                   >
                     <div className="w-12 h-12 rounded-lg overflow-hidden relative flex-shrink-0">
-                      <img
+                      <ImageWithFallback
                         src={`https://image.tmdb.org/t/p/w92${activity.poster}`}
                         alt={activity.title}
-                        className="w-full h-full object-cover"
+                        fill
+                        className="object-cover"
+                        fallbackText=""
                       />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -362,18 +363,23 @@ const WatchStatistics = ({
                       {Math.floor(summaryData.completionRate || 0)}% Tuntas
                     </span>
                     <span className="text-md font-semibold text-green-400">
-                      {Math.floor(100 - (summaryData.completionRate || 0))}% Progress
+                      {Math.floor(100 - (summaryData.completionRate || 0))}%
+                      Progress
                     </span>
                   </div>
                 </div>
                 <div className="overflow-hidden h-2 mb-4 text-xs flex rounded-full bg-gray-700">
                   <div
-                    style={{ width: `${Math.floor(summaryData.completionRate || 0)}%` }}
+                    style={{
+                      width: `${Math.floor(summaryData.completionRate || 0)}%`,
+                    }}
                     className="bg-green-500/85 shadow-none flex flex-col justify-center"
                   />
                   <div
                     style={{
-                      width: `${Math.floor(100 - (summaryData.completionRate || 0))}%`,
+                      width: `${Math.floor(
+                        100 - (summaryData.completionRate || 0)
+                      )}%`,
                     }}
                     className="bg-green-500 shadow-none flex flex-col justify-center"
                   />
@@ -460,19 +466,22 @@ const WatchStatistics = ({
 
 // Komponen StatBox dengan error handling
 const StatBox = ({ icon, title, value, color }: any) => (
-  <motion.div 
+  <motion.div
     className="bg-[#222222] p-4 rounded-xl"
     whileHover={{ scale: 1.02 }}
   >
     <div className="flex items-center gap-3">
-      <div className={`p-2 rounded-lg bg-opacity-20 ${color.replace("text", "bg")}`}>
+      <div
+        className={`p-2 rounded-lg bg-opacity-20 ${color.replace(
+          "text",
+          "bg"
+        )}`}
+      >
         {icon}
       </div>
       <div>
         <div className="text-sm text-gray-400">{title}</div>
-        <div className={`text-xl font-semibold ${color}`}>
-          {value ?? "-"}
-        </div>
+        <div className={`text-xl font-semibold ${color}`}>{value ?? "-"}</div>
       </div>
     </div>
   </motion.div>
