@@ -2,10 +2,12 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { getCookie } from "@/Service/fetchUser";
+import {
+  addToWatchlistAPI,
+  removeFromWatchlistAPI,
+  fetchWatchlist as fetchWatchlistAPI,
+} from "@/Service/actionUser";
 import { Genre } from "@/types/movie.";
-
-// url for link api add and delete watchlist
-const url = "https://backend-movie-apps-api-one.vercel.app/api/watchlist";
 
 export interface WatchlistItem {
   id: number;
@@ -39,18 +41,12 @@ export const useWatchlistStore = create<WatchlistState>()(
         const token = getCookie("user");
 
         if (token) {
-          // Logika API tetap sama
+          // Use Server Action
           try {
-            const response = await fetch(`${url}`, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-              },
-              body: JSON.stringify(item),
-            });
-
-            if (!response.ok) throw new Error("Failed to add to watchlist");
+            await addToWatchlistAPI(
+              item,
+              item.type || item.media_type || "movie"
+            );
 
             set((state) => ({
               watchlist: [...state.watchlist, item],
@@ -71,14 +67,7 @@ export const useWatchlistStore = create<WatchlistState>()(
         const token = getCookie("user");
         if (token) {
           try {
-            const response = await fetch(`${url}/${id}`, {
-              method: "DELETE",
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            });
-            if (!response.ok)
-              throw new Error("Failed to remove from watchlist");
+            await removeFromWatchlistAPI(id);
             // Jalankan syncWithServer setelah berhasil menghapus
             await get().syncWithServer();
           } catch (error) {
@@ -94,26 +83,19 @@ export const useWatchlistStore = create<WatchlistState>()(
         const token = getCookie("user");
 
         if (token) {
-          // Jika ada token, ambil data dari API dan update state TANPA menyentuh local storage
+          // Jika ada token, ambil data dari API (via Server Action) dan update state
           try {
-            const response = await fetch(`${url}`, {
-              method: "GET",
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            });
+            const serverWatchlist = await fetchWatchlistAPI();
 
-            if (!response.ok) throw new Error("Failed to fetch watchlist");
-
-            const serverWatchlist: WatchlistItem[] = await response.json();
-
-            // Update state secara langsung tanpa mempengaruhi local storage
-            set({ watchlist: serverWatchlist });
+            if (serverWatchlist) {
+              // Update state secara langsung tanpa mempengaruhi local storage
+              set({ watchlist: serverWatchlist as WatchlistItem[] });
+            }
           } catch (error) {
             console.error(error);
           }
         } else {
-          // Jika tidak ada token, ambil dari local storage
+          // Jika tidak ada token (atau server action fail), ambil dari local storage
           const localData = JSON.parse(
             localStorage.getItem("watchlist-storage") || "{}"
           );
@@ -125,6 +107,7 @@ export const useWatchlistStore = create<WatchlistState>()(
       name: "watchlist-storage",
       storage: {
         getItem: (name) => {
+          if (typeof window === "undefined") return null;
           const str = localStorage.getItem(name);
           if (!str) return null;
 
@@ -137,6 +120,7 @@ export const useWatchlistStore = create<WatchlistState>()(
           };
         },
         setItem: (name, value) => {
+          if (typeof window === "undefined") return;
           const token = getCookie("user");
           if (!token) {
             // Simpan dengan format yang benar
@@ -151,6 +135,7 @@ export const useWatchlistStore = create<WatchlistState>()(
           }
         },
         removeItem: (name) => {
+          if (typeof window === "undefined") return;
           localStorage.removeItem(name);
         },
       },

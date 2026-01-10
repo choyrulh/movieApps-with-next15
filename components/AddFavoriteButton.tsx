@@ -11,7 +11,7 @@ import { getCookie } from "@/Service/fetchUser";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 
-export const AddFavoriteButton = ({ item }: { item: FavoriteItem }) => {
+export const AddFavoriteButton = ({ item }: { item: any }) => {
   const token = getCookie("user");
   const { favorites, addToFavorites, removeFromFavorites, syncWithServer } =
     useFavoriteStore();
@@ -19,59 +19,44 @@ export const AddFavoriteButton = ({ item }: { item: FavoriteItem }) => {
   const isMobile = useIsMobile();
   const { isAuthenticated } = useAuth();
   // Improved isFavorite logic
-  const isFavorite = favorites?.some((i: FavoriteItem) => 
-    i.itemId === (item.itemId ?? item.id) && 
-    i.type === (item.type ?? item.media_type)
-  ) ?? false;
-  
+  const isFavorite =
+    favorites?.some(
+      (i: FavoriteItem) =>
+        i.itemId === (item.itemId ?? item.id) &&
+        i.type === (item.type ?? item.media_type)
+    ) ?? false;
 
   useEffect(() => {
     syncWithServer();
   }, [syncWithServer]);
 
-
   const handleToggleFavorite = async () => {
-    if (token && isAuthenticated) {
-      try {
-        const endpoint = isFavorite
-          ? `https://backend-movie-apps-api-one.vercel.app/api/favorites/${
-              item.id || item.itemId
-            }?type=${item.media_type || item.type}`
-          : `https://backend-movie-apps-api-one.vercel.app/api/favorites`;
-
-        const response = await fetch(endpoint, {
-          method: isFavorite ? "DELETE" : "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: isFavorite
-            ? undefined
-            : JSON.stringify({
-                itemId: item.id,
-                type: item.media_type,
-                title: item.title || item.name,
-                name: item.name || item.title,
-                imagePath: item.poster_path || item.profile_path,
-                release_date: item.release_date || item.first_air_date,
-                backdrop_path: item.backdrop_path,
-                vote_average: item.vote_average?.toString(),
-                genres: item.genres || [],
-              }),
-        });
-
-        isFavorite
-          ? toast("Removed From Favorites")
-          : toast("Added to Favorites");
-
-        if (!response.ok) {
-          throw new Error("Failed to update favorites");
-        }
-
-        syncWithServer();
-      } catch (error) {
-        console.error(error);
+    try {
+      if (isFavorite) {
+        const idToRemove = item.id || item.itemId;
+        const type = item.media_type || item.type || "movie";
+        await removeFromFavorites(idToRemove, type);
+        toast("Removed From Favorites");
+      } else {
+        const payload: FavoriteItem = {
+          itemId: item.id,
+          type: item.media_type || item.type || "movie",
+          title: item.title || item.name,
+          name: item.name || item.title,
+          imagePath: item.poster_path || item.profile_path,
+          release_date: item.release_date || item.first_air_date,
+          backdrop_path: item.backdrop_path,
+          vote_average: item.vote_average,
+          genres: item.genres || [],
+          id: item.id,
+          media_type: item.media_type || item.type || "movie",
+        };
+        await addToFavorites(payload);
+        toast("Added to Favorites");
       }
+    } catch (error) {
+      console.error(error);
+      toast("Failed to update favorites");
     }
   };
 

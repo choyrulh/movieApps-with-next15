@@ -2,7 +2,12 @@
 
 import { BannerSkeleton } from "@/components/Banner";
 import MovieRow from "@/components/MovieRow"; // Import komponen baru
-import { getPopularMovie, getSearchByGenre, getLatestMoviesByRegion } from "@/Service/fetchMovie";
+import {
+  getPopularMovie,
+  getSearchByGenre,
+  getLatestMoviesByRegion,
+} from "@/Service/fetchMovie";
+import { logAccessAPI } from "@/Service/actionUser";
 import { useAuth } from "@/context/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 import dynamic from "next/dynamic";
@@ -106,11 +111,7 @@ export default function Home() {
   useEffect(() => {
     const trackAccess = async () => {
       try {
-        await axios.post(
-          "https://backend-movie-apps-api-one.vercel.app/api/logs",
-          {},
-          { headers: { "Content-Type": "application/json" } }
-        );
+        await logAccessAPI();
       } catch (error) {
         console.error("Tracking error:", error);
       }
@@ -137,7 +138,7 @@ export default function Home() {
 
         {/* Dynamic Regional Section */}
         {isRegLoading ? (
-           <div className="h-40 w-full animate-pulse bg-gray-900/30 my-4 rounded-md container mx-auto" />
+          <div className="h-40 w-full animate-pulse bg-gray-900/30 my-4 rounded-md container mx-auto" />
         ) : (
           regionalMovies?.results?.length > 0 && (
             <MovieRow

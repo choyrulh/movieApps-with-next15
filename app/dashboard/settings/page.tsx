@@ -10,21 +10,22 @@ import {
   Globe,
   HelpCircle,
   Edit,
-  ChevronRight,
+  ChevronRight, // used implicitly if needed, kept imports
   Eye,
   EyeOff,
-  Check,
+  Check, // kept
   Save,
   Loader2,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import Image from "next/image";
+import Image from "next/image"; // Kept if needed, though ImageWithFallback is used
 import { ImageWithFallback } from "@/components/common/ImageWithFallback";
 import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
-import axios from "axios"; // Pastikan install axios
+// import axios from "axios"; // Removed axios
 import { toast } from "sonner";
-import { getCookie } from "@/Service/fetchUser";
+// import { getCookie } from "@/Service/fetchUser"; // access handled by server actions
+import { updateUserProfileAPI, changePasswordAPI } from "@/Service/actionUser";
 
 // --- Types ---
 interface UserPreferences {
@@ -143,19 +144,14 @@ export default function Page() {
   // 1. General Profile Update
   const handleProfileSave = async () => {
     try {
-      const token = getCookie("user");
-      await axios.put(
-        `https://backend-movie-apps-api-one.vercel.app/api/user/profile`,
-        {
-          name: formData.name,
-          profile: {
-            bio: formData.bio,
-            phone: formData.phone,
-            avatar: formData.avatar,
-          },
+      await updateUserProfileAPI({
+        name: formData.name,
+        profile: {
+          bio: formData.bio,
+          phone: formData.phone,
+          avatar: formData.avatar,
         },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      });
 
       toast.success("Profil berhasil disimpan!");
       setEditMode(false);
@@ -176,14 +172,9 @@ export default function Page() {
 
     // API Call
     try {
-      const token = getCookie("user");
-      await axios.put(
-        `https://backend-movie-apps-api-one.vercel.app/api/user/profile`,
-        {
-          preferences: updatedPreferences,
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      await updateUserProfileAPI({
+        preferences: updatedPreferences,
+      });
     } catch (error) {
       toast.error("Gagal menyingkronkan pengaturan.");
       // Rollback logic could go here
@@ -223,20 +214,15 @@ export default function Page() {
 
     setIsSavingPassword(true);
     try {
-      const token = getCookie("user");
-      await axios.put(
-        `https://backend-movie-apps-api-one.vercel.app/api/auth/change-password`,
-        {
-          currentPassword: password.current,
-          newPassword: password.new,
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      await changePasswordAPI({
+        currentPassword: password.current,
+        newPassword: password.new,
+      });
 
       toast.success("Password berhasil diubah!");
       setPassword({ current: "", new: "", confirm: "" });
     } catch (error: any) {
-      toast.error(error.response?.data?.message || "Gagal mengubah password");
+      toast.error(error.message || "Gagal mengubah password");
     } finally {
       setIsSavingPassword(false);
     }

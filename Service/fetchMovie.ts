@@ -1,7 +1,9 @@
+"use server";
+
 import axios from "axios";
 
-const api_key = process.env.NEXT_PUBLIC_API_KEY;
-const url = process.env.NEXT_PUBLIC_BASE_URL;
+const api_key = process.env.TMDB_API_KEY;
+const url = process.env.TMDB_BASE_URL || "https://api.themoviedb.org/3";
 
 // Search movie
 export const getSearch = async (q: string) => {
@@ -144,9 +146,8 @@ export const getDetailMovie = async (id: number, params = {}) => {
     });
 
     return response.data;
-
   } catch (error) {
-    throw new Error('Failed to fetch movie details');
+    throw new Error("Failed to fetch movie details");
   }
 };
 
@@ -161,9 +162,8 @@ export const getDetailShow = async (id: number, params = {}) => {
     });
 
     return response.data;
-
   } catch (error) {
-    throw new Error('Failed to fetch show details');
+    throw new Error("Failed to fetch show details");
   }
 };
 
@@ -204,7 +204,7 @@ export const getTVEpisodes = async (id: string, seasonNumber: number) => {
   } catch (error) {
     return error;
   }
-}
+};
 
 export const getTVImages = async (id: string) => {
   try {
@@ -217,7 +217,7 @@ export const getTVImages = async (id: string) => {
   } catch (error) {
     return error;
   }
-}
+};
 
 const getUpcoming = async () => {
   try {
@@ -506,11 +506,12 @@ export const getTopRatedShow = async () => {
 export const getLatestMoviesByRegion = async (region: string = "ID") => {
   const today = new Date().toISOString().split("T")[0];
   try {
-    const response = await axios.get(`${url}/discover/movie?api_key=${api_key}&with_origin_country=${region}&region=${region}&sort_by=primary_release_date.desc&release_date.lte=${today}`);
+    const response = await axios.get(
+      `${url}/discover/movie?api_key=${api_key}&with_origin_country=${region}&region=${region}&sort_by=primary_release_date.desc&release_date.lte=${today}`
+    );
     const data = await response.data;
     return data;
   } catch (error) {
     return error;
   }
 };
-

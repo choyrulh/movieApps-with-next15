@@ -4,7 +4,7 @@
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { useWatchlistStore, WatchlistItem } from "@/store/useWatchListStore";
-import { Bookmark, Check } from "lucide-react";
+import { Bookmark } from "lucide-react";
 import { motion } from "framer-motion";
 import useIsMobile from "@/hook/useIsMobile";
 import { getCookie } from "@/Service/fetchUser";
@@ -56,46 +56,35 @@ export const AddToWatchListButton = ({ item }: { item: WatchlistItem }) => {
   }, [watchlist, token, item.id, item.movieId]);
 
   const handleToggleWatchlist = async () => {
-    if (token && isAuthenticated) {
-      try {
-        const response = await fetch(
-          `https://backend-movie-apps-api-one.vercel.app/api/watchlist/${
-            isInWatchlist ? item.id || item.movieId : ""
-          }`,
-          {
-            method: isInWatchlist ? "DELETE" : "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            body: isInWatchlist
-              ? undefined
-              : JSON.stringify({
-                  movieId: item.id, // ID dari film
-                  title: item.title || item.name, // Gunakan langsung dari `item`
-                  poster: item.poster_path, // Gunakan langsung dari `item`
-                  type: pathname.split("/")[1],
-                  release_date: item.release_date || item.first_air_date,
-                  backdrop_path: item.backdrop_path,
-                  vote_average: item.vote_average,
-                  genres: item.genres,
-                }),
-          }
-        );
-        isInWatchlist
-          ? toast("Removed From Watchlist")
-          : toast("Added to Watchlist");
-        if (!response.ok) {
-          throw new Error("Failed to update watchlist");
-        } else {
-          syncWithServer();
-        }
-      } catch (error) {
-        console.error(error);
+    try {
+      if (isInWatchlist) {
+        const idToRemove = item.id || item.movieId;
+        await removeFromWatchlist(idToRemove);
+        toast("Removed From Watchlist");
+      } else {
+        const payload: WatchlistItem = {
+          ...item,
+          movieId: item.id, // ID dari film
+          title: item.title || item.name || "", // Gunakan langsung dari `item`
+          poster_path: item.poster_path, // Gunakan langsung dari `item`
+          type: (pathname.split("/")[1] || item.type || "movie") as
+            | "movie"
+            | "tv"
+            | "person",
+          release_date: item.release_date || item.first_air_date,
+          backdrop_path: item.backdrop_path,
+          vote_average: item.vote_average,
+          genres: item.genres,
+          media_type:
+            item.media_type || (pathname.split("/")[1] as any) || "movie",
+        };
+        await addToWatchlist(payload);
+        toast("Added to Watchlist");
       }
-    } else {
-      // Jika tidak ada token, gunakan lokal state
-      isInWatchlist ? removeFromWatchlist(item.id) : addToWatchlist(item);
+      // Sync is called inside store
+    } catch (error) {
+      console.error(error);
+      toast("Failed to update watchlist");
     }
   };
 
