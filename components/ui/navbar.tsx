@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useState, useRef, useEffect, memo, useCallback } from "react";
 // import { Skeleton } from "./skeleton";
 import { usePathname, useRouter } from "next/navigation";
-import { BookmarkPlus, Clapperboard, ChevronDown } from "lucide-react";
+import { BookmarkPlus, Clapperboard, ChevronDown, Coffee } from "lucide-react";
 import brandLogo from "@/assets/SlashVerseLogo.webp";
 import useIsMobile from "@/hook/useIsMobile";
 import { TitleText } from "./../TitleText";
@@ -272,6 +272,9 @@ export const Navbar = () => {
             {/* Akhir Bagian menu dan dropdown */}
 
             <div className="flex-1 flex items-center justify-end space-x-2 sm:space-x-6">
+              <Link href={"/support"} className="block p-1" title="Support Us">
+                <Coffee className="w-6 h-6 text-gray-300 hover:text-green-400 transition-colors" />
+              </Link>
               {/* --- WATCHLIST DROPDOWN WRAPPER BARU (MODERN & LIGHTER) --- */}
               <div
                 className="relative"
