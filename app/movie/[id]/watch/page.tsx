@@ -6,11 +6,13 @@ import { useQuery } from "@tanstack/react-query";
 import { getDetailMovie } from "@/Service/fetchMovie";
 import { Monitor, Expand, Shrink, Calendar } from "lucide-react";
 import { addRecentlyWatched } from "@/Service/fetchUser"; // Sesuaikan import function API
+import { useAuth } from "@/context/AuthContext";
 import { Metadata } from "@/app/Metadata";
 import Image from "next/image";
 import Link from "next/link";
 
 function Watch() {
+  const { isAuthenticated } = useAuth();
   const pathname = usePathname();
   const id = pathname.split("/")[2];
 
@@ -68,25 +70,53 @@ function Watch() {
       if (currentProgress.duration === 0 || currentProgress.watched === 0)
         return;
 
-      const historyItem = {
-        type: "movie" as const,
-        contentId: Number(movie.id), // Pastikan Number
-        title: movie.title,
-        poster: movie.poster_path,
-        backdrop_path: movie.backdrop_path,
-        // Backend mengharapkan totalDuration & durationWatched
-        totalDuration: currentProgress.duration,
-        durationWatched: currentProgress.watched,
-        genres: movie.genres?.map((g: any) => g.name) || [],
-      };
+      if (isAuthenticated) {
+        const historyItem = {
+          type: "movie" as const,
+          contentId: Number(movie.id), // Pastikan Number
+          title: movie.title,
+          poster: movie.poster_path,
+          backdrop_path: movie.backdrop_path,
+          // Backend mengharapkan totalDuration & durationWatched
+          totalDuration: currentProgress.duration,
+          durationWatched: currentProgress.watched,
+          genres: movie.genres?.map((g: any) => g.name) || [],
+        };
 
-      try {
-        await addRecentlyWatched(historyItem);
-      } catch (error) {
-        console.error("Failed to save progress:", error);
+        try {
+          await addRecentlyWatched(historyItem);
+        } catch (error) {
+          console.error("Failed to save progress:", error);
+        }
+      } else {
+        // Logic Simpan ke Local Storage untuk Guest
+        try {
+          const localData = localStorage.getItem("watchHistory");
+          const parsedData = localData ? JSON.parse(localData) : {};
+
+          parsedData[movie.id] = {
+            id: Number(movie.id),
+            type: "movie",
+            title: movie.title,
+            poster_path: movie.poster_path,
+            backdrop_path: movie.backdrop_path,
+            progress: {
+              watched: currentProgress.watched,
+              duration: currentProgress.duration,
+              percentage:
+                currentProgress.percentage ||
+                (currentProgress.watched / currentProgress.duration) * 100,
+            },
+            last_update: new Date().toISOString(),
+          };
+
+          localStorage.setItem("watchHistory", JSON.stringify(parsedData));
+        } catch (error) {
+          console.error("Failed to save to localStorage:", error);
+        }
       }
     },
-    [movie]
+    [movie, isAuthenticated]
   );
 
   // ==========================================

@@ -118,6 +118,7 @@ export const addRecentlyWatched = async (historyItem: any) => {
     // Jika ada token, simpan ke API lewat Server Action
     if (token) {
       await addRecentlyWatchedAPI(historyItem);
+      return;
     }
 
     // Simpan ke localStorage baik ada token maupun tidak

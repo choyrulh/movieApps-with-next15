@@ -171,46 +171,62 @@ const HistoryTontonan = () => {
     if (isAuthenticated) return [];
 
     // Re-use logic from original code for Guest
-    return localHistory.map((item) => {
-      // ... copy paste logic formatMediaData bagian else ...
-      // Disini saya menyederhanakan agar tidak duplikat panjang,
-      // namun intinya mapping structure raw localStorage ke UI
-      let progressData = { watched: 0, duration: 0, percentage: 0 };
-      let season = null;
-      let episode = null;
-      let epTitle = null;
+    return localHistory
+      .map((item) => {
+        // ... copy paste logic formatMediaData bagian else ...
+        // Disini saya menyederhanakan agar tidak duplikat panjang,
+        // namun intinya mapping structure raw localStorage ke UI
+        let progressData = { watched: 0, duration: 0, percentage: 0 };
+        let season = null;
+        let episode = null;
+        let epTitle = null;
+        let latestDate = 0;
 
-      if (item.type === "tv" && item.seasons) {
-        // Logic cari episode terakhir (sama seperti code asli)
-        let latestTimestamp = 0;
-        Object.entries(item.seasons).forEach(([sNum, sData]: [string, any]) => {
-          Object.entries(sData.episodes).forEach(
-            ([eNum, eData]: [string, any]) => {
-              const ts = new Date(eData.last_updated).getTime();
-              if (ts > latestTimestamp) {
-                season = parseInt(sNum);
-                episode = parseInt(eNum);
-                latestTimestamp = ts;
-                progressData = eData.progress || progressData;
-                epTitle = eData.episode_title;
-              }
+        if (item.type === "tv" && item.seasons) {
+          // Logic cari episode terakhir (sama seperti code asli)
+          Object.entries(item.seasons).forEach(
+            ([sNum, sData]: [string, any]) => {
+              Object.entries(sData.episodes).forEach(
+                ([eNum, eData]: [string, any]) => {
+                  const ts = new Date(
+                    eData.last_updated || eData.last_update || 0
+                  ).getTime();
+                  if (ts > latestDate) {
+                    season = parseInt(sNum);
+                    episode = parseInt(eNum);
+                    latestDate = ts;
+                    progressData = eData.progress || progressData;
+                    epTitle = eData.episode_title;
+                  }
+                }
+              );
             }
           );
-        });
-      } else {
-        progressData = item.progress || progressData;
-      }
+        } else {
+          progressData = item.progress || progressData;
+          latestDate = new Date(
+            item.last_update || item.update_at || 0
+          ).getTime();
+        }
 
-      return {
-        ...item,
-        id: item.contentId || item.id,
-        progress: progressData,
-        season,
-        episode,
-        episode_title: epTitle,
-        _uniqueId: `${item.id}-${season || "movie"}`,
-      };
-    });
+        return {
+          ...item,
+          id: item.contentId || item.id,
+          progress: progressData,
+          season,
+          episode,
+          episode_title: epTitle,
+          _uniqueId: `${item.id}-${season || "movie"}`,
+          // Ensure we have a consistent field for sorting
+          last_update: latestDate
+            ? new Date(latestDate).toISOString()
+            : new Date().toISOString(),
+          _sortTimeStamp: latestDate,
+        };
+      })
+      .sort((a: any, b: any) => {
+        return b._sortTimeStamp - a._sortTimeStamp;
+      });
   }, [localHistory, isAuthenticated]);
 
   const finalDisplayData = isAuthenticated
