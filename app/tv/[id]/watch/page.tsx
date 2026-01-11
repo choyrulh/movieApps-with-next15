@@ -415,18 +415,20 @@ function page() {
             >
               <div
                 ref={videoPlayerRef}
-                className="relative group aspect-video bg-black rounded-xl overflow-hidden shadow-xl"
+                className="relative group aspect-video shadow-xl"
               >
-                <iframe
-                  src={getVideoUrl()}
-                  className="w-full h-full"
-                  allowFullScreen
-                  scrolling="no"
-                  frameBorder="0"
-                />
+                <div className="absolute inset-0 bg-black rounded-xl overflow-hidden">
+                  <iframe
+                    src={getVideoUrl()}
+                    className="w-full h-full"
+                    allowFullScreen
+                    scrolling="no"
+                    frameBorder="0"
+                  />
+                </div>
 
                 {/* Floating Controls */}
-                <div className="absolute top-4 right-4 flex gap-3 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto">
+                <div className="absolute top-4 right-4 flex gap-3 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto z-50">
                   <button
                     onClick={() => setIsFullScreen(!isFullScreen)}
                     className="p-2 bg-[#151515]/80 rounded-lg hover:bg-[#151515] transition-colors"
@@ -450,7 +452,7 @@ function page() {
                     </button>
 
                     {showServerDropdown && (
-                      <div className="absolute right-0 mt-2 w-48 bg-[#151515]/95 backdrop-blur-xl rounded-xl shadow-lg border border-gray-700 z-50">
+                      <div className="absolute right-0 mt-2 w-48 max-h-60 overflow-y-auto bg-[#151515]/95 backdrop-blur-xl rounded-xl shadow-lg border border-gray-700 z-50">
                         {[1, 2, 3, 4].map((num) => (
                           <button
                             key={num}
