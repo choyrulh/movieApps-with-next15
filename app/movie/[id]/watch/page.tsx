@@ -312,10 +312,10 @@ function Watch() {
             </div>
 
             {/* Floating Controls */}
-            <div className="absolute top-4 right-4 flex gap-3 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto z-50">
+            <div className="absolute top-4 right-4 flex gap-3 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity pointer-events-auto md:pointer-events-none md:group-hover:pointer-events-auto z-50">
               <button
                 onClick={() => setIsFullScreen(!isFullScreen)}
-                className="p-2 bg-[#151515]/80 rounded-lg hover:bg-[#151515] transition-colors"
+                className="hidden md:block p-2 bg-[#151515]/80 rounded-lg hover:bg-[#151515] transition-colors"
               >
                 {isFullScreen ? (
                   <Shrink className="w-5 h-5 text-white" />
