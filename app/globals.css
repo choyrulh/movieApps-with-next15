@@ -291,3 +291,16 @@ body {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+@keyframes shine {
+  0% {
+    transform: translateX(-100%) skewX(-12deg);
+  }
+  100% {
+    transform: translateX(400%) skewX(-12deg);
+  }
+}
+
+.animate-shine {
+  animation: shine 1.5s infinite linear;
+}

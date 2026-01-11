@@ -1,7 +1,6 @@
 "use client";
 
-import { BannerSkeleton } from "@/components/Banner";
-import MovieRow from "@/components/MovieRow"; // Import komponen baru
+import MovieRow from "@/components/MovieRow";
 import {
   getPopularMovie,
   getSearchByGenre,
@@ -11,13 +10,15 @@ import { logAccessAPI } from "@/Service/actionUser";
 import { useAuth } from "@/context/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 import dynamic from "next/dynamic";
-import { useState, Suspense, useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { Loader2 } from "lucide-react";
 import HistoryTontonan from "@/Fragments/HistoryWatch";
 
-// --- Helpers ---
-// Mapping Nama Genre User ke TMDB ID
+/* ---------------------------------- */
+/* Helpers */
+/* ---------------------------------- */
+
 const GENRE_MAP: Record<string, string> = {
   Action: "28",
   Adventure: "12",
@@ -35,149 +36,141 @@ const GENRE_MAP: Record<string, string> = {
   Romance: "10749",
   "Science Fiction": "878",
   "Sci-Fi": "878",
-  "TV Movie": "10770",
   Thriller: "53",
   War: "10752",
   Western: "37",
 };
 
-const Banner = dynamic(() => import("@/components/Banner"), {
-  ssr: true,
-});
+const Banner = dynamic(() => import("@/components/Banner"), { ssr: true });
 
-// Component kecil untuk fetch data per genre (agar kode rapi)
+/* ---------------------------------- */
+/* Genre Section */
+/* ---------------------------------- */
+
 const GenreSection = ({ genreName }: { genreName: string }) => {
-  const genreId = GENRE_MAP[genreName] || GENRE_MAP[genreName.split(" ")[0]]; // Fallback logic
+  const genreId = GENRE_MAP[genreName] || GENRE_MAP[genreName.split(" ")[0]];
 
-  const { data: movies, isLoading } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["movies", "genre", genreName],
-    queryFn: () => getSearchByGenre(genreId, 1), // Fetch page 1
+    queryFn: () => getSearchByGenre(genreId, 1),
     enabled: !!genreId,
-    staleTime: 1000 * 60 * 30, // 30 mins
+    staleTime: 30 * 60 * 1000,
   });
 
-  if (isLoading)
-    return (
-      <div className="h-40 w-full animate-pulse bg-gray-900/30 my-4 rounded-md" />
-    );
-  if (!movies?.results?.length) return null;
+  if (isLoading || !data?.results?.length) return null;
 
   return (
     <MovieRow
       id={`genre-${genreId}`}
       title={`Karena Anda menyukai ${genreName}`}
-      movies={movies.results}
+      movies={data.results}
     />
   );
 };
 
-export default function Home() {
-  // 1. Ambil Profil User untuk Preferensi
-  const { user: userProfile, isLoadingUser: isUserLoading } = useAuth();
-  const [userRegion, setUserRegion] = useState<string>("ID"); // Default ID
+/* ---------------------------------- */
+/* Home */
+/* ---------------------------------- */
 
-  // 2. Fetch Popular Movies (Default Row)
+export default function Home() {
+  const { user: userProfile, isLoadingUser } = useAuth();
+  const [userRegion, setUserRegion] = useState("ID");
+
+  /* ---------- Fetch Data ---------- */
+
   const { data: popularMovies, isLoading: isPopLoading } = useQuery({
     queryKey: ["movie", "popular"],
     queryFn: () => getPopularMovie(1, {}),
     staleTime: 5 * 60 * 1000,
   });
 
-  // 1. Deteksi Lokasi User berdasarkan IP saat halaman dimuat
-  useEffect(() => {
-    const fetchUserRegion = async () => {
-      try {
-        // Menggunakan service gratis untuk cek lokasi berdasarkan IP
-        const res = await axios.get("https://ipapi.co/json/");
-        if (res.data.country_code) {
-          setUserRegion(res.data.country_code);
-        }
-      } catch (error) {
-        console.error("Gagal mendapatkan lokasi user:", error);
-      }
-    };
-    fetchUserRegion();
-  }, []);
-
-  // 2. Fetch Movies berdasarkan region yang dideteksi
   const { data: regionalMovies, isLoading: isRegLoading } = useQuery({
-    // Tambahkan userRegion ke queryKey agar refresh saat lokasi berubah
     queryKey: ["movie", "regional", userRegion],
     queryFn: () => getLatestMoviesByRegion(userRegion),
     staleTime: 10 * 60 * 1000,
   });
 
-  // 3. Tracking Logs
+  /* ---------- Effects ---------- */
+
   useEffect(() => {
-    const trackAccess = async () => {
-      try {
-        await logAccessAPI();
-      } catch (error) {
-        console.error("Tracking error:", error);
-      }
-    };
-    trackAccess();
+    axios
+      .get("https://ipapi.co/json/")
+      .then((res) => {
+        if (res.data?.country_code) {
+          setUserRegion(res.data.country_code);
+        }
+      })
+      .catch(() => {});
   }, []);
 
-  // 4. Filter Genre: Ambil maksimal 3 genre pertama user
+  useEffect(() => {
+    logAccessAPI().catch(() => {});
+  }, []);
+
+  /* ---------- Derived State ---------- */
+
   const userGenres = useMemo(() => {
-    if (!userProfile?.data?.preferences?.favoriteGenres) return [];
-    return userProfile.data.preferences.favoriteGenres.slice(0, 3);
+    return userProfile?.data?.preferences?.favoriteGenres?.slice(0, 3) || [];
   }, [userProfile]);
+
+  const isMainLoading = isRegLoading || isPopLoading;
+
+  /* ---------- Render Helpers ---------- */
+
+  const mainMovieSection = useMemo(() => {
+    if (regionalMovies?.results?.length > 0) {
+      return (
+        <MovieRow
+          id="regional-latest"
+          title={`Film Terbaru di Negara Anda (${userRegion})`}
+          movies={regionalMovies.results}
+        />
+      );
+    }
+
+    return (
+      <MovieRow
+        id="popular"
+        title="Populer Saat Ini"
+        movies={popularMovies || []}
+      />
+    );
+  }, [regionalMovies, popularMovies, userRegion]);
+
+  /* ---------- UI ---------- */
 
   return (
     <main className="relative min-h-screen pb-20 overflow-x-hidden">
-      {/*<Suspense fallback={<BannerSkeleton />}>*/}
       <Banner type="movie" />
-      {/*</Suspense>*/}
 
-      <div className="-mt-10 relative z-20 md:-mt-0 pl-0">
+      <div className="-mt-10 relative z-20 md:-mt-0">
         <div className="container mx-auto py-4 max-w-[95.625vw]">
           <HistoryTontonan />
         </div>
 
-        {/* Dynamic Regional Section */}
-        {isRegLoading ? (
-          <div className="h-40 w-full animate-pulse bg-gray-900/30 my-4 rounded-md container mx-auto" />
-        ) : (
-          regionalMovies?.results?.length > 0 && (
-            <MovieRow
-              id="regional-latest"
-              // Judul dinamis berdasarkan region
-              title={`Film Terbaru di Negara Anda (${userRegion})`}
-              movies={regionalMovies.results}
-            />
-          )
-        )}
-
-        {/* ROW 1: Popular Movies (Selalu ada) */}
-        {isPopLoading ? (
+        {/* Regional / Popular */}
+        {isMainLoading ? (
           <div className="flex justify-center items-center h-40">
             <Loader2 className="animate-spin text-green-500" />
           </div>
         ) : (
-          <MovieRow
-            id="popular"
-            title="Populer Saat Ini"
-            movies={popularMovies || []}
-          />
+          mainMovieSection
         )}
 
-        {/* ROW 2, 3, 4: Berdasarkan User Preference */}
-        {!isUserLoading && userGenres.length > 0 && (
+        {/* User Preference */}
+        {!isLoadingUser && userGenres.length > 0 && (
           <div className="flex flex-col gap-2">
-            {userGenres.map((genre: string) => (
+            {userGenres.map((genre: any) => (
               <GenreSection key={genre} genreName={genre} />
             ))}
           </div>
         )}
 
-        {/* Fallback jika user belum punya preferensi atau data sedikit */}
-        {!isUserLoading && userGenres.length === 0 && popularMovies && (
+        {/* Fallback */}
+        {!isLoadingUser && userGenres.length === 0 && popularMovies && (
           <MovieRow
             id="top-rated"
             title="Rekomendasi Top Rated"
-            // Dalam real app ini fetch endpoint top_rated, disini reuse popular sebagai demo
             movies={[...popularMovies].reverse()}
           />
         )}

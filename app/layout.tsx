@@ -6,6 +6,7 @@ import ReactQueryProvider from "@/lib/ReactQueryProvider";
 import Footer from "@/components/Footer";
 import { AuthProvider } from "@/context/AuthContext";
 import { Toaster } from "@/components/ui/sonner";
+import { SupportModal } from "@/components/SupportModal";
 
 // import PageTransition from "@/components/PageTransition";
 
@@ -44,6 +45,7 @@ export default function RootLayout({
             {/*<PageTransition>*/}
             {children}
             <Toaster />
+            <SupportModal />
 
             {/*</PageTransition>*/}
             <Footer />

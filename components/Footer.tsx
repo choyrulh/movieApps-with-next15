@@ -19,7 +19,7 @@ import Link from "next/link";
 import { useState } from "react";
 import Marquee from "./common/Marquee";
 import { TitleText } from "./TitleText";
-import brandLogo from "@/assets/SlashVerseLogo.webp"  
+import brandLogo from "@/assets/SlashVerseLogo.webp";
 import Image from "next/image";
 
 const Footer = () => {
@@ -84,7 +84,7 @@ const Footer = () => {
               "Twisted Metal Season 2",
               "Too Much",
               "Untamed",
-              "Quarterback Season 2"
+              "Quarterback Season 2",
             ].map((title) => (
               <div key={title} className="flex items-center gap-4">
                 <span className="text-white font-medium">{title}</span>
@@ -104,14 +104,14 @@ const Footer = () => {
               whileInView={{ opacity: 1, x: 0 }}
               className="flex items-center gap-2"
             >
-              <Image 
+              <Image
                 src={brandLogo}
                 alt="SlashVerse Logo"
                 width={300}
                 height={200}
                 priority
                 className="object-contain"
-              />  
+              />
             </motion.div>
             <p className="text-sm text-gray-400">
               Your gateway to the cinematic universe. Explore, discover, and
@@ -128,6 +128,7 @@ const Footer = () => {
               { name: "Trending", href: "/trending" },
               { name: "Genres", href: "/genre" },
               { name: "Upcoming", href: "/upcoming" },
+              { name: "Support Us", href: "/support" },
             ].map((link) => (
               <motion.div
                 key={link.name}

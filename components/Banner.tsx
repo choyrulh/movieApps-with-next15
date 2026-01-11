@@ -54,6 +54,72 @@ export const genres = {
   ],
 } as const;
 
+const BannerSkeleton = () => {
+  return (
+    <div className="relative h-[100vh] w-full overflow-hidden bg-[#000000]">
+      {/* Background with shimmer */}
+      <div className="absolute inset-0 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 animate-shimmer opacity-50" />
+
+      {/* Content Area */}
+      <div className="relative h-[80vh] flex flex-col justify-end p-6 md:p-8 lg:p-12">
+        <div className="max-w-2xl space-y-6">
+          {/* Title Skeleton */}
+          <div className="h-8 md:h-14 w-2/3 md:w-1/2 bg-gray-800/80 rounded-lg animate-pulse" />
+
+          {/* Metadata Row Skeleton */}
+          <div className="flex items-center gap-4">
+            <div className="h-6 w-24 bg-gray-800/80 rounded-full animate-pulse" />
+            <div className="h-6 w-12 bg-gray-800/80 rounded-full animate-pulse" />
+            <div className="h-6 w-12 bg-gray-800/80 rounded-full animate-pulse" />
+            <div className="h-6 w-12 bg-gray-800/80 rounded-full animate-pulse" />
+          </div>
+
+          {/* Genres Skeleton */}
+          <div className="flex gap-2">
+            {[1, 2, 3].map((i) => (
+              <div
+                key={i}
+                className="h-6 w-16 bg-gray-800/80 rounded-full animate-pulse"
+              />
+            ))}
+          </div>
+
+          {/* Overview Skeleton (3 lines) */}
+          <div className="space-y-2 max-w-lg">
+            <div className="h-4 w-full bg-gray-800/80 rounded animate-pulse" />
+            <div className="h-4 w-5/6 bg-gray-800/80 rounded animate-pulse" />
+            <div className="h-4 w-4/6 bg-gray-800/80 rounded animate-pulse" />
+          </div>
+
+          {/* Buttons Skeleton */}
+          <div className="flex gap-4 pt-2">
+            <div className="h-12 w-36 bg-gray-800/80 rounded-lg animate-pulse" />
+            <div className="h-12 w-36 bg-gray-800/80 rounded-lg animate-pulse" />
+          </div>
+        </div>
+      </div>
+
+      {/* Navigation Arrows Skeleton */}
+      {/* <div className="absolute inset-0 flex items-center justify-between p-4 pointer-events-none">
+        <div className="w-12 h-12 rounded-full bg-gray-800/50 animate-pulse" />
+        <div className="w-12 h-12 rounded-full bg-gray-800/50 animate-pulse" />
+      </div> */}
+
+      {/* Thumbnails Skeleton (Bottom Right) */}
+      <div className="absolute bottom-8 right-0 md:right-[10rem] h-32 w-1/2 overflow-hidden flex items-center justify-end pr-8 gap-4 opacity-50">
+        {[1, 2, 3].map((i) => (
+          <div
+            key={i}
+            className="flex-shrink-0 w-40 h-24 bg-gray-800/50 rounded-lg animate-pulse transform scale-90"
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export { BannerSkeleton };
+
 function Banner({ type }: { type: "movie" | "tv" }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [pauseAutoSlide, setPauseAutoSlide] = useState(false);
@@ -99,32 +165,8 @@ function Banner({ type }: { type: "movie" | "tv" }) {
     return () => clearInterval(timer);
   }, [pauseAutoSlide]);
 
-  // if (isLoading) {
-  //   return (
-  //     <div className="relative h-[60vh] md:h-[100vh]">
-  //       <div className="h-full w-full rounded-none" />
-  //       <div className="absolute bottom-[15rem] left-0 right-0 p-4 md:p-8 space-y-4">
-  //         <div className="h-8 w-3/4 bg-gray-500" />
-  //         <div className="h-4 w-1/2 bg-gray-500" />
-  //         <div className="flex gap-4">
-  //           <div className="h-10 w-32 rounded-lg bg-gray-500" />
-  //           <div className="h-10 w-32 rounded-lg bg-gray-500" />
-  //         </div>
-  //       </div>
-  //     </div>
-  //   );
-  // }
-  // Ganti loading state dengan animasi skeleton yang lebih menarik
   if (isLoading) {
-    return (
-      <div className="relative h-[60vh] md:h-[100vh] overflow-hidden">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="h-full bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 animate-shimmer"
-        />
-      </div>
-    );
+    return <BannerSkeleton />;
   }
 
   if (isError || !data?.results?.length) {
@@ -420,20 +462,5 @@ function Banner({ type }: { type: "movie" | "tv" }) {
     </div>
   );
 }
-export const BannerSkeleton = () => {
-  return (
-    <div className="relative h-[60vh] md:h-[100vh]">
-      <div className="h-full w-full rounded-none" />
-      <div className="absolute bottom-[15rem] left-0 right-0 p-4 md:p-8 space-y-4">
-        <div className="h-8 w-3/4 bg-gray-500" />
-        <div className="h-4 w-1/2 bg-gray-500" />
-        <div className="flex gap-4">
-          <div className="h-10 w-32 rounded-lg bg-gray-500" />
-          <div className="h-10 w-32 rounded-lg bg-gray-500" />
-        </div>
-      </div>
-    </div>
-  );
-};
 
 export default memo(Banner);
