@@ -87,7 +87,7 @@ export const SupportModal = () => {
 
             <div className="flex flex-col items-center text-center space-y-4 pt-2">
               <div className="w-16 h-16 rounded-full bg-gradient-to-br from-green-500/20 to-transparent flex items-center justify-center border border-green-500/30">
-                <Heart className="w-8 h-8 text-green-400 fill-green-400/20 animate-pulse" />
+                <Heart className="w-8 h-8 text-green-400 fill-green-400/20" />
               </div>
 
               <div className="space-y-1">
