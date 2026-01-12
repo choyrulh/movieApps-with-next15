@@ -17,7 +17,8 @@ const MovieCard = ({ movie }: { movie: Movie }) => {
   const [isHovered, setIsHovered] = useState(false);
   const router = useRouter();
 
-  const selectedType = useStore((state) => state.selectedType);
+  const currentType =
+    movie.media_type || (movie.first_air_date || movie.name ? "tv" : "movie");
 
   const getBadge = () => {
     const releaseDate = movie.release_date || movie.first_air_date;
@@ -80,7 +81,7 @@ const MovieCard = ({ movie }: { movie: Movie }) => {
       transition={{ duration: 0.2 }}
     >
       <Link
-        href={`/${selectedType}/${movie.id}`}
+        href={`/${currentType}/${movie.id}`}
         className="block h-full w-full"
       >
         <div className="relative h-full w-full rounded-xl overflow-hidden bg-zinc-900 shadow-lg">
@@ -155,7 +156,7 @@ const MovieCard = ({ movie }: { movie: Movie }) => {
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
-                      router.push(`/${selectedType}/${movie.id}/watch`);
+                      router.push(`/${currentType}/${movie.id}/watch`);
                     }}
                   >
                     <Play

@@ -515,3 +515,16 @@ export const getLatestMoviesByRegion = async (region: string = "ID") => {
     return error;
   }
 };
+
+export const getLatestTvByRegion = async (region: string = "ID") => {
+  const today = new Date().toISOString().split("T")[0];
+  try {
+    const response = await axios.get(
+      `${url}/discover/tv?api_key=${api_key}&with_origin_country=${region}&sort_by=first_air_date.desc&first_air_date.lte=${today}`
+    );
+    const data = await response.data;
+    return data;
+  } catch (error) {
+    return error;
+  }
+};
