@@ -436,7 +436,7 @@ function Banner({ type }: { type: "movie" | "tv" }) {
                   onClick={() => handleSlideClick(index)}
                   className={`cursor-pointer`}
                 >
-                  <div className={`relative w-40 h-24 overflow-hidden`}>
+                  <div className={`relative w-40 h-24 overflow-hidden rounded-md`}>
                     <ImageWithFallback
                       src={
                         movie.backdrop_path
@@ -450,7 +450,7 @@ function Banner({ type }: { type: "movie" | "tv" }) {
                       fallbackText="No Image"
                     />
                     {index === activeIndex && (
-                      <div className="absolute inset-0 bg-red-500/10" />
+                      <div className="absolute inset-0 bg-red-500/10 rounded-md" />
                     )}
                   </div>
                 </motion.div>
