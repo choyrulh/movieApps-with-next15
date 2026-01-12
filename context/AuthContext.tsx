@@ -9,6 +9,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   setIsAuthenticated: (isAuthenticated: boolean) => void;
   token: string | null;
+  setToken: (token: string | null) => void;
   handleLogout: () => Promise<void>;
   user: any;
   isLoadingUser: boolean;
@@ -74,6 +75,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         isAuthenticated,
         setIsAuthenticated,
         token,
+        setToken,
         handleLogout,
         user,
         isLoadingUser,

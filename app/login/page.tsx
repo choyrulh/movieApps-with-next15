@@ -16,7 +16,7 @@ const initialState = {
 };
 export default function LoginPage() {
   const router = useRouter();
-  const { setIsAuthenticated } = useAuth();
+  const { setIsAuthenticated, setToken } = useAuth();
   const [formState, dispatch, isPending] = useActionState(
     async (prevState: any, formData: FormData) => {
       const email = formData.get("email") as string;
@@ -27,6 +27,7 @@ export default function LoginPage() {
 
         if (response.status === "success" && response.token) {
           document.cookie = `user=${response.token}; path=/; max-age=604800; SameSite=Lax`;
+          setToken(response.token);
           setIsAuthenticated(true);
           toast(response.message);
 
@@ -55,24 +56,27 @@ export default function LoginPage() {
         seoKeywords="login, movies, tv shows"
       />
 
-      <div 
+      <div
         className="min-h-screen flex items-center justify-center p-4"
         style={{
-          backgroundImage: "url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
+          backgroundImage:
+            "url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundAttachment: "fixed",
         }}
       >
         <div className="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
-        
+
         <div className="w-full max-w-md z-10">
           <div className="bg-transparent backdrop-blur-md rounded-xl p-8 shadow-lg border border-gray-800">
             <div className="text-center mb-8">
               <h2 className="text-3xl font-bold text-white mb-2">
                 Welcome Back
               </h2>
-              <p className="text-gray-300">Sign in to continue your cinematic journey</p>
+              <p className="text-gray-300">
+                Sign in to continue your cinematic journey
+              </p>
             </div>
 
             {formState?.error && (
@@ -134,7 +138,10 @@ export default function LoginPage() {
                     type="checkbox"
                     className="h-4 w-4 rounded border-gray-600 bg-transparent text-emerald-500 focus:ring-emerald-500"
                   />
-                  <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-300">
+                  <label
+                    htmlFor="remember-me"
+                    className="ml-2 block text-sm text-gray-300"
+                  >
                     Remember me
                   </label>
                 </div>
@@ -153,13 +160,31 @@ export default function LoginPage() {
               >
                 {isPending ? (
                   <>
-                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    <svg
+                      className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
                     </svg>
                     Signing in...
                   </>
-                ) : "Sign In"}
+                ) : (
+                  "Sign In"
+                )}
               </button>
             </form>
 
