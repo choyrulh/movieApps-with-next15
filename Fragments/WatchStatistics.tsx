@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { motion } from "framer-motion";
 import {
   Film,
@@ -410,4 +411,4 @@ const CircularProgress = ({ value, size = 60, strokeWidth = 5 }: any) => {
   );
 };
 
-export default WatchStatistics;
+export default React.memo(WatchStatistics);

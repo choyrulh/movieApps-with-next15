@@ -81,26 +81,41 @@ export default function Home() {
   const { data: popularMovies, isLoading: isPopLoading } = useQuery({
     queryKey: ["movie", "popular"],
     queryFn: () => getPopularMovie(1, {}),
-    staleTime: 5 * 60 * 1000,
+    staleTime: 30 * 60 * 1000, // Increased from 5min to 30min
+    gcTime: 60 * 60 * 1000, // Cache for 1 hour
   });
 
   const { data: regionalMovies, isLoading: isRegLoading } = useQuery({
     queryKey: ["movie", "regional", userRegion],
     queryFn: () => getLatestMoviesByRegion(userRegion),
-    staleTime: 10 * 60 * 1000,
+    staleTime: 30 * 60 * 1000, // Increased from 10min to 30min
+    gcTime: 60 * 60 * 1000, // Cache for 1 hour
+    enabled: !!userRegion, // Only fetch when region is available
   });
 
   /* ---------- Effects ---------- */
 
   useEffect(() => {
+    // Check if region is already cached
+    const cachedRegion = localStorage.getItem("userRegion");
+    if (cachedRegion) {
+      setUserRegion(cachedRegion);
+      return;
+    }
+
+    // Fetch region only if not cached
     axios
       .get("https://ipapi.co/json/")
       .then((res) => {
         if (res.data?.country_code) {
           setUserRegion(res.data.country_code);
+          localStorage.setItem("userRegion", res.data.country_code);
         }
       })
-      .catch(() => {});
+      .catch(() => {
+        // Fallback to default region
+        setUserRegion("ID");
+      });
   }, []);
 
   useEffect(() => {

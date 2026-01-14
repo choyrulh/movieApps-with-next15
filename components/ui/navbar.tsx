@@ -34,7 +34,7 @@ export const Navbar = () => {
   const { watchlist, syncWithServer } = useWatchlistStore();
 
   useEffect(() => {
-    // Sinkronisasi watchlist saat komponen navbar dimount
+    // Sinkronisasi watchlist saat komponen navbar dimount (hanya sekali)
     syncWithServer();
 
     const handleScroll = () => {
@@ -43,7 +43,8 @@ export const Navbar = () => {
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [syncWithServer]); // <-- Tambahkan syncWithServer sebagai dependency
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Removed syncWithServer from dependencies to prevent re-sync
 
   // --- Logic Watchlist Baru ---
 

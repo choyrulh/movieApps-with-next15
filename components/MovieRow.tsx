@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import MovieCard from "./movieCard";
 import { Movie } from "@/types/movie.";
@@ -84,4 +84,4 @@ const MovieRow = ({ title, movies, id }: MovieRowProps) => {
   );
 };
 
-export default MovieRow;
+export default React.memo(MovieRow);

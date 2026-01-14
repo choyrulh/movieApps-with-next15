@@ -16,7 +16,6 @@ import { useUserProfile } from "@/hook/useUserProfile";
 import { useAuth } from "@/context/AuthContext";
 import Image from "next/image";
 import { ImageWithFallback } from "@/components/common/ImageWithFallback";
-import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import useIsMobile from "@/hook/useIsMobile";
@@ -65,11 +64,11 @@ export default function page() {
       {/* Background with subtle gradient instead of flat black */}
       <div className="min-h-screen bg-zinc-950 text-zinc-100 selection:bg-green-500/30">
         <div className="max-w-7xl mx-auto px-4 md:px-8 py-8">
-          <motion.div
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.5 }}
-            className="space-y-10"
+          <div
+            className="space-y-10 animate-fadeIn"
+            style={{
+              animation: "fadeIn 0.5s ease-out",
+            }}
           >
             {/* Header Section */}
             <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-zinc-800 pb-6">
@@ -190,7 +189,7 @@ export default function page() {
                 </div>
               </div>
             </div>
-          </motion.div>
+          </div>
         </div>
       </div>
     </>
@@ -211,10 +210,7 @@ const SectionHeader = ({ title, link }: { title: string; link: string }) => (
 );
 
 const StatCard = ({ icon, title, value, subValue }: any) => (
-  <motion.div
-    whileHover={{ y: -2 }}
-    className="bg-zinc-900/40 border border-zinc-800 p-5 rounded-xl backdrop-blur-sm hover:border-zinc-700 transition-colors"
-  >
+  <div className="bg-zinc-900/40 border border-zinc-800 p-5 rounded-xl backdrop-blur-sm hover:border-zinc-700 transition-all hover:-translate-y-0.5">
     <div className="flex items-start justify-between mb-4">
       <div className="p-2 bg-zinc-800/50 rounded-lg text-zinc-400 border border-zinc-700/50">
         {icon}
@@ -230,7 +226,7 @@ const StatCard = ({ icon, title, value, subValue }: any) => (
         <span className="text-xs text-zinc-500">{subValue}</span>
       </div>
     </div>
-  </motion.div>
+  </div>
 );
 
 const RecentMovieCard = ({
@@ -241,11 +237,7 @@ const RecentMovieCard = ({
   isMobile: boolean;
 }) => {
   return (
-    <motion.div
-      className="group relative rounded-xl overflow-hidden bg-zinc-900 border border-zinc-800 shadow-sm"
-      whileHover={{ y: -4 }}
-      transition={{ duration: 0.2 }}
-    >
+    <div className="group relative rounded-xl overflow-hidden bg-zinc-900 border border-zinc-800 shadow-sm hover:-translate-y-1 transition-all duration-200">
       {/* Image Container */}
       <div className="relative aspect-video w-full overflow-hidden">
         <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-all z-10" />
@@ -290,7 +282,7 @@ const RecentMovieCard = ({
           </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 
@@ -302,10 +294,7 @@ const CompactListCard = ({
   movie: any;
   isMobile: boolean;
 }) => (
-  <motion.div
-    whileHover={{ x: 4 }}
-    className="flex gap-4 p-3 rounded-lg bg-zinc-900/30 border border-zinc-800/50 hover:bg-zinc-800/50 hover:border-zinc-700 transition-all cursor-pointer group"
-  >
+  <div className="flex gap-4 p-3 rounded-lg bg-zinc-900/30 border border-zinc-800/50 hover:bg-zinc-800/50 hover:border-zinc-700 hover:translate-x-1 transition-all cursor-pointer group">
     <div className="relative w-24 aspect-video rounded-md overflow-hidden flex-shrink-0">
       <ImageWithFallback
         src={`https://image.tmdb.org/t/p/w300${movie.backdrop_path}`}
@@ -334,5 +323,5 @@ const CompactListCard = ({
         </div>
       </div>
     </div>
-  </motion.div>
+  </div>
 );

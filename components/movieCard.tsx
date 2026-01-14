@@ -89,6 +89,7 @@ const MovieCard = ({ movie }: { movie: Movie }) => {
             src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
             alt={movie.title || movie.name || ""}
             fill
+            sizes="(max-width: 640px) 150px, (max-width: 768px) 180px, 230px"
             className="object-cover transition-transform duration-300"
             fallbackText="No Poster"
           />
@@ -144,6 +145,7 @@ const MovieCard = ({ movie }: { movie: Movie }) => {
                   }`}
                   alt="preview"
                   fill
+                  sizes="230px"
                   className="object-cover"
                   fallbackText="No Preview"
                 />

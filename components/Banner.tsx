@@ -436,7 +436,9 @@ function Banner({ type }: { type: "movie" | "tv" }) {
                   onClick={() => handleSlideClick(index)}
                   className={`cursor-pointer`}
                 >
-                  <div className={`relative w-40 h-24 overflow-hidden rounded-md`}>
+                  <div
+                    className={`relative w-40 h-24 overflow-hidden rounded-md`}
+                  >
                     <ImageWithFallback
                       src={
                         movie.backdrop_path
