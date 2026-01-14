@@ -9,6 +9,8 @@ import {
   User,
   Film,
   TrendingUp,
+  PlayCircle,
+  ChevronRight,
 } from "lucide-react";
 import { useUserProfile } from "@/hook/useUserProfile";
 import { useAuth } from "@/context/AuthContext";
@@ -60,124 +62,134 @@ export default function page() {
         seoKeywords="statistik, histori, tontonan"
       />
 
-      <div className="min-h-screen bg-black text-white">
-        {/* Main Content */}
-        <div className="px-4 md:px-8 py-6">
+      {/* Background with subtle gradient instead of flat black */}
+      <div className="min-h-screen bg-zinc-950 text-zinc-100 selection:bg-green-500/30">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 py-8">
           <motion.div
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.5 }}
+            className="space-y-10"
           >
-            {/* Header */}
-            <div className="flex justify-between items-center mb-8">
-              <h1 className="text-2xl font-bold">Dashboard</h1>
-
-              <div className="flex items-center space-x-4">
-                <div className="hidden md:block text-right">
-                  <p className="font-bold text-gray-400">
-                    Welcome,{" "}
-                    <span className="text-gray-400">{data?.data?.name}</span>
-                  </p>
+            {/* Header Section */}
+            <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-zinc-800 pb-6">
+              <div>
+                <h1 className="text-3xl font-bold tracking-tight text-white">
+                  Dashboard
+                </h1>
+                <div className="text-zinc-400 mt-1">
+                  Overview aktivitas menonton anda.
                 </div>
+              </div>
 
-                <Avatar className="h-10 w-10">
+              <div className="flex items-center gap-4 bg-zinc-900/50 p-2 pr-4 rounded-full border border-zinc-800/50 backdrop-blur-sm">
+                <Avatar className="h-10 w-10 rounded-full overflow-hidden border border-zinc-700">
                   <AvatarImage
                     src={data?.data?.profile?.avatar || ""}
-                    alt={data?.data?.name || "User Avatar"}
+                    alt={data?.data?.name || "User"}
+                    className="object-cover h-full w-full"
                   />
-                  <AvatarFallback>
-                    {data?.data?.name
-                      ? data.data.name
-                          .split(" ")
-                          .map((n: any) => n[0])
-                          .join("")
-                          .slice(0, 2)
-                          .toUpperCase()
-                      : "U"}
+                  <AvatarFallback className="flex h-full w-full items-center justify-center bg-zinc-800 text-xs font-bold">
+                    {data?.data?.name?.substring(0, 2).toUpperCase() || "U"}
                   </AvatarFallback>
                 </Avatar>
+                <div className="flex flex-col">
+                  <span className="text-xs text-zinc-400">Welcome back,</span>
+                  <span className="text-sm font-semibold leading-none">
+                    {data?.data?.name}
+                  </span>
+                </div>
               </div>
-            </div>
+            </header>
 
-            {/* Stats */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
+            {/* Quick Stats Grid - Cleaner Look */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <StatCard
-                icon={<User className="w-6 h-6" />}
-                title="Paket"
+                icon={<User className="w-5 h-5" />}
+                title="Paket Saat Ini"
                 value={userData.subscription}
+                subValue="Active"
               />
               <StatCard
-                icon={<Clock className="w-6 h-6" />}
+                icon={<Clock className="w-5 h-5" />}
                 title="Watchlist"
-                value={statsData?.data?.overall?.totalWatchlist}
+                value={statsData?.data?.overall?.totalWatchlist || 0}
+                subValue="Judul disimpan"
               />
               <StatCard
-                icon={<Heart className="w-6 h-6" />}
+                icon={<Heart className="w-5 h-5" />}
                 title="Favorit"
-                value={statsData?.data?.overall?.totalFavorites}
+                value={statsData?.data?.overall?.totalFavorites || 0}
+                subValue="Judul disukai"
               />
               <StatCard
-                icon={<Film className="w-6 h-6" />}
-                title="Film Selesai"
-                value={statsData?.data?.overall?.totalCompletedContent}
+                icon={<Film className="w-5 h-5" />}
+                title="Selesai"
+                value={statsData?.data?.overall?.totalCompletedContent || 0}
+                subValue="Total ditonton"
               />
             </div>
 
-            {/* Recently Watched */}
-            <div className="mb-8">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold">Baru Ditonton</h2>
-                <Link href="/dashboard/history-watch" legacyBehavior>
-                  <a className="text-sm text-green-500/85 hover:underline">
-                    Lihat Semua
-                  </a>
-                </Link>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            {/* Content Sections */}
+            <div className="space-y-8">
+              {/* Recently Watched */}
+              <SectionHeader
+                title="Lanjutkan Menonton"
+                link="/dashboard/history-watch"
+              />
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {historyData?.history.slice(0, 3).map((movie: any) => (
-                  <RecentMovieCard key={movie._id} movie={movie} />
+                  <RecentMovieCard
+                    key={movie._id}
+                    movie={movie}
+                    isMobile={isMobile}
+                  />
                 ))}
               </div>
-            </div>
 
-            <div className="mb-8">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold">Daftar Lihat</h2>
-                <Link href="/dashboard/watchlist" legacyBehavior>
-                  <a className="text-sm text-green-500/85 hover:underline">
-                    Lihat Semua
-                  </a>
-                </Link>
+              {/* Watch Statistics Component */}
+              <div className="pt-4">
+                <WatchStatistics
+                  statsType={statsType}
+                  setStatsType={setStatsType}
+                  statsData={statsData}
+                />
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                {watchlistData?.slice(0, 3).map((movie: any) => (
-                  <RecommendedMovieCard key={movie._id} movie={movie} />
-                ))}
+
+              {/* Grid 2 Column for Watchlist & Favorites */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div>
+                  <SectionHeader
+                    title="Daftar Lihat"
+                    link="/dashboard/watchlist"
+                  />
+                  <div className="space-y-4 mt-4">
+                    {watchlistData?.slice(0, 3).map((movie: any) => (
+                      <CompactListCard
+                        key={movie._id}
+                        movie={movie}
+                        isMobile={isMobile}
+                      />
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <SectionHeader
+                    title="Film Favorit"
+                    link="/dashboard/favorite"
+                  />
+                  <div className="space-y-4 mt-4">
+                    {favoritesData?.slice(0, 3).map((movie: any) => (
+                      <CompactListCard
+                        key={movie._id}
+                        movie={movie}
+                        isMobile={isMobile}
+                      />
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
-
-            <div className="mb-8">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold">Film Favorit</h2>
-                <Link href="/dashboard/favorite" legacyBehavior>
-                  <a className="text-sm text-green-500/85 hover:underline">
-                    Lihat Semua
-                  </a>
-                </Link>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                {favoritesData?.slice(0, 3).map((movie: any) => (
-                  <RecommendedMovieCard key={movie._id} movie={movie} />
-                ))}
-              </div>
-            </div>
-
-            {/* Watch Statistics */}
-            <WatchStatistics
-              statsType={statsType}
-              setStatsType={setStatsType}
-              statsData={statsData}
-            />
           </motion.div>
         </div>
       </div>
@@ -185,141 +197,142 @@ export default function page() {
   );
 }
 
-// Komponen Card untuk film yang ditonton baru-baru ini
-const RecentMovieCard = ({ movie }: { movie: any }) => {
-  const isMobile = useIsMobile();
+// --- Sub Components ---
 
-  return (
-    <motion.div
-      className="bg-[#222222] rounded-lg overflow-hidden shadow-lg"
-      whileHover={{ scale: 1.03 }}
-      transition={{ duration: 0.2 }}
-    >
-      <div className="relative h-40">
-        <div className="absolute inset-0 bg-black/50 z-10 flex items-end">
-          <div className="p-3 w-full">
-            <div className="flex justify-between items-center">
-              <h3 className="text-white font-medium truncate">{movie.title}</h3>
-              <span className="text-xs text-gray-300 bg-[#111111] px-2 py-1 rounded">
-                {movie.genres[1]}
-              </span>
-            </div>
-            <div className="mt-2 bg-[#111111] h-1 rounded-full w-full">
-              <div
-                className="bg-green-500/85 h-1 rounded-full"
-                style={{ width: `${movie.progressPercentage}%` }}
-              ></div>
-            </div>
-            <div className="mt-1 text-xs text-gray-300 text-right">
-              {movie.progressPercentage}%
-            </div>
-          </div>
-        </div>
-        <div className="relative w-full h-full">
-          <ImageWithFallback
-            src={
-              `https://image.tmdb.org/t/p/${isMobile ? "w300" : "w500"}${
-                movie.backdrop_path
-              }` || "/default-poster.jpg"
-            }
-            alt={movie.title ?? ""}
-            fill
-            // objectFit="cover"
-            className="object-cover"
-            placeholder="blur"
-            blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+P+/HgAFdQIQX8Ku3QAAAABJRU5ErkJggg=="
-            fallbackText="No Image"
-          />
-        </div>
-      </div>
-    </motion.div>
-  );
-};
+const SectionHeader = ({ title, link }: { title: string; link: string }) => (
+  <div className="flex justify-between items-end mb-4 border-b border-zinc-800 pb-2">
+    <h2 className="text-xl font-bold text-zinc-100">{title}</h2>
+    <Link href={link} legacyBehavior>
+      <a className="text-sm font-medium text-green-500 hover:text-green-400 flex items-center gap-1 transition-colors">
+        Lihat Semua <ChevronRight className="w-4 h-4" />
+      </a>
+    </Link>
+  </div>
+);
 
-// Komponen Card untuk film yang direkomendasikan
-const RecommendedMovieCard = ({ movie }: { movie: any }) => {
-  const isMobile = useIsMobile();
-  return (
-    <motion.div
-      className="bg-[#222222] rounded-lg overflow-hidden shadow-lg"
-      whileHover={{ scale: 1.03 }}
-      transition={{ duration: 0.2 }}
-    >
-      <div className="relative h-40">
-        <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent z-10 flex items-end">
-          <div className="p-3 w-full">
-            <div className="flex justify-between items-center">
-              <h3 className="text-white font-medium truncate">{movie.title}</h3>
-              <span className="text-xs text-white bg-yellow-600 px-2 py-1 rounded-full">
-                ★ {Math.floor(movie.vote_average)}
-              </span>
-            </div>
-            <div className="mt-1 text-xs text-gray-300">
-              {movie.genres[0]?.name}
-            </div>
-          </div>
-        </div>
-        <div className="relative w-full h-full">
-          <Image
-            src={
-              `https://image.tmdb.org/t/p/${isMobile ? "w300" : "w500"}${
-                movie.backdrop_path
-              }` || "/default-poster.jpg"
-            }
-            alt={movie.title ?? ""}
-            fill
-            // objectFit="cover"
-            className="object-cover"
-            placeholder="blur"
-            blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+P+/HgAFdQIQX8Ku3QAAAABJRU5ErkJggg=="
-          />
-        </div>
-      </div>
-    </motion.div>
-  );
-};
-
-// Komponen Statistik
-const StatCard = ({
-  icon,
-  title,
-  value,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  value: string | number;
-}) => (
+const StatCard = ({ icon, title, value, subValue }: any) => (
   <motion.div
-    className="bg-[#222222] p-4 rounded-lg"
-    whileHover={{ scale: 1.05 }}
-    transition={{ duration: 0.2 }}
+    whileHover={{ y: -2 }}
+    className="bg-zinc-900/40 border border-zinc-800 p-5 rounded-xl backdrop-blur-sm hover:border-zinc-700 transition-colors"
   >
-    <div className="flex items-center space-x-4">
-      <div className="bg-green-500/20 p-3 rounded-full text-green-500">
+    <div className="flex items-start justify-between mb-4">
+      <div className="p-2 bg-zinc-800/50 rounded-lg text-zinc-400 border border-zinc-700/50">
         {icon}
       </div>
-      <div>
-        <h3 className="text-gray-400 text-sm">{title}</h3>
-        <p className="text-white text-xl font-semibold">{value}</p>
+      {/* Optional: Add trend indicator here */}
+    </div>
+    <div>
+      <h3 className="text-zinc-500 text-xs font-medium uppercase tracking-wider mb-1">
+        {title}
+      </h3>
+      <div className="flex items-baseline gap-2">
+        <div className="text-2xl font-bold text-white">{value}</div>
+        <span className="text-xs text-zinc-500">{subValue}</span>
       </div>
     </div>
   </motion.div>
 );
 
-const AvatarPlaceholder = ({ name }: { name?: string }) => {
-  const getInitials = (fullName?: string) => {
-    if (!fullName) return "U"; // Default inisial jika nama tidak ada
-    const initials = fullName
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase();
-    return initials.length > 2 ? initials.slice(0, 2) : initials;
-  };
-
+const RecentMovieCard = ({
+  movie,
+  isMobile,
+}: {
+  movie: any;
+  isMobile: boolean;
+}) => {
   return (
-    <div className="flex items-center justify-center w-10 h-10 bg-gray-700 text-white font-bold rounded-full">
-      {getInitials(name)}
-    </div>
+    <motion.div
+      className="group relative rounded-xl overflow-hidden bg-zinc-900 border border-zinc-800 shadow-sm"
+      whileHover={{ y: -4 }}
+      transition={{ duration: 0.2 }}
+    >
+      {/* Image Container */}
+      <div className="relative aspect-video w-full overflow-hidden">
+        <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-all z-10" />
+        <ImageWithFallback
+          src={`https://image.tmdb.org/t/p/${isMobile ? "w300" : "w500"}${
+            movie.backdrop_path
+          }`}
+          alt={movie.title ?? ""}
+          fill
+          className="object-cover group-hover:scale-105 transition-transform duration-500"
+          fallbackText="No Image"
+        />
+
+        {/* Play Button Overlay */}
+        <div className="absolute inset-0 z-20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+          <PlayCircle className="w-12 h-12 text-white drop-shadow-lg" />
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="p-4 relative z-20 bg-zinc-900">
+        <div className="flex justify-between items-start mb-2">
+          <h3 className="text-white font-semibold truncate pr-2 flex-1">
+            {movie.title}
+          </h3>
+          <span className="text-[10px] font-medium text-zinc-400 bg-zinc-800 px-1.5 py-0.5 rounded border border-zinc-700">
+            {movie.genres?.[0]?.name || movie.genres?.[0] || "Movie"}
+          </span>
+        </div>
+
+        {/* Progress Bar */}
+        <div className="space-y-1.5">
+          <div className="flex justify-between text-xs text-zinc-500">
+            <span>Progress</span>
+            <span>{movie.progressPercentage}%</span>
+          </div>
+          <div className="h-1.5 w-full bg-zinc-800 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-green-500 rounded-full"
+              style={{ width: `${movie.progressPercentage}%` }}
+            />
+          </div>
+        </div>
+      </div>
+    </motion.div>
   );
 };
+
+// New Compact Card Design for lists
+const CompactListCard = ({
+  movie,
+  isMobile,
+}: {
+  movie: any;
+  isMobile: boolean;
+}) => (
+  <motion.div
+    whileHover={{ x: 4 }}
+    className="flex gap-4 p-3 rounded-lg bg-zinc-900/30 border border-zinc-800/50 hover:bg-zinc-800/50 hover:border-zinc-700 transition-all cursor-pointer group"
+  >
+    <div className="relative w-24 aspect-video rounded-md overflow-hidden flex-shrink-0">
+      <ImageWithFallback
+        src={`https://image.tmdb.org/t/p/w300${movie.backdrop_path}`}
+        alt={movie.title}
+        fill
+        className="object-cover"
+        fallbackText=""
+      />
+    </div>
+    <div className="flex flex-col justify-center min-w-0">
+      <h4 className="text-sm font-medium text-zinc-200 truncate group-hover:text-green-400 transition-colors">
+        {movie.title}
+      </h4>
+      <div className="flex items-center gap-2 mt-1">
+        <span className="text-xs text-zinc-500">
+          {movie.release_date
+            ? new Date(movie.release_date).getFullYear()
+            : "-"}
+        </span>
+        <span className="text-zinc-600 text-[10px]">•</span>
+        <div className="flex items-center gap-1">
+          <span className="text-xs text-yellow-500/80">★</span>
+          <span className="text-xs text-zinc-400">
+            {movie.vote_average ? Number(movie.vote_average).toFixed(1) : "-"}
+          </span>
+        </div>
+      </div>
+    </div>
+  </motion.div>
+);

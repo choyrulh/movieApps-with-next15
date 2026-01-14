@@ -1,8 +1,17 @@
-// components/WatchStatistics.tsx
 "use client";
 
 import { motion } from "framer-motion";
-import { Film, Tv, Clock, Star, Zap, Calendar, Activity } from "lucide-react";
+import {
+  Film,
+  Tv,
+  Clock,
+  Star,
+  Zap,
+  Calendar,
+  Activity,
+  BarChart3,
+  PieChart,
+} from "lucide-react";
 import capitalize from "@/lib/function/capitalize";
 import { ImageWithFallback } from "@/components/common/ImageWithFallback";
 
@@ -17,13 +26,11 @@ const WatchStatistics = ({
   statsType,
   setStatsType,
 }: WatchStatisticsProps) => {
-  // Format data period
   const periodData = statsData?.data?.period?.data || [];
   const summaryData = statsData?.data?.period?.summary || {};
   const overallData = statsData?.data?.overall || {};
   const recentActivity = statsData?.data?.recentActivity || [];
 
-  // Format durasi dalam jam
   const formatHours = (seconds: number) => {
     if (!seconds) return "0j 0m";
     const hours = Math.floor(seconds / 3600);
@@ -31,515 +38,374 @@ const WatchStatistics = ({
     return `${hours}j ${minutes}m`;
   };
 
-  // Hitung max duration untuk scaling grafik
-  const maxDuration = Math.max(
-    ...periodData.map((e: any) => e.totalDuration || 0),
-    1 // Minimal 1 untuk menghindari pembagian 0
-  );
-
+  // Mencari nilai maksimum untuk kalkulasi tinggi batang grafik
+  const maxDurationValue =
+    periodData.length > 0
+      ? Math.max(...periodData.map((e: any) => e.totalDuration || 0))
+      : 0;
   return (
-    <div>
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+    <div className="bg-zinc-900/20 border border-zinc-800 rounded-2xl p-6 md:p-8">
+      {/* Header Statistik */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
-          <h2 className="text-2xl font-bold">Statistik Menonton</h2>
-          <p className="text-gray-400 text-sm">
-            {statsType === "month"
-              ? statsData?.data?.period?.label
-              : "7 Hari Terakhir"}
+          <h2 className="text-2xl font-bold flex items-center gap-2 text-white">
+            <BarChart3 className="w-6 h-6 text-green-500" />
+            Statistik Menonton
+          </h2>
+          <p className="text-zinc-400 text-sm mt-1">
+            Analisis aktivitas anda{" "}
+            {statsType === "month" ? "bulan ini" : "7 hari terakhir"}.
           </p>
         </div>
-        <div className="flex gap-2">
-          <button
-            onClick={() => setStatsType("month")}
-            className={`px-4 py-2 rounded-lg transition-colors flex items-center gap-2 ${
-              statsType === "month"
-                ? "bg-green-500 text-white"
-                : "bg-[#222222] text-gray-300 hover:bg-[#333333]"
-            }`}
-          >
-            <Calendar size={18} />
-            Bulanan
-          </button>
+
+        {/* Toggle Switch Modern */}
+        <div className="bg-zinc-900 p-1 rounded-lg border border-zinc-800 inline-flex">
           <button
             onClick={() => setStatsType("week")}
-            className={`px-4 py-2 rounded-lg transition-colors flex items-center gap-2 ${
+            className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${
               statsType === "week"
-                ? "bg-green-500 text-white"
-                : "bg-[#222222] text-gray-300 hover:bg-[#333333]"
+                ? "bg-zinc-800 text-white shadow-sm"
+                : "text-zinc-500 hover:text-zinc-300"
             }`}
           >
-            <Zap size={18} />
             Mingguan
+          </button>
+          <button
+            onClick={() => setStatsType("month")}
+            className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${
+              statsType === "month"
+                ? "bg-zinc-800 text-white shadow-sm"
+                : "text-zinc-500 hover:text-zinc-300"
+            }`}
+          >
+            Bulanan
           </button>
         </div>
       </div>
 
-      <div className="bg-[#111111] rounded-lg p-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-6">
-          <StatBox
-            icon={<Clock size={20} />}
-            title="Durasi"
-            value={overallData.formattedWatchTime}
-            color="text-green-400"
-          />
+      {/* Main Stats Grid - Bento Grid Style */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <StatBox
+          label="Total Durasi"
+          value={overallData.formattedWatchTime}
+          icon={<Clock size={16} />}
+          accentColor="text-green-500"
+        />
+        <StatBox
+          label="Total Judul"
+          value={
+            (overallData.contentTypeDistribution?.[0]?.count || 0) +
+            (overallData.contentTypeDistribution?.[1]?.count || 0)
+          }
+          icon={<Film size={16} />}
+          accentColor="text-blue-500"
+        />
+        <StatBox
+          label="Rate Selesai"
+          value={`${summaryData.completionRate || 0}%`}
+          icon={<Activity size={16} />}
+          accentColor="text-purple-500"
+        />
+        <StatBox
+          label="Dalam Progres"
+          value={overallData.totalInProgress || 0}
+          icon={<Zap size={16} />}
+          accentColor="text-yellow-500"
+        />
+      </div>
 
-          <StatBox
-            icon={<Film size={20} />}
-            title="Film / Series"
-            value={
-              overallData.contentTypeDistribution?.[0]?.count +
-              overallData.contentTypeDistribution?.[1]?.count
-            }
-            color="text-purple-400"
-          />
-
-          <StatBox
-            icon={<Star size={20} />}
-            title="Rate Penyelesaian"
-            value={`${summaryData.completionRate || 0}%`}
-            color="text-yellow-400"
-          />
-
-          <StatBox
-            icon={<Tv size={20} />}
-            title={`Rasio ${capitalize(
-              overallData.contentTypeDistribution?.[0].type
-            )} : ${capitalize(overallData.contentTypeDistribution?.[1].type)}`}
-            value={`${overallData.contentTypeDistribution?.[0].count || 0} : ${
-              overallData.contentTypeDistribution?.[1].count || 0
-            }`}
-            color="text-green-400"
-          />
-
-          <StatBox
-            icon={<Activity size={20} />}
-            title="Dalam Progres"
-            value={overallData.totalInProgress || 0}
-            color="text-orange-400"
-          />
-
-          <StatBox
-            icon={<Star size={20} />}
-            title="Konten Favorit"
-            value={overallData.totalFavorites || 0}
-            color="text-pink-400"
-          />
-        </div>
-
-        <div className="mt-6">
-          <div className="flex justify-between text-sm text-gray-400 mb-2">
-            <span>Aktivitas Menonton</span>
-            <span>{statsType === "month" ? "Bulan Ini" : "Minggu Ini"}</span>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Chart Section (2/3 width) */}
+        <div className="lg:col-span-2 bg-zinc-900/50 border border-zinc-800/50 rounded-xl p-6 backdrop-blur-sm">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="font-semibold text-zinc-200">Grafik Aktivitas</h3>
+            <div className="flex gap-2 text-xs">
+              <span className="flex items-center gap-1 text-zinc-400">
+                <span className="w-2 h-2 rounded-full bg-green-500"></span>
+                Waktu Nonton
+              </span>
+            </div>
           </div>
 
-          {/* Container grafik */}
-          <div className="h-64 bg-[#111111] rounded-lg p-4">
+          <div className="h-auto w-full">
             {periodData?.length > 0 ? (
-              <div className="flex items-end justify-between h-full gap-1">
+              <div className="flex items-end justify-between h-full gap-2 md:gap-4">
                 {periodData.map((entry: any, index: number) => {
-                  const maxDuration = Math.max(
-                    ...periodData.map((e: any) => e.totalDuration),
-                    1 // Pastikan tidak division by zero
-                  );
-
                   const heightPercentage =
-                    (entry.totalDuration / maxDuration) * 100;
-                  const barHeight = `${heightPercentage}%`;
+                    maxDurationValue > 0
+                      ? Math.max(
+                          (entry.totalDuration / maxDurationValue) * 100,
+                          3
+                        )
+                      : 0;
 
                   return (
-                    <motion.div
+                    <div
                       key={index}
-                      className="flex-1 bg-green-500 rounded-t relative transition-all"
-                      style={{ height: barHeight }}
-                      initial={{ height: 0 }}
-                      animate={{ height: barHeight }}
-                      transition={{ duration: 0.5, delay: index * 0.1 }}
+                      className="flex-1 flex flex-col items-center gap-2 group cursor-pointer"
                     >
-                      {/* Label durasi */}
-                      <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs text-green-300 whitespace-nowrap">
-                        {formatHours(entry.totalDuration)}
+                      <div className="w-full h-40 md:h-48 relative rounded-t-lg overflow-hidden">
+                        <motion.div
+                          className="absolute bottom-0 w-full text-center bg-green-500/80 group-hover:bg-green-400 transition-colors"
+                          initial={{ height: 0 }}
+                          animate={{ height: `${heightPercentage}%` }}
+                          transition={{
+                            duration: 0.8,
+                            ease: "easeOut",
+                            delay: index * 0.05,
+                          }}
+                        >
+                          {/* Tooltip */}
+                          <span className="text-[10px] md:text-xs text-white font-semibold select-none">
+                            {formatHours(entry.totalDuration)}
+                          </span>
+                        </motion.div>
                       </div>
 
-                      {/* Tooltip hover */}
-                      <div className="hidden group-hover:block absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-1 bg-[#111111] rounded text-xs">
-                        {statsType === "month" ? entry.label : entry.dayOfWeek}
-                      </div>
-                    </motion.div>
+                      <span className="text-[10px] md:text-xs text-zinc-500 uppercase font-medium">
+                        {statsType === "month"
+                          ? entry.label?.split(" ")[1]
+                          : entry.dayOfWeek.substring(0, 3)}
+                      </span>
+                    </div>
                   );
                 })}
               </div>
             ) : (
-              <div className="h-full flex items-center justify-center text-gray-400">
-                Tidak ada aktivitas menonton
+              <div className="h-full flex flex-col items-center justify-center text-zinc-500 gap-2">
+                <Activity className="w-8 h-8 opacity-20" />
+                <span>Belum ada data aktivitas</span>
               </div>
             )}
           </div>
-
-          {/* Label sumbu X */}
-          <div className="flex justify-between text-xs text-gray-500 mt-2 px-2">
-            {periodData?.map((entry: any) => (
-              <span
-                key={entry.label || entry.date}
-                className="flex-1 text-center truncate"
-              >
-                {statsType === "month"
-                  ? entry.label?.replace("Minggu ", "W")
-                  : entry.dayOfWeek}
-              </span>
-            ))}
-          </div>
         </div>
 
-        {/* Additional Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-gray-700">
-          <div className="space-y-4 mt-8">
-            <div className="flex items-center gap-2 text-sm">
-              <Clock size={16} className="text-green-400" />
-              <span className="font-medium">Waktu Nonton Favorit:</span>
-              <span className="text-green-400">
-                {summaryData.favoriteWatchTimes?.[0]?.timeOfDay || "-"}
-              </span>
+        {/* Sidebar Stats (1/3 width) */}
+        <div className="space-y-4">
+          {/* Completion Score Card */}
+          <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-xl p-5">
+            <div className="flex items-center gap-2 mb-4 text-zinc-300">
+              <Activity className="w-4 h-4 text-green-500" />
+              <h3 className="text-sm font-semibold">Konsistensi</h3>
             </div>
 
-            <div className="flex items-center gap-2 text-sm">
-              <Film size={16} className="text-purple-400" />
-              <span className="font-medium">Genre Dominan:</span>
-              <div className="flex gap-2">
-                {overallData.mostWatchedGenres
-                  ?.slice(0, 3)
-                  .map((genre: any, i: number) => (
-                    <span
-                      key={i}
-                      className="px-2 py-1 bg-[#111111] rounded-full text-xs"
-                    >
-                      {genre.genre}
-                    </span>
-                  ))}
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-4 mt-8">
-            <div className="flex items-center gap-2 text-sm">
-              <Star size={16} className="text-yellow-400" />
-              <span className="font-medium">Rata-rata Progress:</span>
-              <span className="text-yellow-400">
-                {summaryData.avgProgressPercentage?.toFixed(1) || 0}%
-              </span>
-            </div>
-
-            <div className="flex items-center gap-2 text-sm">
-              <Zap size={16} className="text-green-400" />
-              <span className="font-medium">Durasi Harian:</span>
-              <span className="text-green-400">
-                {summaryData.averageWatchTimePerDay || "-"}
-              </span>
-            </div>
-          </div>
-
-          {/* Recent Activity */}
-          <div className="bg-[#111111] rounded-xl pt-2 backdrop-blur-sm">
-            <h3 className="text-lg font-semibold text-gray-200 flex items-center gap-2 mb-4">
-              <Activity className="w-5 h-5 text-purple-400" />
-              Aktivitas Terakhir
-            </h3>
-            <div className="space-y-3">
-              {recentActivity
-                .slice(0, 3)
-                .map((activity: any, index: number) => (
-                  <div
-                    key={index}
-                    className="flex items-center gap-4 p-3 rounded-lg bg-[#111111]"
-                  >
-                    <div className="w-12 h-12 rounded-lg overflow-hidden relative flex-shrink-0">
-                      <ImageWithFallback
-                        src={`https://image.tmdb.org/t/p/w92${activity.poster}`}
-                        alt={activity.title}
-                        fill
-                        className="object-cover"
-                        fallbackText=""
-                      />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="text-sm font-medium text-gray-200 truncate">
-                        {activity.title}
-                      </h4>
-                      <div className="flex items-center gap-2 mt-1">
-                        <span className="text-xs text-gray-400">
-                          {activity.type === "tv"
-                            ? `S${activity.season} E${activity.episode}`
-                            : "Film"}
-                        </span>
-                        <span className="w-1 h-1 bg-gray-600 rounded-full" />
-                        <span className="text-xs text-gray-400">
-                          {activity.formattedWatchedDate}
-                        </span>
-                      </div>
-                      <div className="mt-2 h-1.5 bg-gray-700 rounded-full overflow-hidden">
-                        <div
-                          className={`h-full rounded-full ${
-                            activity.progressPercentage >= 90
-                              ? "bg-green-500"
-                              : activity.progressPercentage >= 50
-                              ? "bg-green-500"
-                              : "bg-purple-500"
-                          }`}
-                          style={{ width: `${activity.progressPercentage}%` }}
-                        />
-                      </div>
-                    </div>
-                    {/* Modifikasi bagian progress percentage */}
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        activity.progressPercentage >= 100
-                          ? "bg-green-500/20 text-green-400"
-                          : activity.progressPercentage >= 90
-                          ? "bg-green-500/20 text-green-400"
-                          : activity.progressPercentage >= 50
-                          ? "bg-yellow-500/20 text-yellow-400"
-                          : "bg-gray-500/20 text-gray-400"
-                      }`}
-                    >
-                      {activity.progressPercentage}%
-                      {activity.progressPercentage >= 100 ? " ✓" : ""}
-                    </span>
-                  </div>
-                ))}
-            </div>
-          </div>
-
-          <div className="bg-[#111111] pt-2 rounded-xl">
-            <div className="flex items-center gap-3 mb-4">
-              <Activity size={20} className="text-cyan-400" />
-              <h4 className="font-semibold">Konsistensi Nonton</h4>
-            </div>
-            <div className="flex justify-between items-center">
-              <div className="space-y-1">
-                <span className="text-sm text-gray-400">
-                  Hari / Waktu Aktif
-                </span>
-                <div className="flex gap-2">
-                  <div className="flex items-center gap-1">
-                    <span className="text-md font-bold text-cyan-400">
-                      {periodData.filter((d: any) => d.hasActivity).length}
-                    </span>
-                    <span className="text-md text-gray-400">hari</span>
-                  </div>
-                  <div className="h-6 w-px bg-gray-600" />
-                  <div className="flex items-center gap-1">
-                    <span className="text-md font-bold text-cyan-400">
-                      {summaryData.favoriteWatchTimes?.[0]?.timeOfDay || "-"}
-                    </span>
-                    <span className="text-md text-gray-400">Waktu favorit</span>
-                  </div>
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <div className="text-2xl font-bold text-white">
+                  {periodData.filter((d: any) => d.hasActivity).length}
+                  <span className="text-sm text-zinc-500 font-normal ml-1">
+                    hari aktif
+                  </span>
+                </div>
+                <div className="text-xs text-zinc-500 mt-1">
+                  Waktu favorit:{" "}
+                  <span className="text-zinc-300">
+                    {summaryData.favoriteWatchTimes?.[0]?.timeOfDay || "-"}
+                  </span>
                 </div>
               </div>
-              <div className="w-24 h-24 relative">
+              <div className="h-12 w-12">
                 <CircularProgress
                   value={
                     (periodData.filter((d: any) => d.hasActivity).length /
                       (statsType === "week" ? 7 : 28)) *
                     100
                   }
+                  size={48}
+                  strokeWidth={4}
                 />
               </div>
             </div>
 
-            <div className="space-y-1">
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-400">Skor Penyelesaian</span>
-                <span className="text-xl font-bold text-yellow-400">
-                  {Math.round(
-                    summaryData.avgProgressPercentage *
-                      (summaryData.completionRate / 100)
-                  ) || 0}
-                  /100
+            <div className="border-t border-zinc-800 pt-4 mt-2">
+              <div className="flex justify-between text-xs mb-2">
+                <span className="text-zinc-400">Rata-rata Progress</span>
+                <span className="text-white font-medium">
+                  {summaryData.avgProgressPercentage?.toFixed(0) || 0}%
                 </span>
               </div>
-              <div className="relative">
-                <div className="flex mb-2 items-center justify-between">
-                  <div className="flex gap-2">
-                    <span className="text-md font-semibold text-green-400">
-                      {Math.floor(summaryData.completionRate || 0)}% Tuntas
-                    </span>
-                    <span className="text-md font-semibold text-green-400">
-                      {Math.floor(100 - (summaryData.completionRate || 0))}%
-                      Progress
-                    </span>
-                  </div>
-                </div>
-                <div className="overflow-hidden h-2 mb-4 text-xs flex rounded-full bg-gray-700">
-                  <div
-                    style={{
-                      width: `${Math.floor(summaryData.completionRate || 0)}%`,
-                    }}
-                    className="bg-green-500/85 shadow-none flex flex-col justify-center"
-                  />
-                  <div
-                    style={{
-                      width: `${Math.floor(
-                        100 - (summaryData.completionRate || 0)
-                      )}%`,
-                    }}
-                    className="bg-green-500 shadow-none flex flex-col justify-center"
-                  />
-                </div>
+              <div className="w-full bg-zinc-800 h-1.5 rounded-full overflow-hidden">
+                <div
+                  className="bg-zinc-600 h-full rounded-full"
+                  style={{
+                    width: `${summaryData.avgProgressPercentage || 0}%`,
+                  }}
+                />
               </div>
             </div>
           </div>
 
-          {/* Efisiensi Penyelesaian */}
-          {/*<div className="bg-gray-800/50 p-4 rounded-xl">
-            <div className="flex items-center gap-3 mb-4">
-              <Zap size={20} className="text-yellow-400" />
-              <h4 className="font-semibold">Efisiensi Nonton</h4>
+          {/* Genre Distribution */}
+          <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-xl p-5">
+            <div className="flex items-center gap-2 mb-3 text-zinc-300">
+              <PieChart className="w-4 h-4 text-purple-500" />
+              <h3 className="text-sm font-semibold">Top Genre</h3>
             </div>
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-400">Skor Penyelesaian</span>
-                <span className="text-xl font-bold text-yellow-400">
-                  {Math.round(summaryData.avgProgressPercentage * (summaryData.completionRate/100)) || 0}/100
-                </span>
-              </div>
-              <div className="relative pt-2">
-                <div className="flex mb-2 items-center justify-between">
-                  <div className="flex gap-2">
-                    <span className="text-xs font-semibold text-green-400">
-                      {Math.floor(summaryData.completionRate || 0)}% Tuntas
-                    </span>
-                    <span className="text-xs font-semibold text-green-400">
-                      {Math.floor(100 - (summaryData.completionRate || 0))}% Progress
-                    </span>
-                  </div>
-                </div>
-                <div className="overflow-hidden h-2 mb-4 text-xs flex rounded-full bg-gray-700">
-                  <div
-                    style={{ width: `${Math.floor(summaryData.completionRate || 0)}%` }}
-                    className="bg-green-500 shadow-none flex flex-col justify-center"
-                  />
-                  <div
-                    style={{ width: `${Math.floor(100 - (summaryData.completionRate || 0))}%` }}
-                    className="bg-green-500 shadow-none flex flex-col justify-center"
-                  />
-                </div>
-              </div>
-            </div>
-          </div> */}
-
-          {/* Konten Paling Aktif */}
-          {/*<div className="bg-gray-800/50 p-4 rounded-xl">
-            <div className="flex items-center gap-3 mb-4">
-              <Tv size={20} className="text-green-400" />
-              <h4 className="font-semibold">Konten Paling Aktif</h4>
-            </div>
-            <div className="space-y-3">
-              {recentActivity
-                .reduce((acc: any[], curr: any) => {
-                  const existing = acc.find(i => i.title === curr.title)
-                  existing ? existing.count++ : acc.push({...curr, count: 1})
-                  return acc
-                }, [])
-                .sort((a, b) => b.count - a.count)
-                .slice(0, 2)
-                .map((content: any, i: number) => (
-                  <div key={i} className="flex items-center gap-3 p-2 bg-gray-700/20 rounded-lg">
-                    <img
-                      src={`https://image.tmdb.org/t/p/w92${content.poster}`}
-                      className="w-10 h-10 rounded-md"
-                      alt={content.title}
-                    />
-                    <div className="flex-1">
-                      <div className="text-sm font-medium">{content.title}</div>
-                      <div className="text-xs text-gray-400">
-                        {content.count}x ditonton • {content.type.toUpperCase()}
-                      </div>
-                    </div>
-                  </div>
+            <div className="flex flex-wrap gap-2">
+              {overallData.mostWatchedGenres
+                ?.slice(0, 4)
+                .map((genre: any, i: number) => (
+                  <span
+                    key={i}
+                    className="text-xs px-2.5 py-1 bg-zinc-800 text-zinc-300 rounded-full border border-zinc-700/50"
+                  >
+                    {genre.genre}
+                  </span>
                 ))}
+              {!overallData.mostWatchedGenres?.length && (
+                <span className="text-xs text-zinc-500">-</span>
+              )}
             </div>
-          </div> */}
+          </div>
+        </div>
+      </div>
+
+      {/* Recent Activity List - Updated with Episode Info */}
+      <div className="mt-6 border-t border-zinc-800 pt-6">
+        <h3 className="font-semibold text-zinc-200 mb-4 flex items-center gap-2">
+          <Clock className="w-4 h-4 text-green-500" />
+          Aktivitas Terakhir
+        </h3>
+        <div className="space-y-2">
+          {recentActivity.slice(0, 3).map((activity: any, index: number) => (
+            <div
+              key={index}
+              className="flex items-center justify-between p-3 hover:bg-zinc-900/60 rounded-lg transition-colors group"
+            >
+              <div className="flex items-center gap-4 overflow-hidden">
+                {/* Thumbnail */}
+                <div className="relative w-14 h-14 rounded-md bg-zinc-800 flex-shrink-0 overflow-hidden border border-zinc-700/50">
+                  <ImageWithFallback
+                    src={`https://image.tmdb.org/t/p/w92${activity.poster}`}
+                    alt={activity.title}
+                    fill
+                    className="object-cover group-hover:scale-110 transition-transform duration-300"
+                    fallbackText=""
+                  />
+                </div>
+
+                {/* Info Text */}
+                <div className="min-w-0">
+                  <h4 className="text-sm font-semibold text-zinc-100 truncate pr-4">
+                    {activity.title}
+                  </h4>
+
+                  <div className="flex flex-wrap items-center gap-2 mt-1">
+                    {/* Badge Type & Episode Info */}
+                    {activity.type === "tv" ? (
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[10px] px-1.5 py-0.5 bg-green-500/10 text-green-500 rounded font-bold uppercase tracking-wider">
+                          TV
+                        </span>
+                        <span className="text-xs text-zinc-300 font-medium">
+                          {/* Menampilkan S1:E2 atau info episode lainnya */}S
+                          {activity.season || 1} : E{activity.episode || 1}
+                        </span>
+                      </div>
+                    ) : (
+                      <span className="text-[10px] px-1.5 py-0.5 bg-blue-500/10 text-blue-500 rounded font-bold uppercase tracking-wider">
+                        Movie
+                      </span>
+                    )}
+
+                    <span className="text-zinc-600 text-[10px]">•</span>
+                    <span className="text-xs text-zinc-500">
+                      {activity.formattedWatchedDate}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Progress Value */}
+              <div className="text-right flex-shrink-0 ml-4">
+                <div className="flex flex-col items-end gap-1">
+                  <span
+                    className={`text-xs font-mono font-bold ${
+                      activity.progressPercentage >= 90
+                        ? "text-green-500"
+                        : "text-zinc-400"
+                    }`}
+                  >
+                    {activity.progressPercentage}%
+                  </span>
+                  {/* Progress bar kecil di bawah angka */}
+                  <div className="w-12 h-1 bg-zinc-800 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full transition-all duration-500 ${
+                        activity.progressPercentage >= 90
+                          ? "bg-green-500"
+                          : "bg-zinc-200"
+                      }`}
+                      style={{ width: `${activity.progressPercentage}%` }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+
+          {/* Fallback if empty */}
+          {!recentActivity?.length && (
+            <div className="text-center py-8 text-zinc-600 text-sm italic">
+              Belum ada histori tontonan terbaru.
+            </div>
+          )}
         </div>
       </div>
     </div>
   );
 };
 
-// Komponen StatBox dengan error handling
-const StatBox = ({ icon, title, value, color }: any) => (
-  <motion.div
-    className="bg-[#222222] p-4 rounded-xl"
-    whileHover={{ scale: 1.02 }}
-  >
-    <div className="flex items-center gap-3">
-      <div
-        className={`p-2 rounded-lg bg-opacity-20 ${color.replace(
-          "text",
-          "bg"
-        )}`}
-      >
-        {icon}
-      </div>
-      <div>
-        <div className="text-sm text-gray-400">{title}</div>
-        <div className={`text-xl font-semibold ${color}`}>{value ?? "-"}</div>
-      </div>
+// Reusable Small Components
+
+const StatBox = ({ label, value, icon, accentColor }: any) => (
+  <div className="bg-zinc-900/50 border border-zinc-800/50 p-4 rounded-xl flex flex-col justify-between hover:border-zinc-700 transition-colors">
+    <div
+      className={`p-2 rounded-lg w-fit mb-3 bg-zinc-950 border border-zinc-800 ${accentColor}`}
+    >
+      {icon}
     </div>
-  </motion.div>
+    <div>
+      <div className="text-2xl font-bold text-white tracking-tight">
+        {value || 0}
+      </div>
+      <div className="text-xs text-zinc-500 font-medium mt-1">{label}</div>
+    </div>
+  </div>
 );
 
-// Tambahkan komponen ini di bawah komponen StatBox atau di file terpisah
-const CircularProgress = ({
-  value,
-  className = "",
-}: {
-  value: number;
-  className?: string;
-}) => {
-  // Calculate dimensions and values
-  const size = 72; // 24 * 4 = 96px (matching w-24 h-24)
-  const strokeWidth = 5;
+const CircularProgress = ({ value, size = 60, strokeWidth = 5 }: any) => {
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (value / 100) * circumference;
-  const center = size / 2;
 
   return (
-    <div className={`relative inline-flex ${className}`}>
-      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-        {/* Background circle */}
+    <div className="relative flex items-center justify-center">
+      <svg width={size} height={size} className="transform -rotate-90">
         <circle
-          cx={center}
-          cy={center}
+          cx={size / 2}
+          cy={size / 2}
           r={radius}
           fill="transparent"
-          stroke="#374151" // text-gray-700 equivalent
+          stroke="#27272a"
           strokeWidth={strokeWidth}
         />
-
-        {/* Progress circle */}
         <circle
-          cx={center}
-          cy={center}
+          cx={size / 2}
+          cy={size / 2}
           r={radius}
           fill="transparent"
-          stroke="#06b6d4" // text-cyan-500 equivalent
+          stroke="#10b981"
           strokeWidth={strokeWidth}
           strokeLinecap="round"
           strokeDasharray={circumference}
           strokeDashoffset={strokeDashoffset}
-          transform={`rotate(-90 ${center} ${center})`}
-          style={{
-            transition: "stroke-dashoffset 0.5s ease",
-          }}
+          className="transition-all duration-1000 ease-out"
         />
       </svg>
-
-      {/* Percentage text */}
-      <div className="absolute inset-0 flex items-center justify-center">
-        <span className="text-lg font-bold text-cyan-400">
-          {Math.round(value)}%
-        </span>
-      </div>
+      <span className="absolute text-[10px] font-bold text-white">
+        {Math.round(value)}%
+      </span>
     </div>
   );
 };
