@@ -21,8 +21,6 @@ import {
 } from "lucide-react";
 import {
   fetchVideoProgress,
-  // Pastikan import addRecentlyWatched ada di sini
-  // addRecentlyWatched,
 } from "@/Service/actionUser";
 import { getShowProgressUser, addRecentlyWatched } from "@/Service/fetchUser";
 import { Metadata } from "@/app/Metadata";
@@ -53,6 +51,10 @@ function page() {
 
   const videoProgressRef = useRef(videoProgress);
   const videoPlayerRef = useRef<HTMLDivElement>(null);
+  
+  // Ref baru untuk elemen episode aktif di sidebar
+  const activeEpisodeRef = useRef<HTMLDivElement>(null);
+
   const [lastSavedProgress, setLastSavedProgress] = useState({
     watched: 0,
     duration: 0,
@@ -101,13 +103,12 @@ function page() {
 
       const historyItem = {
         type: "tv" as const,
-        contentId: Number(show.id), // Pastikan Number
+        contentId: Number(show.id),
         season: parseInt(season),
         episode: parseInt(episode),
         title: show.name,
         poster: show.poster_path,
         backdrop_path: show.backdrop_path,
-        // Backend mengharapkan field ini:
         totalDuration: currentProgress.duration,
         durationWatched: currentProgress.watched,
         genres: show.genres?.map((g: any) => g.name) || [],
@@ -129,14 +130,13 @@ function page() {
     if (!show) return;
 
     const interval = setInterval(() => {
-      // Hanya simpan jika ada perubahan signifikan (> 2 detik) dari simpanan terakhir
       const diff = Math.abs(videoProgress.watched - lastSavedProgress.watched);
 
       if (diff > 2) {
         saveProgress(videoProgress);
         setLastSavedProgress(videoProgress);
       }
-    }, 30000); // Setiap 30 detik
+    }, 30000); 
 
     return () => clearInterval(interval);
   }, [show, videoProgress, lastSavedProgress, saveProgress]);
@@ -146,14 +146,12 @@ function page() {
   // ==========================================
   useEffect(() => {
     const getProgress = async () => {
-      // Reset state saat ganti episode agar tidak menampilkan progress episode sebelumnya
       setVideoProgress({ watched: 0, duration: 0, percentage: 0 });
 
       try {
         const data = await fetchVideoProgress({ id, season, episode });
 
         if (data) {
-          // fetchVideoProgress already maps backend fields to { watched, duration, percentage }
           const watchedVal = data.watched || 0;
           const durationVal = data.duration || 0;
 
@@ -176,15 +174,13 @@ function page() {
   }, [id, season, episode]);
 
   // ==========================================
-  // 4. UNIFIED EVENT LISTENER (VidLink, VidSrc, Videasy)
+  // 4. UNIFIED EVENT LISTENER
   // ==========================================
   useEffect(() => {
-    // Load preference server
     const savedServer = localStorage.getItem("selectedVideoServer");
     if (savedServer) setSelectedServer(savedServer);
 
     const handleMessage = (event: MessageEvent) => {
-      // Helper untuk update state
       const updateState = (watched: number, duration: number) => {
         if (!duration) return;
         setVideoProgress({
@@ -194,14 +190,12 @@ function page() {
         });
       };
 
-      // --- VIDLINK (Media 1) ---
       if (
         selectedServer === "Media 1" &&
         event.origin === "https://vidlink.pro"
       ) {
         if (event.data?.type === "MEDIA_DATA") {
           const mediaData = event.data.data;
-          // Key format vidlink biasanya s{season}e{episode}
           const key = `s${season}e${episode}`;
 
           if (mediaData && mediaData[id]?.show_progress?.[key]?.progress) {
@@ -212,16 +206,13 @@ function page() {
         }
       }
 
-      // --- VIDSRC (Media 2 & 3) ---
       if (
         (selectedServer === "Media 2" || selectedServer === "Media 3") &&
         event.origin === "https://vidsrc.cc"
       ) {
         if (event.data?.type === "PLAYER_EVENT") {
           const data = event.data.data;
-          // Validasi ID & Tipe
           if (String(data.tmdbId) === id && data.mediaType === "tv") {
-            // Update hanya jika event progress berjalan
             if (data.event === "time" || data.event === "pause") {
               updateState(data.currentTime, data.duration);
             }
@@ -229,7 +220,6 @@ function page() {
         }
       }
 
-      // --- VIDEASY (Media 4) ---
       if (
         selectedServer === "Media 4" &&
         event.origin.includes("videasy.net")
@@ -249,7 +239,7 @@ function page() {
             updateState(watched, duration);
           }
         } catch (e) {
-          // ignore parsing error
+          // ignore
         }
       }
     };
@@ -258,7 +248,6 @@ function page() {
 
     return () => {
       window.removeEventListener("message", handleMessage);
-      // PENTING: Save saat unmount/ganti episode
       if (videoProgressRef.current.watched > 0) {
         saveProgress(videoProgressRef.current);
       }
@@ -266,11 +255,10 @@ function page() {
   }, [id, season, episode, selectedServer, saveProgress]);
 
   // ==========================================
-  // INITIALIZE LAST WATCHED (Auto Select Season/Ep)
+  // INITIALIZE LAST WATCHED
   // ==========================================
   useEffect(() => {
     if (progress?.episodes?.length > 0) {
-      // Cari episode terakhir yang ditonton berdasarkan tanggal
       const lastWatched = progress.episodes.reduce(
         (latest: any, current: any) =>
           new Date(current.watchedDate) > new Date(latest.watchedDate)
@@ -286,21 +274,56 @@ function page() {
   }, [progress]);
 
   // ==========================================
+  // IMPROVED: SCROLL TO ACTIVE EPISODE
+  // ==========================================
+  useEffect(() => {
+    // Jalankan logika scroll ketika data episode tersedia, tab 'episodes' aktif, dan ref ada
+    if (showContent === "episodes" && activeEpisodeRef.current) {
+      activeEpisodeRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "center", // Posisikan di tengah container
+      });
+    }
+  }, [season, episode, showContent, seasonData]); // Trigger saat season/episode berubah atau data load
+
+  // ==========================================
   // HELPER & RENDER
   // ==========================================
 
   const getVideoUrl = () => {
+    // Cari progress (detik) dari data user yang sudah di-fetch
+    const currentEpisodeProgress = progress?.episodes?.find(
+      (ep: any) => ep.season === parseInt(season) && ep.episode === parseInt(episode)
+    );
+    console.log(currentEpisodeProgress)
+    
+    // Ambil detik terakhir ditonton (default 0)
+    // Asumsi: field 'watched' atau 'durationWatched' ada di objek episode
+    // Jika API mengembalikan 'progressPercentage' saja, logic ini perlu disesuaikan.
+    // Namun biasanya ada 'watched' (seconds).
+    const progressPlay = currentEpisodeProgress?.watched || currentEpisodeProgress?.durationWatched || 0;
+    const playTime = Math.floor(progressPlay); // Pastikan integer
+    console.log(progressPlay)
+
     switch (selectedServer) {
       case "Media 1":
-        return `https://vidlink.pro/tv/${id}/${season}/${episode}`;
+        // VidLink: Tambah ?startAt=
+        return `https://vidlink.pro/tv/${id}/${season}/${episode}?startAt=${playTime}`;
+      
       case "Media 2":
-        return `https://vidsrc.cc/v2/embed/tv/${id}/${season}/${episode}?autoPlay=false`;
+        // VidSrc v2: Tambah &startAt= (karena sudah ada parameter lain biasanya, atau pakai ?)
+        return `https://vidsrc.cc/v2/embed/tv/${id}/${season}/${episode}?autoPlay=false&startAt=${playTime}`;
+      
       case "Media 3":
-        return `https://vidsrc.cc/v3/embed/tv/${id}/${season}/${episode}?autoPlay=false`;
+        // VidSrc v3: Tambah &startAt=
+        return `https://vidsrc.cc/v3/embed/tv/${id}/${season}/${episode}?autoPlay=false&startAt=${playTime}`;
+      
       case "Media 4":
-        return `https://player.videasy.net/tv/${id}/${season}/${episode}`;
+        // Videasy: Tambah ?progress=
+        return `https://player.videasy.net/tv/${id}/${season}/${episode}?progress=${playTime}`;
+      
       default:
-        return `https://vidlink.pro/tv/${id}/${season}/${episode}`;
+        return `https://vidlink.pro/tv/${id}/${season}/${episode}?startAt=${playTime}`;
     }
   };
 
@@ -344,6 +367,7 @@ function page() {
 
   const handleEpisodeChange = useCallback((episodeNumber: string) => {
     setEpisode(episodeNumber);
+    // Scroll player into view (mobile UX optimization)
     setTimeout(() => {
       videoPlayerRef.current?.scrollIntoView({
         behavior: "smooth",
@@ -387,7 +411,6 @@ function page() {
                       </div>
                     ))}
                     <div className="badge badge-ghost">
-                      {/* Tampilkan progress bar sederhana jika ada */}
                       {videoProgress.percentage > 0 && (
                         <span className="text-green-400 font-bold ml-2">
                           Resume: {Math.round(videoProgress.percentage)}%
@@ -598,6 +621,8 @@ function page() {
                         return (
                           <div
                             key={ep.id}
+                            // Tambahkan Ref di sini jika ini episode aktif
+                            ref={isCurrentEpisode ? activeEpisodeRef : null}
                             onClick={() =>
                               handleEpisodeChange(ep.episode_number.toString())
                             }
@@ -712,7 +737,7 @@ function page() {
                             key={actor.id}
                             className="flex items-center gap-3 p-2 rounded-lg bg-[#151515]/30 hover:bg-[#151515]/50 transition-colors"
                           >
-                            {/* Actor Avatar - Larger and Clearer */}
+                            {/* Actor Avatar */}
                             <div className="relative w-16 h-16 min-w-[4rem] rounded-full overflow-hidden border border-gray-600">
                               <Image
                                 src={
@@ -724,8 +749,8 @@ function page() {
                                 fill
                                 className="object-cover"
                                 sizes="64px"
-                                loading="eager" // Changed to eager for better loading
-                                quality={85} // Better image quality
+                                loading="eager"
+                                quality={85}
                                 priority={false}
                               />
                             </div>

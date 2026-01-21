@@ -5,7 +5,7 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getDetailMovie } from "@/Service/fetchMovie";
 import { Monitor, Expand, Shrink, Calendar } from "lucide-react";
-import { addRecentlyWatched } from "@/Service/fetchUser"; // Sesuaikan import function API
+import { addRecentlyWatched, fetchVideoProgress } from "@/Service/actionUser"; // Pastikan import fetchVideoProgress ada
 import { useAuth } from "@/context/AuthContext";
 import { Metadata } from "@/app/Metadata";
 import Image from "next/image";
@@ -22,12 +22,16 @@ function Watch() {
   const [showServerDropdown, setShowServerDropdown] = useState(false);
   const [isCastExpanded, setIsCastExpanded] = useState(false);
 
-  // State Progress
+  // State Progress (Realtime saat nonton)
   const [videoProgress, setVideoProgress] = useState({
     watched: 0,
     duration: 0,
     percentage: 0,
   });
+
+  // State khusus untuk Resume (Dari API saat Load)
+  // Dipisahkan agar iframe tidak reload setiap detik saat videoProgress berubah
+  const [resumeTime, setResumeTime] = useState(0);
 
   // Refs untuk akses state terbaru di dalam listener/cleanup
   const videoProgressRef = useRef(videoProgress);
@@ -60,6 +64,43 @@ function Watch() {
   }, []);
 
   // ==========================================
+  // 0. FETCH INITIAL PROGRESS (RESUME LOGIC)
+  // ==========================================
+  useEffect(() => {
+    const loadProgress = async () => {
+      // Reset dulu
+      setVideoProgress({ watched: 0, duration: 0, percentage: 0 });
+      setResumeTime(0);
+
+      try {
+        // Ambil data progress dari API (misal: fetchVideoProgress support type='movie')
+        // Sesuaikan parameter fungsi ini dengan API service Anda
+        const data = await fetchVideoProgress({ id, type: "movie" });
+
+        if (data && data.watched > 0) {
+          // Set resume time untuk URL iframe
+          setResumeTime(Math.floor(data.watched));
+
+          // Set visual state (untuk badge resume %, dll)
+          setVideoProgress({
+            watched: data.watched,
+            duration: data.duration || 0,
+            percentage: data.duration
+              ? (data.watched / data.duration) * 100
+              : 0,
+          });
+        }
+      } catch (error) {
+        console.error("Error loading progress:", error);
+      }
+    };
+
+    if (id) {
+      loadProgress();
+    }
+  }, [id]);
+
+  // ==========================================
   // 1. SAVE PROGRESS FUNCTION (API)
   // ==========================================
   const saveProgress = useCallback(
@@ -73,11 +114,10 @@ function Watch() {
       if (isAuthenticated) {
         const historyItem = {
           type: "movie" as const,
-          contentId: Number(movie.id), // Pastikan Number
+          contentId: Number(movie.id),
           title: movie.title,
           poster: movie.poster_path,
           backdrop_path: movie.backdrop_path,
-          // Backend mengharapkan totalDuration & durationWatched
           totalDuration: currentProgress.duration,
           durationWatched: currentProgress.watched,
           genres: movie.genres?.map((g: any) => g.name) || [],
@@ -126,25 +166,22 @@ function Watch() {
     if (!movie) return;
 
     const interval = setInterval(() => {
-      // Simpan hanya jika ada perbedaan signifikan (> 2 detik) dari save terakhir
-      // untuk mengurangi spam request API
       const diff = Math.abs(videoProgress.watched - lastSavedProgress.watched);
 
       if (diff > 2) {
         saveProgress(videoProgress);
         setLastSavedProgress(videoProgress);
       }
-    }, 30000); // Check setiap 30 detik
+    }, 30000);
 
     return () => clearInterval(interval);
   }, [movie, videoProgress, lastSavedProgress, saveProgress]);
 
   // ==========================================
-  // 3. UNIFIED EVENT LISTENER (VidLink, VidSrc, Videasy)
+  // 3. UNIFIED EVENT LISTENER
   // ==========================================
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
-      // Helper update state
       const updateState = (watched: number, duration: number) => {
         if (!duration || duration <= 0) return;
         setVideoProgress({
@@ -154,32 +191,25 @@ function Watch() {
         });
       };
 
-      // --- VIDLINK (Media 1) ---
       if (
         selectedServer === "Media 1" &&
         event.origin === "https://vidlink.pro"
       ) {
         if (event.data?.type === "MEDIA_DATA") {
           const mediaData = event.data.data;
-          // Struktur Vidlink Movie: mediaData[id].progress
           if (mediaData && mediaData[id]?.progress) {
             const { watched, duration } = mediaData[id].progress;
             updateState(watched, duration);
-
-            // Opsional: Simpan raw data vidlink ke localStorage jika diperlukan player
-            localStorage.setItem("vidLinkProgress", JSON.stringify(mediaData));
           }
         }
       }
 
-      // --- VIDSRC (Media 2 & 3) ---
       if (
         (selectedServer === "Media 2" || selectedServer === "Media 3") &&
         event.origin === "https://vidsrc.cc"
       ) {
         if (event.data?.type === "PLAYER_EVENT") {
           const data = event.data.data;
-          // Validasi ID & Tipe
           if (String(data.tmdbId) === id && data.mediaType === "movie") {
             if (data.event === "time" || data.event === "pause") {
               updateState(data.currentTime, data.duration);
@@ -188,8 +218,6 @@ function Watch() {
         }
       }
 
-      // --- VIDEASY (Media 4) ---
-      // Pastikan URL includes videasy karena player mungkin di subdomain
       if (
         (selectedServer === "Media 4" || selectedServer === "Media 6") &&
         event.origin.includes("videasy.net")
@@ -212,7 +240,6 @@ function Watch() {
 
     window.addEventListener("message", handleMessage);
 
-    // Cleanup: Remove listener & Save Final Progress
     return () => {
       window.removeEventListener("message", handleMessage);
       if (videoProgressRef.current.watched > 0) {
@@ -222,25 +249,34 @@ function Watch() {
   }, [id, selectedServer, saveProgress]);
 
   // ==========================================
-  // HELPER: Get URL
+  // HELPER: Get URL (UPDATED)
   // ==========================================
   const getVideoUrl = () => {
+    // Gunakan resumeTime (yang diambil sekali dari API) agar URL tidak berubah saat nonton
+    const progressPlay = resumeTime;
+
     switch (selectedServer) {
-      case "Media 1":
-        return `https://vidlink.pro/movie/${id}`;
-      case "Media 2":
-        return `https://vidsrc.cc/v2/embed/movie/${id}?autoPlay=false`;
-      case "Media 3":
-        return `https://vidsrc.cc/v3/embed/movie/${id}?autoPlay=false`;
-      case "Media 4":
-        return `https://player.videasy.net/movie/${id}`;
-      // Media 5 & 6 bisa disesuaikan jika ada source lain
+      case "Media 1": // VidLink
+        return `https://vidlink.pro/movie/${id}?startAt=${progressPlay}`;
+      
+      case "Media 2": // VidSrc v2
+        return `https://vidsrc.cc/v2/embed/movie/${id}?autoPlay=false&startAt=${progressPlay}`;
+      
+      case "Media 3": // VidSrc v3
+        return `https://vidsrc.cc/v3/embed/movie/${id}?autoPlay=false&startAt=${progressPlay}`;
+      
+      case "Media 4": // Videasy
+        return `https://player.videasy.net/movie/${id}?progress=${progressPlay}`;
+      
       case "Media 5":
         return `https://vidsrc.to/embed/movie/${id}`;
+      
       case "Media 6":
-        return `https://vidsrc.icu/embed/movie/${id}`;
+        // Videasy mirror (asumsi sama dengan media 4)
+        return `https://player.videasy.net/movie/${id}?progress=${progressPlay}`;
+      
       default:
-        return `https://vidlink.pro/movie/${id}`;
+        return `https://vidlink.pro/movie/${id}?startAt=${progressPlay}`;
     }
   };
 

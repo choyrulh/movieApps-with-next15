@@ -265,14 +265,25 @@ const HistoryTontonan = () => {
     }
   };
 
-  const formatRemainingTime = (watched: number, duration: number) => {
-    if (!duration || !watched) return "Belum ditonton";
-    const remaining = duration - watched;
-    if (remaining <= 0) return "Selesai";
-    const minutes = Math.floor(remaining / 60);
-    return `${minutes}m tersisa`;
-  };
+  // const formatRemainingTime = (watched: number, duration: number) => {
+  //   if (!duration || !watched) return "Belum ditonton";
+  //   const remaining = duration - watched;
+  //   if (remaining <= 0) return "Selesai";
+  //   const minutes = Math.floor(remaining / 60);
+  //   return `${minutes}m tersisa`;
+  // };
 
+  const formatCurrentProgress = (watched: number) => {
+    if (!watched || watched <= 0) return "Baru dimulai";
+    
+    const minutes = Math.floor(watched / 60);
+    const seconds = Math.floor(watched % 60);
+
+    if (minutes > 0) {
+      return `${minutes} : ${seconds}`;
+    }
+    return `00 : ${seconds}d`;
+  };
   // --- RENDER ---
   if (!isLoading && (!finalDisplayData || finalDisplayData.length === 0))
     return null;
@@ -285,15 +296,6 @@ const HistoryTontonan = () => {
           <h2 className="text-2xl font-bold text-white tracking-wide">
             Lanjutkan Menonton
           </h2>
-          {!isLoading && (
-            <span className="text-sm text-gray-400 mb-1 hidden sm:block">
-              {/* Jika infinite scroll, jumlah total mungkin belum semua terload, jadi tampilkan yang visible atau metadata totalItems */}
-              {isAuthenticated && data?.pages[0]?.pagination
-                ? data.pages[0].pagination.totalItems
-                : finalDisplayData.length}{" "}
-              Judul
-            </span>
-          )}
         </div>
 
         {/* Desktop Navigation Arrows */}
@@ -357,125 +359,105 @@ const HistoryTontonan = () => {
               const key = media._uniqueId || media.id;
 
               return (
-                <div
-                  key={key}
-                  className="relative flex-shrink-0 snap-start group"
+              <div
+                key={key}
+                className="relative flex-shrink-0 snap-start group"
+              >
+                <Link
+                  href={`/${media.type}/${media.id}/watch${
+                    isTVShow && media.season && media.episode
+                      ? `?season=${media.season}&episode=${media.episode}`
+                      : ""
+                  }`}
+                  className="block w-64 sm:w-72 md:w-80"
                 >
-                  <Link
-                    href={`/${media.type}/${media.id}/watch${
-                      isTVShow && media.season && media.episode
-                        ? `?season=${media.season}&episode=${media.episode}`
-                        : ""
-                    }`}
-                    className="block w-64 sm:w-72 md:w-80"
-                  >
-                    {/* Card UI Code (Sama seperti original) */}
-                    <div className="relative aspect-video w-full rounded-xl overflow-hidden bg-gray-900 shadow-lg group-hover:shadow-2xl group-hover:shadow-amber-500/10 transition-all duration-300 ring-1 ring-white/10 group-hover:ring-amber-500/50">
-                      <ImageWithFallback
-                        src={
-                          media.backdrop_path
-                            ? `https://image.tmdb.org/t/p/w780${media.backdrop_path}`
-                            : ""
-                        }
-                        alt={media.title || "Untitled"}
-                        fill
-                        className="object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out opacity-90 group-hover:opacity-100"
-                        fallbackText="No Image"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80" />
+                  <div className="relative aspect-video w-full rounded-xl overflow-hidden bg-gray-900 shadow-lg group-hover:shadow-2xl group-hover:shadow-amber-500/10 transition-all duration-300 ring-1 ring-white/10 group-hover:ring-amber-500/50">
+                    <ImageWithFallback
+                      src={
+                        media.backdrop_path
+                          ? `https://image.tmdb.org/t/p/w780${media.backdrop_path}`
+                          : ""
+                      }
+                      alt={media.title || "Untitled"}
+                      fill
+                      className="object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out opacity-90 group-hover:opacity-100"
+                      fallbackText="No Image"
+                    />
+                    
+                    {/* Overlay gelap di bagian bawah agar teks putih terbaca jelas */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-transparent to-transparent opacity-90" />
 
-                      {/* Play Button Overlay */}
-                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 scale-90 group-hover:scale-100">
-                        <div className="w-12 h-12 rounded-full bg-amber-500/90 flex items-center justify-center shadow-lg backdrop-blur-sm pl-1">
-                          <svg
-                            className="w-5 h-5 text-black"
-                            fill="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path d="M8 5v14l11-7z" />
-                          </svg>
-                        </div>
-                      </div>
-
-                      {/* Delete Button */}
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          e.preventDefault();
-                          handleDelete(
-                            isAuthenticated ? media._id : media.id.toString()
-                          );
-                        }}
-                        className="absolute top-2 right-2 p-2 bg-black/40 hover:bg-red-500/80 rounded-full text-white/70 hover:text-white transition-all backdrop-blur-md opacity-0 group-hover:opacity-100 z-20"
-                      >
-                        <svg
-                          className="w-4 h-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M6 18L18 6M6 6l12 12"
-                          />
+                    {/* Tombol Play (Tengah) */}
+                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 scale-90 group-hover:scale-100">
+                      <div className="w-12 h-12 rounded-full bg-amber-500/90 flex items-center justify-center shadow-lg backdrop-blur-sm pl-1 border border-black/10">
+                        <svg className="w-5 h-5 text-black" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M8 5v14l11-7z" />
                         </svg>
-                      </button>
+                      </div>
+                    </div>
 
-                      {/* Content Info Bottom */}
-                      <div className="absolute bottom-0 left-0 right-0 p-3 flex flex-col justify-end">
+                    {/* Tombol Hapus (Kanan Atas) */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        handleDelete(isAuthenticated ? media._id : media.id.toString());
+                      }}
+                      className="absolute top-2 right-2 p-2 bg-black/40 hover:bg-red-500/80 rounded-full text-white/70 hover:text-white transition-all backdrop-blur-md opacity-0 group-hover:opacity-100 z-20"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+
+                    {/* --- POSISI BARU: JUDUL & EPISODE DI ATAS PROGRESS BAR --- */}
+                    <div className="absolute bottom-0 left-0 right-0 p-3 flex flex-col justify-end z-10">
+                      
+                      {/* Row Judul & Episode */}
+                      <div className="flex justify-between items-end gap-3 mb-2">
+                        <div className="min-w-0 flex-1">
+                          <h3 className="text-sm md:text-base font-bold text-white drop-shadow-lg truncate group-hover:text-amber-400 transition-colors">
+                            {media.title}
+                          </h3>
+                          {/* Info Tambahan (Tahun) di bawah judul kecil saja */}
+                          <p className="text-[9px] text-gray-400 opacity-80">
+                            {media.release_date ? new Date(media.release_date).getFullYear() : ""}
+                          </p>
+                        </div>
+
+                        {/* Episode di paling kanan pinggir */}
                         {isTVShow && media.season && media.episode && (
-                          <div className="flex items-center gap-2 mb-2">
-                            <span className="text-[11px] font-bold uppercase tracking-wider bg-white/20 text-white px-2 py-0.5 rounded backdrop-blur-md border border-white/10">
-                              S{media.season} E{media.episode}
+                          <div className="flex-shrink-0 mb-1">
+                            <span className="text-[10px] text-white md:text-[11px] font-black uppercase tracking-wider bg-amber-500 text-black px-2 py-0.5 rounded shadow-[0_2px_4px_rgba(0,0,0,0.3)]">
+                              S{media.season}E{media.episode}
                             </span>
                           </div>
                         )}
-                        <div className="w-full h-1 bg-white/20 rounded-full overflow-hidden mb-1">
-                          <div
-                            className="bg-green-500 rounded-full h-full transition-all duration-300"
-                            style={{
-                              width: `${progressPercentage}%`,
-                              minWidth: "2px",
-                            }}
-                          />
-                        </div>
-                        <div className="flex justify-between items-center text-[11px] font-medium text-gray-300">
-                          <span>
-                            {formatRemainingTime(
-                              media.progress.watched,
-                              media.progress.duration
-                            )}
-                          </span>
-                          <span>{progressPercentage}%</span>
-                        </div>
                       </div>
-                    </div>
 
-                    {/* Title */}
-                    <div className="mt-3 px-1">
-                      <h3 className="text-lg font-semibold text-gray-100 truncate group-hover:text-amber-400 transition-colors">
-                        {media.title}
-                      </h3>
-                      <div className="flex items-center gap-2 text-xs text-gray-500 mt-0.5">
-                        {media.release_date && (
-                          <span>
-                            {new Date(media.release_date).getFullYear()}
-                          </span>
-                        )}
-                        {media.episode_title && isTVShow && (
-                          <>
-                            <span className="w-1 h-1 bg-gray-600 rounded-full" />
-                            <span className="truncate max-w-[150px]">
-                              {media.episode_title}
-                            </span>
-                          </>
-                        )}
+                      {/* Progress Bar Area */}
+                      <div className="w-full h-1 bg-white/20 rounded-full overflow-hidden mb-1.5">
+                        <div
+                          className="bg-green-500 rounded-full h-full transition-all duration-300 shadow-[0_0_8px_rgba(34,197,94,0.6)]"
+                          style={{
+                            width: `${progressPercentage}%`,
+                            minWidth: "2px",
+                          }}
+                        />
+                      </div>
+
+                      {/* Time Progress */}
+                      <div className="flex justify-between items-center text-[10px] font-medium text-gray-300">
+                        <span className="flex items-center gap-1">
+                          <span className="w-1 h-1 bg-green-500 rounded-full animate-pulse" />
+                          {formatCurrentProgress(media.progress.watched)}
+                        </span>
+                        <span className="text-white/80">{progressPercentage}%</span>
                       </div>
                     </div>
-                  </Link>
-                </div>
+                  </div>
+                </Link>
+              </div>
               );
             })}
 
