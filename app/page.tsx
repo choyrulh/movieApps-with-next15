@@ -3,8 +3,8 @@ import HomeClient from "./HomeClient";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Aura Movies",
-  description: "Aura Movies is a free movie streaming website.",
+  title: "Slashverse Movies",
+  description: "Slashverse Movies is a free movie streaming website.",
 };
 
 export default async function Home() {
