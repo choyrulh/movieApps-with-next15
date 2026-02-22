@@ -1,4 +1,3 @@
-import axios from "axios";
 import {
   fetchUserProfileAPI,
   getWatchlistUserAPI,
@@ -93,12 +92,12 @@ export const getShowProgressUser = async (id: string) => {
               progressPercentage: episodeData.progress.percentage,
               isCompleted: episodeData.progress.percentage >= 90,
               watchedDate: episodeData.last_updated,
-            })
-          )
+            }),
+          ),
       ),
       totalEpisodesWatched: Object.values(showData.seasons).reduce(
         (acc: number, season: any) => acc + Object.keys(season.episodes).length,
-        0
+        0,
       ),
       hasWatchedEpisodes: true,
     };

@@ -144,7 +144,7 @@ export const fetchVideoProgress = async ({ id, season, episode }: any) => {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      }
+      },
     );
 
     if (!response.ok) {
@@ -199,7 +199,7 @@ export const getHistoryWatchUserAPI = async (page = 1) => {
     `${BASE_URL}/recently-watched?page=${page}&limit=10`,
     {
       headers: { Authorization: `Bearer ${token}` },
-    }
+    },
   );
   if (!response.ok) throw new Error("Failed to fetch history");
   return response.json();
@@ -228,7 +228,12 @@ export const getStatsUserAPI = async (type: "week" | "month" = "week") => {
     headers: { Authorization: `Bearer ${token}` },
   });
   if (!response.ok) throw new Error("Failed to fetch stats");
-  return response.json();
+  const data = await response.json();
+  console.log(
+    "SERVER_STATS_DATA",
+    JSON.stringify(data.data?.period?.data?.[0]),
+  );
+  return data;
 };
 
 export const getEpisodeAndSeasonUserAPI = async ({
@@ -241,7 +246,7 @@ export const getEpisodeAndSeasonUserAPI = async ({
 
   const response = await fetch(
     `${BASE_URL}/recently-watched/tv/${id}/season/${season}/episode/${episode}`,
-    { headers: { Authorization: `Bearer ${token}` } }
+    { headers: { Authorization: `Bearer ${token}` } },
   );
   if (!response.ok) throw new Error("Failed to fetch episode progress");
   return response.json();
@@ -254,7 +259,7 @@ export const getShowProgressUserAPI = async (id: string) => {
   try {
     const response = await fetch(
       `${BASE_URL}/recently-watched/tv-progress/${id}`,
-      { headers: { Authorization: `Bearer ${token}` } }
+      { headers: { Authorization: `Bearer ${token}` } },
     );
     if (!response.ok) return null;
     return response.json();

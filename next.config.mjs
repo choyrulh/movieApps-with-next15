@@ -6,6 +6,10 @@ const nextConfig = {
         protocol: "https",
         hostname: "image.tmdb.org",
       },
+      {
+        protocol: "https",
+        hostname: "avatar.iran.liara.run",
+      },
     ],
     // Removed unoptimized: true to enable Next.js image optimization
     // This will automatically compress and serve responsive images

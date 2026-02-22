@@ -292,9 +292,9 @@ export default function Page() {
                   <Edit size={16} />
                 </button>
               </div>
-              <p className="text-xs text-gray-500 mt-3">
+              <div className="text-xs text-gray-500 mt-3">
                 Klik tombol hijau untuk ganti avatar acak
-              </p>
+              </div>
             </div>
 
             <div className="grid md:grid-cols-2 gap-4">
@@ -351,12 +351,12 @@ export default function Page() {
               <h3 className="text-xl font-semibold text-white">
                 {formData.name}
               </h3>
-              <p className="text-gray-400 text-sm">
+              <div className="text-gray-400 text-sm">
                 {userProfile?.data?.email}
-              </p>
-              <p className="text-gray-500 text-sm mt-1">
+              </div>
+              <div className="text-gray-500 text-sm mt-1">
                 {formData.bio || "Belum ada bio"}
-              </p>
+              </div>
             </div>
             <button
               onClick={() => setEditMode(true)}
@@ -436,9 +436,9 @@ export default function Page() {
           <div className="bg-gradient-to-r from-gray-800 to-gray-700 rounded-xl p-6 flex justify-between items-center">
             <div>
               <h3 className="text-lg font-bold text-white">Paket Gratis</h3>
-              <p className="text-gray-400 text-sm">
+              <div className="text-gray-400 text-sm">
                 Upgrade ke Premium untuk akses tanpa batas.
-              </p>
+              </div>
             </div>
             <button className="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-black font-bold rounded-lg">
               Upgrade Premium
@@ -460,22 +460,22 @@ export default function Page() {
               </span>
             </div>
             <div className="space-y-1 text-sm text-gray-300">
-              <p>
+              <div>
                 Harga:{" "}
                 <span className="font-semibold text-white">
                   {userProfile?.data?.subscription?.price || "Rp 59.000"}/bulan
                 </span>
-              </p>
-              <p>
+              </div>
+              <div>
                 Perpanjangan otomatis pada:{" "}
                 <span className="font-semibold text-white">
                   {userProfile?.data?.subscription?.billingDate
                     ? new Date(
-                        userProfile.data.subscription.billingDate
+                        userProfile.data.subscription.billingDate,
                       ).toLocaleDateString()
                     : "-"}
                 </span>
-              </p>
+              </div>
             </div>
           </div>
         )}
@@ -763,7 +763,7 @@ const SettingsItem = ({ title, description, action, isLast = false }: any) => (
     <div className="pr-4">
       <h3 className="font-medium text-gray-200">{title}</h3>
       {description && (
-        <p className="text-xs text-gray-500 mt-0.5">{description}</p>
+        <div className="text-xs text-gray-500 mt-0.5">{description}</div>
       )}
     </div>
     <div className="flex-shrink-0">{action}</div>

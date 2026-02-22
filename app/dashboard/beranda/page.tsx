@@ -19,9 +19,16 @@ import { ImageWithFallback } from "@/components/common/ImageWithFallback";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import useIsMobile from "@/hook/useIsMobile";
-import WatchStatistics from "@/Fragments/WatchStatistics";
+import dynamic from "next/dynamic";
 import { Metadata } from "@/app/Metadata";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+
+const WatchStatistics = dynamic(() => import("@/Fragments/WatchStatistics"), {
+  loading: () => (
+    <div className="w-full h-64 bg-zinc-900/50 animate-pulse rounded-xl" />
+  ),
+  ssr: false, // Statistics relies heavily on client-side charts and animations
+});
 
 // Data dummy untuk contoh
 const userData = {

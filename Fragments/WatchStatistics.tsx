@@ -27,10 +27,15 @@ const WatchStatistics = ({
   statsType,
   setStatsType,
 }: WatchStatisticsProps) => {
-  const periodData = statsData?.data?.period?.data || [];
-  const summaryData = statsData?.data?.period?.summary || {};
-  const overallData = statsData?.data?.overall || {};
-  const recentActivity = statsData?.data?.recentActivity || [];
+  // Handle different API response structures (with and without .data wrapper)
+  const payload = statsData?.data || statsData || {};
+  const periodObj = payload?.period || {};
+  const periodData = Array.isArray(periodObj)
+    ? periodObj
+    : periodObj?.data || [];
+  const summaryData = periodObj?.summary || {};
+  const overallData = payload?.overall || {};
+  const recentActivity = payload?.recentActivity || [];
 
   const formatHours = (seconds: number) => {
     if (!seconds) return "0j 0m";
@@ -42,7 +47,17 @@ const WatchStatistics = ({
   // Mencari nilai maksimum untuk kalkulasi tinggi batang grafik
   const maxDurationValue =
     periodData.length > 0
-      ? Math.max(...periodData.map((e: any) => e.totalDuration || 0))
+      ? Math.max(
+          ...periodData.map(
+            (e: any) =>
+              e.totalDuration ||
+              e.durationWatched ||
+              e.watchTime ||
+              e.duration ||
+              e.totalWatchTime ||
+              0,
+          ),
+        )
       : 0;
   return (
     <div className="bg-zinc-900/20 border border-zinc-800 rounded-2xl p-6 md:p-8">
@@ -128,27 +143,33 @@ const WatchStatistics = ({
             </div>
           </div>
 
-          <div className="h-auto w-full">
+          <div className="h-48 md:h-56 w-full mt-4">
             {periodData?.length > 0 ? (
               <div className="flex items-end justify-between h-full gap-2 md:gap-4">
                 {periodData.map((entry: any, index: number) => {
-                  const heightPercentage =
+                  const entryDuration =
+                    entry.totalDuration ||
+                    entry.durationWatched ||
+                    entry.watchTime ||
+                    entry.duration ||
+                    entry.totalWatchTime ||
+                    0;
+                  const calculatedPct =
                     maxDurationValue > 0
-                      ? Math.max(
-                          (entry.totalDuration / maxDurationValue) * 100,
-                          3
-                        )
+                      ? (entryDuration / maxDurationValue) * 100
                       : 0;
+                  // Ensure minimum visible bar (e.g. 4%) so we can always see and hover it
+                  const heightPercentage = Math.max(calculatedPct, 4);
 
                   return (
                     <div
-                      key={index}
+                      key={`${statsType}-${index}`}
                       className="flex-1 flex flex-col items-center gap-2 group cursor-pointer"
                     >
                       <div className="w-full h-40 md:h-48 relative rounded-t-lg overflow-hidden">
                         <motion.div
                           className="absolute bottom-0 w-full text-center bg-green-500/80 group-hover:bg-green-400 transition-colors"
-                          initial={{ height: 0 }}
+                          initial={{ height: "0%" }}
                           animate={{ height: `${heightPercentage}%` }}
                           transition={{
                             duration: 0.8,
@@ -157,16 +178,26 @@ const WatchStatistics = ({
                           }}
                         >
                           {/* Tooltip */}
-                          <span className="text-[10px] md:text-xs text-white font-semibold select-none">
-                            {formatHours(entry.totalDuration)}
+                          <div className="absolute -top-6 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap bg-zinc-800 px-2 py-0.5 rounded text-[10px] md:text-xs text-white z-10 shadow-xl border border-zinc-700/50">
+                            {formatHours(entryDuration)}
+                          </div>
+                          <span className="text-[10px] md:text-xs text-white font-semibold select-none flex items-center justify-center h-full pb-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            {formatHours(entryDuration)}
                           </span>
                         </motion.div>
                       </div>
 
                       <span className="text-[10px] md:text-xs text-zinc-500 uppercase font-medium">
                         {statsType === "month"
-                          ? entry.label?.split(" ")[1]
-                          : entry.dayOfWeek.substring(0, 3)}
+                          ? (entry.label || "").split(" ")[1] ||
+                            entry.dayOfWeek?.substring(0, 3) ||
+                            `Minggu ${index + 1}`
+                          : (
+                              entry.dayOfWeek ||
+                              ["Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min"][
+                                index
+                              ]
+                            ).substring(0, 3)}
                       </span>
                     </div>
                   );
